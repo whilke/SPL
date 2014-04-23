@@ -1,0 +1,36 @@
+{% extends _layout %}
+
+{% block content %}
+<div class="row">
+<div class="col-lg-offset-3 col-lg-6">
+<h1>{{'reset_password_heading'|lang()}}</h1>
+
+{% if data.message != "" %}
+<div class="alert alert-info" id="infoMessage">{{ data.message}}</div>
+{% endif%}
+
+{% set l = 'auth/reset_password/' ~ data.code %}
+{{l|form_open()}}
+    <p>
+        <label for='new_password'>
+            {% set l = 'reset_password_new_password_label'|lang %}
+            {% set l2 = l|sprintf(data.min_password_length) %}
+            {{ l2 }}
+        {{data.new_password|bs_form_input()}}
+        </label> <br/>
+    </p>
+    
+    <p>
+        {{'reset_password_new_password_confirm_label'|lang('new_password_confirm')}}
+        {{data.new_password_confirm|bs_form_input()}}
+    </p>    
+    
+    {{data.user_id|form_input}}
+    {{data.csrf|form_hidden}}
+
+    {% set lsubbtn = 'reset_password_submit_btn'|lang %}
+    {{'submit'|bs_form_submit(lsubbtn)}}
+
+{{form_close()}}
+
+{% endblock %}

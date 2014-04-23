@@ -1,0 +1,39 @@
+{% extends _layout %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-lg-offset-3 col-lg-6">
+<h1>{{'login_heading'|lang()}}</h1>
+<p>{{'login_subheading'|lang()}}</p>
+
+{% if data.message != "" %}
+<div class="alert alert-info" id="infoMessage">{{ data.message}}</div>
+{% endif%}
+
+{{'auth/login'|form_open()}}
+    <p>
+        {{'login_identity_label'|lang('identity')}}
+        {{data.identity|bs_form_input()}}
+    </p>
+
+    <p>
+        {{'login_password_label'|lang('password')}}
+        {{data.password|bs_form_input()}}
+    </p>
+
+    <p>
+        {{'login_remember_label'|lang('remember')}}
+        {{'remember'|form_checkbox('1', FALSE, 'id="remember"')}}
+    </p>
+
+    {% set lsubbtn = 'login_submit_btn'|lang %}
+    {{'submit'|bs_form_submit(lsubbtn)}}
+
+{{form_close()}}
+
+<p>
+    <a href="auth/forgot_password" rel="async" ajaxify="{{'auth/auth_ajax/ion_auth_dialog/forgot_password'|site_url}}">
+        {{'login_forgot_password'|lang}}</a>
+    </p>
+    </div></div>
+{% endblock %}

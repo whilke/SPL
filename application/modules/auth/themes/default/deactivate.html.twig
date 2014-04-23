@@ -1,0 +1,36 @@
+{% extends _layout %}
+
+{% block content %}
+<div class="row">
+<div class="col-lg-offset-3 col-lg-6">
+<h1>{{'deactivate_heading'|lang()}}</h1>
+<p>
+    {% set l = 'deactivate_subheading'|lang %}
+    {% set l2 = l|sprintf(data.teamname) %}
+    {{ l2 }}
+</p>
+
+{% if data.message != "" %}
+<div class="alert alert-info" id="infoMessage">{{ data.message}}</div>
+{% endif%}
+
+{% set l = 'auth/deactivate/' ~ data.user.id %}
+{{l|form_open()}}
+    <p>
+        {{'deactivate_confirm_y_label'|lang('conf   irm')}}
+        <input type="radio" name="confirm" value="yes" checked="checked" />    
+        {{'deactivate_confirm_n_label'|lang('confirm')}}
+        <input type="radio" name="confirm" value="no" />
+    </p>
+    
+    {% set arr = {'id': data.user.id} %}
+    {{arr|form_hidden}}
+    {{data.csrf|form_hidden}}
+
+
+    {% set lsubbtn = 'deactivate_submit_btn'|lang %}
+    {{'submit'|bs_form_submit(lsubbtn)}}
+
+{{form_close()}}
+
+{% endblock %}

@@ -1,0 +1,60 @@
+{% extends _layout %}
+
+{% block content %}
+<div class="row">
+<div class="col-lg-offset-3 col-lg-6">
+<h1>{{'index_heading'|lang()}}</h1>
+<p>{{'index_subheading'|lang()}}</p>
+
+{% if data.message != "" %}
+<div class="alert alert-info" id="infoMessage">{{ data.message}}</div>
+{% endif%}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>{{'index_tname_th'|lang}}</th>
+            <th>{{'index_email_th'|lang}}</th>
+            <th>{{'index_groups_th'|lang}}</th>
+            <th>{{'index_status_th'|lang}}</th>
+            <th>{{'index_action_th'|lang}}</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for user in data.users %}
+        <tr>
+            <td>{{user.teamname}}</td>
+            <td>{{user.email}}</td>
+            <td>
+                {% for group in user.groups %}
+                    {% set s = 'auth/edit_group/' ~ group.id %}
+                    {{s|anchor(group.name)}}
+                {% endfor %}
+            </td>            
+            <td>
+                {% if user.active == TRUE %}
+                    {% set l = 'index_active_link'|lang %}
+                    {% set s =  'auth/deactivate/' ~ user.id %}
+                {% else %}
+                    {% set l = 'index_inactive_link'|lang %}
+                    {% set s =  'auth/activate/' ~ user.id %}
+                {% endif %}
+                {{s|anchor(l)}}
+            </td>            
+            <td>
+                {% set l = "auth/edit_user/" ~ user.id %}
+                {{l|anchor('Edit')}}
+            </td>
+        </tr>        
+    {% endfor %}
+    </tbody>
+</table>
+
+
+<p>
+    {% set l1 = 'index_create_user_link'|lang %}
+    {% set l2 = 'index_create_group_link'|lang %}
+    {{'auth/create_user'|anchor(l1)}} | {{'auth/create_group'|anchor(l2)}}
+</p>
+
+{% endblock %}

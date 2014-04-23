@@ -1,0 +1,36 @@
+{% extends _layout %}
+
+{% block content %}
+<div class="row">
+<div class="col-lg-offset-3 col-lg-6">
+<h1>{{'forgot_password_heading'|lang()}}</h1>
+<p>
+    {% set l = 'forgot_password_subheading'|lang %}
+    {% set l2 = l|sprintf(data.identity_label) %}
+    {{ l2 }}
+</p>
+
+{% if data.message != "" %}
+<div class="alert alert-info" id="infoMessage">{{ data.message}}</div>
+{% endif%}
+
+{{'auth/forgot_password'|form_open()}}
+    <p>
+        <label for='email'>
+            {% set l = 'orgot_password_email_label'|lang %}
+            {% set l2 = l|sprintf(data.identity_label) %}
+            {{ l2 }}
+        </label> <br/>
+    </p>
+    
+    <p>
+        {{'login_identity_label'|lang('identity')}}
+        {{data.email|bs_form_input()}}
+    </p>
+
+    {% set lsubbtn = 'forgot_password_submit_btn'|lang %}
+    {{'submit'|bs_form_submit(lsubbtn)}}
+
+{{form_close()}}
+
+{% endblock %}

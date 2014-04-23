@@ -1,0 +1,40 @@
+{% extends _layout %}
+
+{% block content %}
+<div class="row">
+<div class="col-lg-offset-3 col-lg-6">
+<h1>{{'create_user_heading'|lang()}}</h1>
+<p>{{'create_user_subheading'|lang()}}</p>
+
+{% if data.message != "" %}
+<div class="alert alert-info" id="infoMessage">{{ data.message}}</div>
+{% endif%}
+
+{{'auth/create_user'|form_open()}}
+    <p>
+        {{'create_user_email_label'|lang('email')}}
+        {{data.email|bs_form_input()}}
+    </p>
+
+    <p>
+        {{'create_user_team_label'|lang('teamname')}}
+        {{data.teamname|bs_form_input()}}
+    </p>
+    
+    <p>
+        {{'create_user_password_label'|lang('password')}}
+        {{data.password|bs_form_input()}}
+    </p>
+
+    <p>
+        {{'create_user_password_confirm_label'|lang('password_confirm')}}
+        {{data.password_confirm|bs_form_input()}}
+    </p>    
+
+    {% set lsubbtn = 'create_user_submit_btn'|lang %}
+    {{'submit'|bs_form_submit(lsubbtn)}}
+
+{{form_close()}}
+
+       
+{% endblock %}

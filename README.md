@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 CodeIgniter Skeleton [![Build Status](https://travis-ci.org/anvoz/CodeIgniter-Skeleton.png?branch=master)](https://travis-ci.org/anvoz/CodeIgniter-Skeleton)
 ====================
 
@@ -182,7 +181,3 @@ Use `alert`, `confirm` and `dialog` functions of the `Response` library to displ
 Copyright An Vo [@an_voz](https://twitter.com/an_voz), 2013-2014.
 
 [CodeIgniter License Agreement](http://ellislab.com/codeigniter/user-guide/license.html), everything else is released under the [MIT License](http://opensource.org/licenses/MIT).
-=======
-SPL
-===
->>>>>>> ed60d782362a061e343f032fc1f703ed7fea0431

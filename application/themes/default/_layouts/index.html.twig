@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">        
-        <title>Default layout</title>
+        <title>Strife Pro League</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
         <!-- Bootstrap core CSS -->
@@ -54,8 +54,11 @@
                           <ul class="dropdown-menu">
                             {% if user.isAdmin == TRUE %}
                             <li><a href="{{'auth/index'|site_url}}">Admin</a></li>
+                            {% else %}
+                            <li><a href="{{'team/edit'|site_url}}">Edit Team</a></li>
+                            <li><a href="{{'team/portal'|site_url}}">Team Portal</a></li>
                             {% endif %}
-                            <li><a href="auth/logout">Logout</a></li>
+                            <li><a href="{{'auth/logout'|site_url}}">Logout</a></li>
                           </ul>
                         </li>
                      {% endif %}

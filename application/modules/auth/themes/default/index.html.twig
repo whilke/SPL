@@ -23,7 +23,12 @@
     <tbody>
     {% for user in data.users %}
         <tr>
-            <td>{{user.teamname}}</td>
+            <td>
+                {% if user.teamname != 'Admin' %}
+                    {% set s = 'team/edit/' ~ user.teamname %}
+                    {{s|anchor(user.teamname)}}
+                {% endif %}
+            </td>
             <td>{{user.email}}</td>
             <td>
                 {% for group in user.groups %}

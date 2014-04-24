@@ -1,0 +1,113 @@
+{% extends _layout %}
+{% block content %}
+    <h2 style='text-align:center;'>{{team.name}}</h2><br/>
+    <div class="col-md-12">        
+        <div class="col-md-4">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Logo</h3>
+                </div>
+                <div class="panel-body" style="height:222px">
+                </div>
+            </div> 
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Points</h3>
+                </div>
+                <div class="panel-body">
+                    <div style="text-align:center;">0</div>
+                </div>
+            </div> 
+        </div>
+        <div class="col-md-4">
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <h3 class="panel-title">How to contact</h3>
+                </div>
+                <div class="panel-body">
+                    {{team.contact}}
+                </div>
+            </div>
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Record</h3>
+                </div>
+                <div class="panel-body">
+                    <table align='center'>
+                        <thead>
+                            <tr>
+                                <th width='150px'>Season</th>
+                                <th width='50px'>W - L</th>
+                                <th width='50px'>Win %</th>
+                                <th width='50px'>Points</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Season 1</td>
+                                <td>0 - 0</td>
+                                <td>0%</td>
+                                <td>0</td>
+                            </tr>
+                            <tr>
+                                <td>All Time</td>
+                                <td>0 - 0</td>
+                                <td>0%</td>
+                                <td>0</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Region</h3>
+                </div>
+                <div class="panel-body">
+                    {{team.region}}
+                </div>
+            </div>                
+        </div>
+            <div class="col-md-4">
+             <div class="panel panel-info">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Captain</h3>
+                </div>
+                <div class="panel-body">
+                    {{team.captain}}
+                </div>
+            </div>
+           <div class="panel panel-info">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Members</h3>
+                </div>
+                <div class="panel-body">
+                    {{team.slot1}}<br/>
+                    {{team.slot2}}<br/>
+                    {{team.slot3}}<br/>
+                    {{team.slot4}}<br/>
+                </div>
+                <div class="panel-heading">
+                    <h3 class="panel-title">Subs</h3>
+                </div>
+                <div class="panel-body">
+                    {{team.slot5}}<br/>
+                    {{team.slot6}}<br/>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8 col-md-offset-2">   
+        <table id="matches">
+            <thead>
+                <tr>
+                    <th align='center' width='300px'>Versus</th>
+                    <th align='center' width='50px'>Win</th>
+                    <th align='center' width='50px'>Loss</th>
+                    <th align='center' width='100px'>Result</th>
+                    <th align='center' width='200px'>Match ID</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+{% endblock %}

@@ -413,12 +413,19 @@ class Auth extends MY_Controller {
 
             $additional_data = array();
         }
-        if ($this->form_validation->run() == true && $this->ion_auth->register($teamname, $password, $email, $additional_data))
+        if ($this->form_validation->run() == true)
         {
-            //check to see if we are creating the user
-            //redirect them back to the admin page
-            $this->session->set_flashdata('message', $this->ion_auth->messages());
-            redirect("auth", 'refresh');
+            $id = $this->ion_auth->register($teamname, $password, $email, $additional_data);
+            if ($id != FALSE)
+            {          
+                $this->load->model('Teams_model');
+                $this->Teams_model->addNewTeam($teamname, $id);
+
+                //check to see if we are creating the user
+                //redirect them back to the admin page
+                $this->session->set_flashdata('message', $this->ion_auth->messages() );
+                redirect("auth", 'refresh');
+            }
         }
         else
         {

@@ -181,12 +181,12 @@ class Team extends MY_Controller
                 $this->data['slot5'] = array(
                     'name'  => 'slot5',
                     'id'    => 'slot5',
-                    'value' => $this->form_validation->set_value('slot5', $team->slot4),
+                    'value' => $this->form_validation->set_value('slot5', $team->slot5),
                 );         
                 $this->data['slot6'] = array(
                     'name'  => 'slot6',
                     'id'    => 'slot6',
-                    'value' => $this->form_validation->set_value('slot6', $team->slot4),
+                    'value' => $this->form_validation->set_value('slot6', $team->slot6),
                 );                      
                 $this->twiggy->set('team', $team);
                 $this->twiggy->set('data', $this->data);

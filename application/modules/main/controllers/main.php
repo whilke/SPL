@@ -11,20 +11,9 @@ class Main extends MY_Controller
     
     function index()
     {
-        $skipLanding = $this->session->userdata('skipLanding');
-        
-        if ($this->ion_auth->logged_in())
-            $skipLanding = true;
-        
-        $this->twiggy->set('skipLanding', $skipLanding);
         $this->twiggy->template('index')->display();
     }
-    
-    function setLanding()
-    {
-        $this->session->set_userdata('skipLanding', true);
-    }
-    
+        
     function contact()
     {
         get_instance()->load->library('form_validation');

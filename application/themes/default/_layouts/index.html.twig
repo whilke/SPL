@@ -20,9 +20,10 @@
             <script src="{{'js/html5shiv.min.js'|assets_url()}}"></script>
             <script src="{{'js/respond.min.js'|assets_url()}}"></script>
         <![endif]-->
-
+        
         <script src="{{'js/jquery.min.js'|assets_url()}}"></script>
         <script src="{{'js/jquery.jplayer.min.js'|assets_url()}}"></script>
+
         
     </head>
     <body>
@@ -74,6 +75,18 @@
             {% block content %}
             {% endblock %}
         </div>
+        
+        <nav class="navbar navbar-default navbar-fixed-bottom" role="navigation"
+             style="min-height: 22px; height:22px;">
+            <div class="container">
+                <div class="col-md-12">
+                    <p class="text-right text-muted">
+                        &copy;2014 StrifeProLeague.com. All rights reserved. |
+                    <a href="/assets/privacy.html" target="_blank">Privacy Policy</a> |
+                    </p>
+                </div>
+            </div>
+        </nav>
 
         <script src="{{'js/bootstrap.min.js'|assets_url()}}"></script>
         <script src="{{'js/main.js'|assets_url()}}"></script>

@@ -1,34 +1,19 @@
 {% extends _layout %}
 
 {% block content %}
-    
-{% if skipLanding != true %}
-<div class="foo" id="foo" style="float: none; position:fixed;top:0;left:0; width:100%;height:100%;z-index: 10000; background-color: black;">
-  <div class="col-md-12 center-block" style="margin-top:50px">
-      <div id="playdiv" class="col-md-2 col-md-offset-5">
-          <h1><a href="javascript:void(0)" id="playBtn">PLAY</a></h1> 
-          <br/>
-          <h1><a href="javascript:void(0)" id="skipBtn">SKIP</a></h1>
-      </div>
-  <div id="jp_container_1" class="jp-video">
+   <div id="jp_container_1" class="jp-video" style="position: fixed; left: 0; top: 0">
     <div class="jp-type-single">
-      <div id="jquery_jplayer_1" class="jp-jplayer col-md-2 col-md-offset-5"></div>
+      <div id="jquery_jplayer_1" class="jp-jplayer"></div>
       <div class="jp-no-solution">
         <span>Update Required</span>
         To play the media you will need to either update your browser to a recent version or update your <a href="http://get.adobe.com/flashplayer/" target="_blank">Flash plugin</a>.
       </div>
     </div>
   </div>
-  </div>
-</div>
 
 <script type="text/javascript">
     $(document).ready(
     function() {
-        $('#foo').css({
-                width: $(document).width(),
-                height: $(document).height()
-            });
     }
     );
     
@@ -37,11 +22,11 @@
         ready: function () {
           $(this).jPlayer("setMedia", {
            flv: "/assets/splash.flv"
-          });
+          });        
         },
         size:{
-            width: "1280px",
-            height: "720px"
+            width: 0,
+            height: 0
         },
         swfPath: "/assets",
          supplied: "flv",
@@ -49,20 +34,22 @@
                 console.log(event.jPlayer.error);
                 console.log(event.jPlayer.error.type);
                 },
-        ended: function (event) {
-                $("#foo").hide();
-                $.ajax({
-                    url: '{{'main/setLanding'|site_url}}',
-                    error: function(){
-                        console.log('error in ajax');
-                    }
-                });
+        ended: function (event) {                    
+                $("#jquery_jplayer_1").jPlayer("option", {"size" : {
+                    width: "0px",
+                    height: "0px"
+                }});
                 }                
       });      
+
       
       $('#playBtn').click(function(){
-            $("#playdiv").hide();
-            $("#jquery_jplayer_1").jPlayer("play");
+                
+                $("#jquery_jplayer_1").jPlayer("option", {"size" : {
+                    width: $(window).width() +"px",
+                    height: $(window).height() +"px"
+                }});
+                $("#jquery_jplayer_1").jPlayer("play");
         });
         
        $('#skipBtn').click(function(){
@@ -76,36 +63,37 @@
         }); 
     });
 </script>
-{% endif %}
 
  <div class="jumbotron">
-     <p> I'm sure you're asking yourself what this is all about, and while we are not ready to completely roll 
+ <p> I'm sure you're asking yourself what this is all about, and while we are not ready to completely roll 
          out the website and league, we wanted to at least tell you what our general plans are.         
      </p>
      
      <p> <strong>So, just what is the Strife Pro League?</strong> Well, It's our intention to run a professional strife 
          league in the form of seasons. Within these seasons teams will play against one another in the league with the goal
          of earning points. At the end of the season we'll invite the top teams (determined by total points) 
-         to compete in a end of season tourmanet, seeded by that same point total</p>
+         to compete in a end of season tournament, seeded by that same point total</p>
      
-     <p> <strong>Are these weekly tournaments?</strong> No, the league is not a weekly tournmant, but instead a series of games
-         you play against other teams to earn points. We do not have a strict play time policy. You'll infact have several days to
+     <p> <strong>Are these weekly tournaments?</strong> No, the league is not a weekly tournament, but instead a series of games
+         you play against other teams to earn points. We do not have a strict play time policy. You'll in fact have several days to
          coordinate with your matched up teams to complete your games. We feel this will open up the ability for teams to complete
          games every week.
      </p>
      
      <p><strong>Are there any prizes in the league?</strong> While today we do not have any confirmed prizes, I can tell you that
          our intentions are to do so. We are working hard to secure a prize pool for season one, and when we have something that
-         we are happy with, you all will be the first to know. The more active teams that we have parcticipating equates to us
+         we are happy with, you all will be the first to know. The more active teams that we have participating equates to us
          having a higher chance at building a prize pool though.
      </p>
      
      <p><strong>What now?</strong> If you have a team that is interested in joining the league, setup an account and get your team
          registered. We are currently finishing up the complete league rules, and will be posting them soon. We are hard at work 
-         on the website and backend systems so that we can get season one underway within the new couple of weeks.
+         on the website and back end systems so that we can get season one underway within the new couple of weeks.
      </p>
      
      <p>Welcome to the Strife Pro League</p>
-     
  </div>
+<div style="text-align: center">
+    <a href="javascript:void(0)" id="playBtn">Play Trailer</a>
+</div>
 {% endblock %}

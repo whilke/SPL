@@ -12,6 +12,7 @@
         <link rel="stylesheet" href="{{'css/bootstrap.min.css'|assets_url()}}">
         <!-- Custom styles -->
         <link rel="stylesheet" href="{{'css/main.css'|assets_url()}}">
+        <link rel="stylesheet" href="{{'css/jplayer.blue.monday.css'|assets_url()}}">
         {{ css }}
 
         <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -20,6 +21,9 @@
             <script src="{{'js/respond.min.js'|assets_url()}}"></script>
         <![endif]-->
 
+        <script src="{{'js/jquery.min.js'|assets_url()}}"></script>
+        <script src="{{'js/jquery.jplayer.min.js'|assets_url()}}"></script>
+        
     </head>
     <body>
         
@@ -40,14 +44,13 @@
                 </div>
                 <div class="navbar-collapse collapse">
                     <ul class="nav navbar-nav">
-                        <li><a href="#about">Standings</a></li>
-                        <li><a href="#about">Schedule</a></li>
-                        <li><a href="#contact">Contact</a></li>
+                        <li><a href="{{'standings/index'|site_url}}">Standings</a></li>
+                        <li><a href="{{'main/contact'|site_url}}">Contact</a></li>
                   </ul>
                   <ul class="nav navbar-nav navbar-right">                    
                     {% if user.isvalid != "true" %}
-                        <li><a href="auth/login" rel="async" ajaxify="{{'auth/auth_ajax/ion_auth_dialog/login'|site_url}}">Login</a></li>
-                        <li><a href="auth/create_user" rel="async" ajaxify="{{'auth/auth_ajax/ion_auth_dialog/create_user'|site_url}}">Signup</a></li>
+                        <li><a href="{{'auth/login'|site_url}}" rel="async" ajaxify="{{'auth/auth_ajax/ion_auth_dialog/login'|site_url}}">Login</a></li>
+                        <li><a href="{{'auth/create_user'|site_url}}" rel="async" ajaxify="{{'auth/auth_ajax/ion_auth_dialog/create_user'|site_url}}">Signup</a></li>
                     {% else %}
                         <li class="dropdown">
                           <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{user.uname}} <b class="caret"></b></a>
@@ -72,10 +75,10 @@
             {% endblock %}
         </div>
 
-        <script src="{{'js/jquery.min.js'|assets_url()}}"></script>
         <script src="{{'js/bootstrap.min.js'|assets_url()}}"></script>
         <script src="{{'js/main.js'|assets_url()}}"></script>
         <!-- Extra javascript -->
         {{ js }}
+        
     </body>
 </html>

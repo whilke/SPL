@@ -13,6 +13,7 @@ class MY_Controller extends MX_Controller {
 
         $this->_ci =& get_instance();
         
+        $this->load->library('session');
         $this->load->library('authentication', NULL, 'ion_auth');
         
         if ($this->ion_auth->logged_in())
@@ -67,6 +68,7 @@ class Ajax_Controller extends MY_Controller {
     {
         parent::__construct();
 
+        $this->load->library('session');
         $this->load->library('response');
         $this->load->library('authentication', NULL, 'ion_auth');
         

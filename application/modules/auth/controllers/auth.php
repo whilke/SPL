@@ -42,10 +42,17 @@ class Auth extends MY_Controller {
             //set the flash data error message if there is one
             $this->data['message'] = (validation_errors()) ? validation_errors() : $this->session->flashdata('message');
 
+            $this->load->model('Teams_model');
+
             //list the users
             $this->data['users'] = $this->ion_auth->users()->result();
             foreach ($this->data['users'] as $k => $user)
             {
+                $team = $this->Teams_model->get($user->teamname);
+                if ($team != null)
+                {
+                    $this->data['users'][$k]->teamId = $team->id;
+                }
                 $this->data['users'][$k]->groups = $this->ion_auth->get_users_groups($user->id)->result();
             }
 
@@ -89,6 +96,12 @@ class Auth extends MY_Controller {
             //set the flash data error message if there is one
             $this->data['message'] = (validation_errors()) ? validation_errors() : $this->session->flashdata('message');
 
+            if ($this->data['message'] == '' || $this->data['message'] == false)
+            {
+                $this->data['message'] = $this->session->userdata('AuthMessage');
+                $this->session->unset_userdata('AuthMessage');
+            }
+            
             $this->data['identity'] = array('name' => 'identity',
                 'id' => 'identity',
                 'type' => 'text',
@@ -113,6 +126,7 @@ class Auth extends MY_Controller {
 
         //redirect them to the login page
         $this->session->set_flashdata('message', $this->ion_auth->messages());
+        $this->session->set_userdata('skipLanding', true);
         redirect('auth/login', 'refresh');
     }
 
@@ -405,6 +419,8 @@ class Auth extends MY_Controller {
         $this->form_validation->set_rules('password', $this->lang->line('create_user_validation_password_label'), 'required|min_length[' . $this->config->item('min_password_length', 'ion_auth') . ']|max_length[' . $this->config->item('max_password_length', 'ion_auth') . ']|matches[password_confirm]');
         $this->form_validation->set_rules('password_confirm', $this->lang->line('create_user_validation_password_confirm_label'), 'required');
 
+        $displayForm = true;
+        
         if ($this->form_validation->run() == true)
         {
             $teamname = $this->input->post('teamname');
@@ -415,19 +431,22 @@ class Auth extends MY_Controller {
         }
         if ($this->form_validation->run() == true)
         {
+            $displayForm = true;
             $id = $this->ion_auth->register($teamname, $password, $email, $additional_data);
             if ($id != FALSE)
-            {          
+            {         
+                $displayForm = false;
                 $this->load->model('Teams_model');
                 $this->Teams_model->addNewTeam($teamname, $id);
 
                 //check to see if we are creating the user
                 //redirect them back to the admin page
-                $this->session->set_flashdata('message', $this->ion_auth->messages() );
+                $this->session->set_userdata('AuthMessage', 'Validation email has been sent, please check for it.' );
                 redirect("auth", 'refresh');
             }
         }
-        else
+        
+        if ($displayForm)
         {
             //display the create user form
             //set the flash data error message if there is one

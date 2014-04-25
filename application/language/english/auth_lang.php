@@ -149,7 +149,7 @@ $lang['reset_password_validation_new_password_label']         = 'New Password';
 $lang['reset_password_validation_new_password_confirm_label'] = 'Confirm New Password';
 
 // Activation Email
-$lang['email_activate_heading']    = 'Activate account for %s';
+$lang['email_activate_heading']    = '%s, Welcome to the Strife Pro league!';
 $lang['email_activate_subheading'] = 'Please click this link to %s.';
 $lang['email_activate_link']       = 'Activate Your Account';
 

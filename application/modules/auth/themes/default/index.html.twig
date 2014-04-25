@@ -25,7 +25,7 @@
         <tr>
             <td>
                 {% if user.teamname != 'Admin' %}
-                    {% set s = 'team/edit/' ~ user.teamname %}
+                    {% set s = 'team/edit/' ~ user.teamId    %}
                     {{s|anchor(user.teamname)}}
                 {% endif %}
             </td>

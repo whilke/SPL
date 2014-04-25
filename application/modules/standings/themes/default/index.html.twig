@@ -1,0 +1,17 @@
+{% extends _layout %}
+{% block content %}
+<div class="row">
+    <div class="col-lg-offset-3 col-lg-6">
+    
+        <h1>Signed up teams</h1><p>*Proper standings coming soon</p><br/>
+
+       
+    {% for team in teams %}
+        <p>
+        {% set s = 'team/portal/' ~ team.id    %}        
+            <a href="{{s|site_url}}">{{team.name}}</a>
+        </p>
+    {% endfor %}
+    </div>
+</div>
+{% endblock %}

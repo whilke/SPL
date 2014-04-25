@@ -59,7 +59,7 @@ class Team extends MY_Controller
         
     }
     
-    public function edit($teamname='')
+    public function edit($id=0)
     {
         get_instance()->load->library('form_validation');
         
@@ -68,7 +68,14 @@ class Team extends MY_Controller
              redirect('/', 'refresh');
         }
         
-                //validate form input
+        if ($id == 0)
+        {
+            $id = $this->input->post('id');
+            if ($id == false)
+                $id = 0;
+        }
+        
+        //validate form input
         $this->form_validation->set_rules('captain', 'Captain', 'required|xss_clean');
         $this->form_validation->set_rules('contact', 'Contact', 'required|xss_clean');
         $this->form_validation->set_rules('region', 'Region', 'required|xss_clean');
@@ -110,15 +117,22 @@ class Team extends MY_Controller
         {
             $this->data = array();
             $this->data['message']= (validation_errors() ? validation_errors() : $this->session->flashdata('message') );
-
-            if ($isAdmin == FALSE && $teamname == '')
+            
+            $teamname = '';
+            $team = 0;
+            if ($isAdmin == FALSE && $id == 0)
             {
                 $teamname = $user->teamname;
-            }
-
-            if ($user->teamname == $teamname || ($isAdmin && $teamname != '') )
-            {
                 $team = $this->Teams_model->get($teamname);
+                $id = $team->id;
+            }            
+
+            if ($user->teamname == $teamname || ($isAdmin && $id != 0) )
+            {
+                if (!$team)
+                {
+                    $team = $this->Teams_model->getById($id);
+                }
                 
                 $this->data['name'] = array(
                 'name'  => 'name',

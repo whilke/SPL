@@ -13,6 +13,7 @@
         <!-- Custom styles -->
         <link rel="stylesheet" href="{{'css/main.css'|assets_url()}}">
         <link rel="stylesheet" href="{{'css/jplayer.blue.monday.css'|assets_url()}}">
+        <link rel="stylesheet" href="{{'css/modules/skeleton.css'|assets_url()}}">
         {{ css }}
 
         <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -24,6 +25,12 @@
         <script src="{{'js/jquery.min.js'|assets_url()}}"></script>
         <script src="{{'js/jquery.jplayer.min.js'|assets_url()}}"></script>
 
+        <style type="text/css">
+            body {padding-top: 70px;}
+            @media screen and (max-width:768px){
+                body {padding-top: 0px;}
+            }
+        </style>
         
     </head>
     <body>
@@ -47,6 +54,7 @@
                     <ul class="nav navbar-nav">
                         <li><a href="{{'standings/index'|site_url}}">Standings</a></li>
                         <li><a href="{{'main/contact'|site_url}}">Contact</a></li>
+                        <li><a href="{{'main/rules'|site_url}}">Rules</a></li>
                   </ul>
                   <ul class="nav navbar-nav navbar-right">                    
                     {% if user.isvalid != "true" %}
@@ -71,9 +79,9 @@
             </div>
         </div>
 
-        <div class="container" style='padding-top:70px;'>
-            {% block content %}
-            {% endblock %}
+        <div class="container">
+        {% block content %}
+        {% endblock %}
         </div>
         
         <nav class="navbar navbar-default navbar-fixed-bottom" role="navigation"
@@ -90,8 +98,18 @@
 
         <script src="{{'js/bootstrap.min.js'|assets_url()}}"></script>
         <script src="{{'js/main.js'|assets_url()}}"></script>
-        <!-- Extra javascript -->
+        <script src="{{'js/modules/skeleton.js'|assets_url()}}"></script>
+        <!-- Extra javascript -->        
         {{ js }}
+        
+        <script type="text/javascript">
+            var offset = 80;
+            $('.sidenav li a').click(function(event){
+               event.preventDefault();
+               $($(this).attr('href'))[0].scrollIntoView();
+               scrollBy(0, -offset);
+            });
+        </script>
         
     </body>
 </html>

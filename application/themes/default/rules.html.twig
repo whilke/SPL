@@ -1,0 +1,195 @@
+{% extends _layout %}
+{% block content %}
+    
+<div class="col-md-3">
+    <div id="sidebar" class="sidebar hidden-print affix">
+        <ul class="nav sidenav">
+            <li class="active">
+                <a href="#overview">Overview</a>
+            </li>
+            <li>
+                <a href="#leaguerules">League Rules</a>
+                <ul id="theme-nav" class="nav show">
+                    <li><a href="#members">Members</a></li>                    
+                    <li><a href="#team">Team</a></li>                    
+                    <li><a href="#schedule">Schedule</a></li>                    
+                </ul>
+            </li>
+            <li>
+                <a href="#matchrules">Match Rules</a>
+                <ul id="theme-nav" class="nav show">
+                    <li><a href="#schedule">Scheduling</a></li>
+                    <li><a href="#pregame">Pre Game</a></li>
+                    <li><a href="#postgame">Post Game</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="#points">Points</a>
+                <ul id="theme-nav" class="nav show">
+                    <li><a href="#matchpoints">Match Points</a></li>
+                    <li><a href="#seasonpoints">Season Points</a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>   
+</div>
+<div class="col-md-9">
+    <div>
+        <h1 id="overview">Overview</h1>
+        Before teams play their first matches, all players should read and completely understand the rules.
+        We'll do our best to keep this section updated at all times, but in certain circumstances this may not be possible. 
+        In the case of a discrepancy, decisions made by SPL Admins will take precedence.
+        <br/><br/>
+        StrifeProLeague reserves the right to make changes to any/all rules as deemed appropriate at any time in an effort to 
+        maintain the spirit of fair play.
+    </div>
+    <div>
+        <div class="page-header">
+            <h1 id="leaguerules">League Rules</h1>
+        </div>
+        <h2 id="members">Members</h2><br/>
+        <div>
+            <h4>Sportsmanship</h4>
+            All members are required to uphold and observe a universal level of sportsmanship. Any unsportsmanlike 
+            action which can include, but is not limited to racism, profanity, rude/vulgar acts, abusive remarks, and 
+            disrespect of an official are not tolerated. Users who engage in unsportsmanlike conduct are subject to 
+            suspension, match forfeits, or any other punishment that SPL deems necessary.           
+        </div>
+        <h2 id="team">Team</h2><br/>
+        <div>            
+            <h4>Team Name Changes</h4>
+            Team name changes are allowed at any time, and must be requested via a support ticket.
+        </div>
+        <div>            
+            <h4>Rosters</h4>
+            Team rosters must consist of five full time members, and up to two substitute members.
+        </div>
+        <h2 id="schedule">Schedule</h2><br/>
+        <div>            
+            <h4>Weekly Matches</h4>
+            Teams are scheduled to play two matches against one team every week. You will not be matched up against the same team again
+            until your team has played all other registered teams participating in the active season.
+        </div>
+        <div>            
+            <h4>Home vs Away</h4>
+            The home team will be randomly determined for the first match of the week. The second match will have the home and away teams swapped.
+        </div>
+        <div>            
+            <h4>Bye Week</h4>
+            In the event that there is uneven number of teams registered for the season, every team will have at least one bye week for the season.
+            During your bye week you will not be scheduled to play any matches.
+        </div>
+    </div>    
+    <div>
+        <div class="page-header">
+            <h1 id="matchrules">Match Rules</h1>
+        </div>
+        <h2 id="schedule">Scheduling</h2><br/>
+        <div>
+            <h4>Initiating a Match Offer</h4>
+            Either team can initiate a match offer. When initiating an offer, the captain proposes a match 
+            day and time from within the match page.
+        </div>
+        <div>
+            <h4>Countering a Match Offer</h4>            
+            The opposing team's captain has 24 hours to accept the offer or reject it. A rejected offer will allow either captain
+            to propose a new match time, repeating this process. An accepted offer will change the deadline to the new proposed time.
+            If the opposing team does not accept or reject an offer within 24 hours, they will automatically accept the offer.
+        </div>
+        <div>
+            <h4>Match Offers Less Then 24 Hours In Advance</h4>
+            If a team initiates a match offer that is less then 24 hours in advance, and the opposing team does not respond, then
+            it will default to a rejected offer.
+        </div>
+        <div>
+            <h4>Match Deadlines</h4>
+            All matches must be reported in within 90 minutes of the scheduled match deadline. A failure to report the results of a match
+            by the deadline will result in both teams receiving a no show for that match.
+        </div>
+        <div>
+            <h4>Scheduling Exceptions</h4>
+            If a match has been flagged as a no show, but both teams were able to complete their match before
+            the end of the week deadline, you must contact an admin or put in a support ticket so that the match can be 
+            corrected.
+        </div>
+        <div>
+            <h4>Home Team Advantage</h4>
+            The home team for a specific match has advantage, and must choose either "Server Select" or  "Side Select" for the match. This advantage must
+            be chosen before a match can enter into Pre-Game. If the home team does not choose, they will be defaulted to server select.
+            <ul>
+                <li>Server Select: This advantage means you must create the custom game for the match, and are allowed to choose the server region.</li>
+                <li>Side Select: This advantage means you choose either valor or glory, keeping in mind who gets first and last picks based on side.</li>
+            </ul>
+        </div>
+    </div>
+    <div>
+        <h2 id="pregame">Pre Game</h2>
+        <div>
+            <h4>Match Creation</h4>
+            The team that has server select advantage in the match must create the custom game no later then five minutes before
+            the scheduled match time, and they have control over server selection. The match must be named with the format of
+            Home Team vs Away Team. Matches should contain at least three spectator spots.
+        </div>
+        <div>
+            <h4>Spectators</h4>
+            Spectators are only allowed within a match if both teams agree on it, with the following exceptions. SPL Admins are always
+            allowed to join as a spectator, as well as approved SPL casters who are there for the sole purpose of casting the match.
+        </div>
+        <div>
+            <h4>Bans & Drafting</h4>
+            Teams are given one ban each, with GLORY getting the first ban and VALOR banning directly after. Banned heroes may not
+            be selected by either team. Once bans are completed drafting will follow the format of 1-2-2-2-2-1 with VALOR picking first,
+            and GLORY getting the last pick. If there is a dispute with the drafting phase, take a screen shot of the issue and file
+            a support ticket.
+        </div>
+        
+        <div>
+            <h4>Starting</h4>
+            A match must start within ten minutes of the lobby being created, unless both teams agree to wait longer. A match may not start
+            early unless all ten players are present, and both captains agree upon it.
+        </div>
+    </div>
+    <div>
+        <h2 id="postgame">Post Game</h2>
+        <div>
+            <h4>Reporting</h4>
+            The winning team of the match must take a screen shot of the final scoreboard and report the results to the SPL website before
+            the match deadline plus 90 minutes. Failure to report the match will result in both teams being marked as a no show, and
+            will require an SPL Admin to resolve. Results consist of the winning team, scoreboard screen shot, and strife match ID.
+        </div>
+    </div>
+    <div>
+        <div class="page-header">
+            <h1 id="points">Points</h1>
+        </div>
+        <h2 id="matchpoints">Match Points</h2><br/>
+        <div>
+            <h4>Showing up</h4>
+            Teams who show up and complete a match will be awarded 13 points
+        </div>
+        <div>
+            <h4>Winning a match</h4>
+            Teams who win a match will be awarded 25 points
+        </div>
+        <div>
+            <h4>Losing a match</h4>
+            Teams who lose a match will be awarded 10 points
+        </div>
+        <div>
+            <h4>Forfeit</h4>
+            Teams who forfeit a match before the scheduled match time will be awarded as if showing up and losing.
+            The winning team will be awarded as if showing up and winning.
+        </div>
+        <div>
+            <h4>No Show</h4>
+            Teams who do not show up for their match will be awarded 0 point. If one team shows up they will be awarded
+            for showing up and winning.
+        </div>
+        <h2 id="seasonpoints">Season Points</h2><br/>
+        <div>
+            <h4>Totals</h4>
+            Points earned from all matches will be totaled up and accumulate to compute your season total.
+        </div>              
+    </div>
+</div>
+{% endblock %}

@@ -13,6 +13,11 @@ class Main extends MY_Controller
     {
         $this->twiggy->template('index')->display();
     }
+    
+    function rules()
+    {
+        $this->twiggy->template('rules')->display();
+    }
         
     function contact()
     {

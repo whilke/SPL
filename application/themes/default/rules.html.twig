@@ -19,7 +19,7 @@
                 <a href="#matchrules">Match Rules</a>
                 <ul id="theme-nav" class="nav show">
                     <li><a href="#schedule">Scheduling</a></li>
-                    <li><a href="#pregame">Pre Game</a></li>
+                    <li><a href="#pregame">Pre & In Game</a></li>
                     <li><a href="#postgame">Post Game</a></li>
                 </ul>
             </li>
@@ -65,10 +65,15 @@
             Team rosters must consist of five full time members, and up to two substitute members.
         </div>
         <h2 id="schedule">Schedule</h2><br/>
-        <div>            
-            <h4>Weekly Matches</h4>
-            Teams are scheduled to play two matches against one team every week. You will not be matched up against the same team again
-            until your team has played all other registered teams participating in the active season.
+        <div>
+            <h4>Round Robin Format</h4>
+            A season will be broken up into a round robin format with every team playing every other team at least once in the season.
+            The system will generate the round robin schedule as the season progresses, with one series per team per week.
+        </div>
+        <div>
+            <h4>Weekly Series</h4>
+            A weekly series is two games against the same team. Both games do not need to be completed back to back, as long as both are finished
+            before the end of the week deadline.
         </div>
         <div>            
             <h4>Home vs Away</h4>
@@ -86,14 +91,19 @@
         </div>
         <h2 id="schedule">Scheduling</h2><br/>
         <div>
-            <h4>Initiating a Match Offer</h4>
-            Either team can initiate a match offer. When initiating an offer, the captain proposes a match 
-            day and time from within the match page.
+            <h4>Default Match Times</h4>
+            By default, all matches will be scheduled with a match start time of Saturday 9PM GMT. This can be changed via the match time offer and counter
+            system.
         </div>
         <div>
-            <h4>Countering a Match Offer</h4>            
+            <h4>Initiating a Match Time Offer</h4>
+            Once the week starts either team can initiate a match time offer. When initiating an offer, the captain proposes a match day 
+            and time from within the match page.
+        </div>
+        <div>
+            <h4>Countering a Match Time Offer</h4>            
             The opposing team's captain has 24 hours to accept the offer or reject it. A rejected offer will allow either captain
-            to propose a new match time, repeating this process. An accepted offer will change the deadline to the new proposed time.
+            to propose a new match time, repeating this process. An accepted offer will change the match start date to the new proposed time.
             If the opposing team does not accept or reject an offer within 24 hours, they will automatically accept the offer.
         </div>
         <div>
@@ -102,32 +112,54 @@
             it will default to a rejected offer.
         </div>
         <div>
-            <h4>Match Deadlines</h4>
-            All matches must be reported in within 90 minutes of the scheduled match deadline. A failure to report the results of a match
-            by the deadline will result in both teams receiving a no show for that match.
+            <h4>Match Start Date</h4>
+            All matches must begin by the match start date. If one team fails to show up in the lobby before the lobby time expires, that team will
+            recieve a no show for that match. If neither team shows up for the match, both teams will recieve a no show.
+        </div>
+        <div>
+            <h4>Early Matches</h4>
+            Matchs can be played and completed before the scheduled match start date, as long as both teams agree. The scheduling system is here just
+            to aid teams in communicating an agreeable match day, that communication can be done on your own. Results just need to be uploaded before the deadline.
         </div>
         <div>
             <h4>Scheduling Exceptions</h4>
-            If a match has been flagged as a no show, but both teams were able to complete their match before
+            If a match has been flagged as a no show, but both teams were willing and able to complete their match before
             the end of the week deadline, you must contact an admin or put in a support ticket so that the match can be 
             corrected.
         </div>
         <div>
-            <h4>Home Team Advantage</h4>
-            The home team for a specific match has advantage, and must choose either "Server Select" or  "Side Select" for the match. This advantage must
-            be chosen before a match can enter into Pre-Game. If the home team does not choose, they will be defaulted to server select.
-            <ul>
-                <li>Server Select: This advantage means you must create the custom game for the match, and are allowed to choose the server region.</li>
-                <li>Side Select: This advantage means you choose either valor or glory, keeping in mind who gets first and last picks based on side.</li>
-            </ul>
-        </div>
+            <h4>Forfeits</h4>
+            A team can forfeit a match up to the lobby expire time. A forfeit will be counted as a loss, but that team will still recieve points for
+            showing up.
+        </div>          
     </div>
     <div>
-        <h2 id="pregame">Pre Game</h2>
+        <h2 id="pregame">Pre & In Game</h2>
+        <div>
+            <h4>Server Selection</h4>
+            The follow server must be chosen if the team matchup matches any of the below, otherwise the server select advantage rule becomes activated:
+            <ul>
+                <li>US vs US = Any US based server, defaulting to USE if both teams can not agree.</li>
+                <li>USE vs EU = USE</li>
+                <li>USE vs SEA = USE</li>
+                <li>USW vs AUS = USW</li>
+            </ul>            
+        </div>
+        <div>
+            <h4>Home Team Advantage</h4>
+            The home team for a specific match has advantage, and must choose either "Server Select" or  "Side Select" for the match. This advantage must
+            be chosen before a match can enter into Pre-Game. If the home team does not choose, they will be defaulted to "Side Select". If both advantages
+            are in play, the away team will be given the advantage not chosen by the home team.
+            <ul>
+                <li>Server Select: This advantage is only activated when two teams are more then two servers apart (USW vs EU). In that case the team
+                with this advantage can select the server from the two closest servers between the two teams (USW vs EU would allow you either USE or EU).</li>
+                <li>Side Select: This advantage means you choose either valor or glory, keeping in mind who gets first and last picks based on side.</li>
+            </ul>
+        </div>       
         <div>
             <h4>Match Creation</h4>
-            The team that has server select advantage in the match must create the custom game no later then five minutes before
-            the scheduled match time, and they have control over server selection. The match must be named with the format of
+            One of the teams must create the custom game no later then five minutes before
+            the scheduled match time. The match must be named with the format of
             Home Team vs Away Team. Matches should contain at least three spectator spots.
         </div>
         <div>
@@ -148,13 +180,24 @@
             A match must start within ten minutes of the lobby being created, unless both teams agree to wait longer. A match may not start
             early unless all ten players are present, and both captains agree upon it.
         </div>
+        <div>
+            <h4>Remakes</h4>
+            Each team is allowed one remake per match, within three minutes of the game starting. Pause the game and communicate the remake with
+            the other team. If both teams agree, you can remake past the one remake per team.
+        </div>
+        <div>
+            <h4>Pauses</h4>            
+            Teams maybe pause for an acceptable duration, and matchs may not resume until both teams agree. If a player disconnects from a game it must be
+            paused immeditaly. A player has 10 minutes to reconnect to the game, after which time the other team is free to unpause and continue the game. 
+            If a player is dropped from the game, both teams should communicate and resume the game.            
+        </div>
     </div>
     <div>
         <h2 id="postgame">Post Game</h2>
         <div>
             <h4>Reporting</h4>
             The winning team of the match must take a screen shot of the final scoreboard and report the results to the SPL website before
-            the match deadline plus 90 minutes. Failure to report the match will result in both teams being marked as a no show, and
+            the weekly match deadline. Failure to report the match will result in both teams being marked as a no show, and
             will require an SPL Admin to resolve. Results consist of the winning team, scoreboard screen shot, and strife match ID.
         </div>
     </div>
@@ -165,7 +208,7 @@
         <h2 id="matchpoints">Match Points</h2><br/>
         <div>
             <h4>Showing up</h4>
-            Teams who show up and complete a match will be awarded 13 points
+            Teams who show up and complete a match will be awarded 10 points
         </div>
         <div>
             <h4>Winning a match</h4>

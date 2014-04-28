@@ -18,6 +18,11 @@ class Main extends MY_Controller
     {
         $this->twiggy->template('rules')->display();
     }
+    
+    function bfbtournament()
+    {
+        $this->twiggy->template('bfbtournament')->display();
+    }
         
     function contact()
     {

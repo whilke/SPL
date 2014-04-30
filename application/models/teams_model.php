@@ -33,7 +33,12 @@ class Teams_model extends CI_Model
 
     function get_list()
     {
-        $query = $this->db->select('id, name')->from('teams')->get();
+        $query = $this->db->
+                select('teams.id, teams.name')->
+                from('teams')->
+                where('active', true)->
+                join('users', 'users.id = teams.userid')->
+                get();
         
         $arr = Array();
         foreach($query->result() as $row)

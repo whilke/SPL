@@ -32,6 +32,11 @@
         <style type="text/css">
             .mySideBar {}
             body {padding-top: 70px;}
+
+            .myNavLinks{
+                 min-height:25px; height:25px;padding-top:0px;
+            }
+            
             @media screen and (max-width:1000px){
                 .mySideBar {display: none;}
             }
@@ -42,6 +47,7 @@
             @media screen and (max-width:368px){
                 body {padding-top: 120px;}
             }
+            
         </style>
         
 <style type="text/css">
@@ -81,42 +87,39 @@
     </head>
     <body>
         <!--Navbar-->
-        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
-            <div class="container">
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                        <span class="sr-only">Toggle nav</span>
-                        <span class="icon-bar"></span>
-                        <span class="icon-bar"></span>
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation" style="min-height:26px; height:26px;">
+            <div class="container" style="min-height:25px; height:25px;">
+                <div class="navbar-header" >
+                    <button style="padding-top:0px; margin-top:3px;" type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="sr-only" >Toggle nav</span>
+                        <span class="icon-bar" style="padding-top:0px; margin-top:3px;"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <div class="navbar-brand">
-                        <a href="http://twitter.com/strifeproleague" target="_blank"><i class="fa fa-border pull-left fa-twitter"></i></a>
-                        <a href="/" style="text-decoration:none; color:black; font-family: 'Audiowide', 'cursive';">STRIFE PRO LEAGUE</a>
-                    </div>
                 </div>
-                <div class="navbar-collapse collapse">
+                <div class="navbar-brand" style="padding-bottom:0px;">
+                </div>
+                <div class="navbar-collapse collapse" style="min-height:25px; height:25px;background-color:#f8f8f8">
                     <ul class="nav navbar-nav">
-                        <li><a href="{{'standings/index'|site_url}}">Standings</a></li>
-                        <li><a href="{{'main/contact'|site_url}}">Contact</a></li>
-                        <li><a href="{{'main/rules'|site_url}}">Rules</a></li>
-                        <li><a href="{{'main/bfbtournament'|site_url}}">Battle For Bot Tournament</a></li>
+                        <li><a href="{{'standings/index'|site_url}}" class="myNavLinks" style="padding-top:0px;">Standings</a></li>
+                        <li><a href="{{'main/contact'|site_url}}" class="myNavLinks" style="padding-top:0px;">Contact</a></li>
+                        <li><a href="{{'main/rules'|site_url}}" class="myNavLinks" style="padding-top:0px;">Rules</a></li>
+                        <li><a href="{{'main/bfbtournament'|site_url}}" class="myNavLinks" style="padding-top:0px;">Battle For Bot Tournament</a></li>
                   </ul>
                   <ul class="nav navbar-nav navbar-right">                    
                     {% if user.isvalid != "true" %}
-                        <li><a href="{{'auth/login'|site_url}}" rel="async" ajaxify="{{'auth/auth_ajax/ion_auth_dialog/login'|site_url}}">Login</a></li>
-                        <li><a href="{{'auth/create_user'|site_url}}" rel="async" ajaxify="{{'auth/auth_ajax/ion_auth_dialog/create_user'|site_url}}">Signup</a></li>
+                        <li><a class="myNavLinks" style="padding-top:0px;" href="{{'auth/login'|site_url}}" rel="async" ajaxify="{{'auth/auth_ajax/ion_auth_dialog/login'|site_url}}">Login</a></li>
+                        <li><a class="myNavLinks" style="padding-top:0px;" href="{{'auth/create_user'|site_url}}" rel="async" ajaxify="{{'auth/auth_ajax/ion_auth_dialog/create_user'|site_url}}">Signup</a></li>
                     {% else %}
                         <li class="dropdown">
-                          <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{user.uname}} <b class="caret"></b></a>
+                          <a class="myNavLinks" style="padding-top:0px;" href="#" class="dropdown-toggle" data-toggle="dropdown">{{user.uname}} <b class="caret"></b></a>
                           <ul class="dropdown-menu">
                             {% if user.isAdmin == TRUE %}
-                            <li><a href="{{'auth/index'|site_url}}">Admin</a></li>
+                            <li><a class="myNavLinks" style="padding-top:0px;" href="{{'auth/index'|site_url}}">Admin</a></li>
                             {% else %}
-                            <li><a href="{{'team/edit'|site_url}}">Edit Team</a></li>
+                            <li><a class="myNavLinks" style="padding-top:0px;" href="{{'team/edit'|site_url}}">Edit Team</a></li>
                             <li><a href="{{'team/portal'|site_url}}">Team Portal</a></li>
                             {% endif %}
-                            <li><a href="{{'auth/logout'|site_url}}">Logout</a></li>
+                            <li><a class="myNavLinks" style="padding-top:0px;" href="{{'auth/logout'|site_url}}">Logout</a></li>
                           </ul>
                         </li>
                      {% endif %}
@@ -124,21 +127,29 @@
                 </div>
             </div>
         </div>
-
-
+        
+        <div class="col-md-12" style="margin-top:-44px;">
+            <div class="container" style="background-image:url('{{'images/banner_bkg.png'|assets_url()}}');no-repeat center center fixed;
+      webkit-background-size: cover;
+      moz-background-size: cover;
+      o-background-size: cover;
+      background-size: cover;">
+                <div class="col-md-12">
+                    <a href="{{'main/index'|site_url}}"><img src="{{'images/spl_logo.png'|assets_url()}}"/></a>
+                    <a href="http://www.gamevox.com" target="_blank"><img class="hidden-xs hidden-sm" src="{{'images/sponsors.png'|assets_url()}}" style="text-align:right; float:right;"/></a>                                            
+                </div>
+            </div>
+        </div>
         <div class="col-md-12">
             <div class="container">                     
-          <div id="extruderAds" class="{title:'Google Ads'} extruder" style="width: 160px; height: 605px; background-color: #F8F8F8;"> 
+          <div id="extruderAds" class="{title:'Google Adverts'} extruder" style="width: 160px; height: 605px; background-color: #F8F8F8;"> 
             <!-- SPL -->
             <ins id="ads" class="adsbygoogle"
              style="display:block; padding-top: 1px;"
              data-ad-client="ca-pub-9458588775176630"
              data-ad-slot="3642177922"
              data-ad-format="auto"></ins>
-          </div>
-          <div id="extruderSpons" class="{title:'Sponsors'} extruder" style="width: 200px; height: 605px;"> 
-              <a href="http://www.gamevox.com" target="_blank"><img src="/assets/images/gamevox.png" style="width:100%; height:100%;" /></a>
-          </div>
+          </div>         
                 {% block content %}
                 {% endblock %}
             </div>
@@ -205,30 +216,10 @@
                   slideTimer:0
               });
               
-
-
-        $("#extruderSpons").buildMbExtruder({
-                  positionFixed:false,
-                  width:200,
-                  sensibility:0,
-                  top:100,
-                  accordionPanels:false,
-                  position:"left", // left, right, bottom
-                  extruderOpacity:0.5,
-                  flapDim:50,
-                  textOrientation:"tb", // or "tb" (top-bottom or bottom-top)
-                  onExtOpen:function(){},
-                  onExtContentLoad:function(){},
-                  onExtClose:function(){},
-                  hidePanelsOnClose:false,
-                  autoCloseTime:0, // 0=ne  ver
-                  slideTimer:0
-              });
                        
          if ($(window).width() > 1350)    
          {
              $("#extruderAds").openMbExtruder();
-             $("#extruderSpons").openMbExtruder();
          }
          else
          if ($(window).width() > 800)    

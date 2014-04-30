@@ -1,7 +1,6 @@
 {% extends _layout %}
 
 {% block content %}
-<div class="row">
 <div class="col-lg-offset-3 col-lg-6">
 <h1>Contact Us</h1>
 
@@ -31,9 +30,5 @@
 
 {{form_close()}}
 
-<p>
-    <a href="auth/forgot_password" rel="async" ajaxify="{{'auth/auth_ajax/ion_auth_dialog/forgot_password'|site_url}}">
-        {{'login_forgot_password'|lang}}</a>
-    </p>
-    </div></div>
+</div>
 {% endblock %}

@@ -53,3 +53,9 @@ tr th:last-child {
     border-top-right-radius: 6px;
     border-bottom-right-radius: 6px;
 }
+
+.center-div
+{
+  margin: 0 auto;
+  width: 800px;
+}

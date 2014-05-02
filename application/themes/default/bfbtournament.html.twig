@@ -1,8 +1,10 @@
 {% extends _layout %}
 
 {% block content %}
-
+<script src="{{'js/jquery.countdown.js'|assets_url()}}"></script>
+</style>
  <div class="jumbotron ">
+     <div class="text-center"><div class="countdown-styled"></div></div>
      <h2> Do you think you have what it takes to claim the title as the best bottom player in Strife?</h2> 
      <h3>Test your mettle of war in this SPL hosted 1v1 bottom lane tournament!</h3>
      
@@ -12,11 +14,11 @@
          <li>Matches are to be played on USE servers unless the players are of the same region (EU/SEA), in which a server of that region is used.</li>
          <li>First to kill the enemy hero, or tier one bottom tower wins and both players should DC.</li>
          <li>Wins must be reported to the SPL tournament director after the game.</li>
-         <li>Game disputes will be handled via replay inspection.</li>     
+         <li>Game disputes will be handled via an admin inspecting screen shots. No screen shots, and the admin will make their own call.</li>     
          <li>STRIFEProLeague chat channel will be used for all tournament announcements, and players should idle for information.</li>
          <li>Each round of the tournament will be a bo1 match unless it is down to the top 8, at which point each round will be a bo3.</li>
-         <li>Players must pick the same hero, which will be set by the tournament for each round ahead of time. Hero picks will be announced once brackets
-         are setup and closed. If it's a bo3 match, each game will be a different hero.</li>
+         <li>Each match played will be a pool of three pre-defined heroes. Each player gets one ban, and the final hero will be a mirror match.
+         The hero pool list for each round will be posted once registration closes.</li>
          <li>Players have 5 minutes to join the game lobby once created, or forfeit the match.</li>
          <li>Pauses should be given an approriate amount of time.</li>
          <li>If the other player DCs, you must pause the game for up to 10 minutes. If more then 10 minutes pass, the DC player forfeits.</li>
@@ -34,7 +36,23 @@
          <li>2nd Place: $60 US</li>
          <li>3rd Place: $20 US</li>
      </ul>
-     
      <div class="text-center"><a href="http://challonge.com/tournaments/signup/KLpBgjkORM" target="_blank">Sign up Here</a></div>
  </div>
+
+<script type="text/javascript">
+$(function() {
+        $('.countdown-styled').countdown({
+        date: "May 11, 2014 16:00:00 EDT",
+        render: function(data) {
+          var el = $(this.el);
+          el.empty()
+            .append("<div>" + this.leadingZeros(data.days, 2) + " <span>days</span></div>")
+            .append("<div>" + this.leadingZeros(data.hours, 2) + " <span>hrs</span></div>")
+            .append("<div>" + this.leadingZeros(data.min, 2) + " <span>min</span></div>")
+            .append("<div>" + this.leadingZeros(data.sec, 2) + " <span>sec</span></div>");
+        }
+    });
+        
+});
+</script>
 {% endblock %}

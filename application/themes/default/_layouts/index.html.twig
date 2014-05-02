@@ -82,6 +82,36 @@
 			padding-left: 10px;
 			padding-right: 40px;
 		}
+                
+.countdown-styled div {
+  display: inline-block;
+  margin: 0 5px 1em;
+  font-size: 30px;
+  font-weight: 100;
+  line-height: 1;
+  text-align: right;
+
+  /* IE7 inline-block hack */
+  *display: inline;
+  *zoom: 1;
+}
+
+.countdown-styled div:first-child {
+  margin-left: 0;
+}
+
+.countdown-styled div:last-child {
+  margin-right: 0;
+}
+
+.countdown-styled div span {
+  display: block;
+  border-top: 1px solid #cecece;
+  padding-top: 3px;
+  font-size: 12px;
+  font-weight: normal;
+  text-transform: uppercase;
+  text-align: left;                
 	</style>        
         
     </head>
@@ -142,18 +172,20 @@
         </div>
         <div class="col-md-12">
             <div class="container">                     
-          <div id="extruderAds" class="{title:'Google Adverts'} extruder" style="width: 160px; height: 605px; background-color: #F8F8F8;"> 
-            <!-- SPL -->
-            <ins id="ads" class="adsbygoogle"
-             style="display:block; padding-top: 1px;"
-             data-ad-client="ca-pub-9458588775176630"
-             data-ad-slot="3642177922"
-             data-ad-format="auto"></ins>
-          </div>         
+                <div id="extruderAds" class="{title:'Google Adverts'} extruder" style="width: 160px; height: 605px; background-color: #F8F8F8;"> 
+                  <!-- SPL -->
+                  <ins id="ads" class="adsbygoogle"
+                   style="display:block; padding-top: 1px;"
+                   data-ad-client="ca-pub-9458588775176630"
+                   data-ad-slot="3642177922"
+                   data-ad-format="auto"></ins>
+                </div>         
                 {% block content %}
                 {% endblock %}
+             </div>
+                <br/>
+                <br/>
             </div>
-        </div>
         <nav class="navbar navbar-default navbar-fixed-bottom" role="navigation"
              style="min-height: 22px;">
             <div class="container">

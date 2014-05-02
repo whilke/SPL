@@ -14,7 +14,6 @@
         <tr>
             <th>{{'index_tname_th'|lang}}</th>
             <th>{{'index_email_th'|lang}}</th>
-            <th>{{'index_groups_th'|lang}}</th>
             <th>{{'index_status_th'|lang}}</th>
             <th>{{'index_action_th'|lang}}</th>
         </tr>
@@ -29,12 +28,6 @@
                 {% endif %}
             </td>
             <td>{{user.email}}</td>
-            <td>
-                {% for group in user.groups %}
-                    {% set s = 'auth/edit_group/' ~ group.id %}
-                    {{s|anchor(group.name)}}
-                {% endfor %}
-            </td>            
             <td>
                 {% if user.active == TRUE %}
                     {% set l = 'index_active_link'|lang %}
@@ -55,10 +48,5 @@
 </table>
 
 
-<p>
-    {% set l1 = 'index_create_user_link'|lang %}
-    {% set l2 = 'index_create_group_link'|lang %}
-    {{'auth/create_user'|anchor(l1)}} | {{'auth/create_group'|anchor(l2)}}
-</p>
 </div>
 {% endblock %}

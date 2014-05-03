@@ -1,7 +1,7 @@
 {% extends _layout %}
 
 {% block content %}
-<div class="col-lg-offset-3 col-lg-6">
+<div class="col-lg-offset-0 col-lg-6">
 <h1>{{'index_heading'|lang()}}</h1>
 <p>{{'index_subheading'|lang()}}</p>
 
@@ -46,7 +46,47 @@
     {% endfor %}
     </tbody>
 </table>
-
+</div>
+<div class="col-lg-6">
+<h1>Seasons</h1>
+<p>Below is a list of seasons</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Tag</th>
+            <th>Registration Start</th>
+            <th>Registration Close</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for season in data.seasons %}
+        <tr>
+            <td>
+                {% set s = 'auth/season_edit/' ~ season.id    %}
+                {{s|anchor(season.name)}}
+            </td>
+            <td>{{season.tag}}</td>
+            <td>{{season.start}}</td>
+            <td>{{season.end}}</td>
+            <td>
+                {% if season.active == TRUE %}
+                    {% set l = 'index_active_link'|lang %}
+                    {% set s =  'auth/season_deactivate/' ~ season.id %}
+                {% else %}
+                    {% set l = 'index_inactive_link'|lang %}
+                    {% set s =  'auth/season_activate/' ~ season.id %}
+                {% endif %}
+                {{s|anchor(l)}}
+            </td>            
+        </tr>        
+    {% endfor %}
+    </tbody>
+</table>
+<p>
+    {% set l1 = 'Create New Season' %}
+    {{'auth/create_season'|anchor(l1)}}
 
 </div>
 {% endblock %}

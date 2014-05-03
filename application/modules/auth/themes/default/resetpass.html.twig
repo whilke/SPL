@@ -25,7 +25,7 @@
         {{data.new_password_confirm|bs_form_input()}}
     </p>    
     
-    {{data.user_id|form_input}}
+    {{data.user_id|form_hidden}}
     {{data.csrf|form_hidden}}
 
     {% set lsubbtn = 'reset_password_submit_btn'|lang %}

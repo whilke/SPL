@@ -75,20 +75,41 @@ class Team extends MY_Controller
                 $id = 0;
         }
         
+        $seasonData = $this->input->post('inSeasons');
+        $subSeason = false;
+        if (isset($seasonData) && !empty($seasonData)) 
+        {
+            $subSeason = true;
+        }
+
+        
         //validate form input
         $this->form_validation->set_rules('captain', 'Captain', 'required|xss_clean');
         $this->form_validation->set_rules('contact', 'Contact', 'required|xss_clean');
         $this->form_validation->set_rules('region', 'Region', 'required|xss_clean');
         $this->form_validation->set_rules('bio', 'Bio', 'xss_clean');
-        $this->form_validation->set_rules('slot1', 'Member', 'xss_clean');
-        $this->form_validation->set_rules('slot2', 'Member', 'xss_clean');
-        $this->form_validation->set_rules('slot3', 'Member', 'xss_clean');
-        $this->form_validation->set_rules('slot4', 'Member', 'xss_clean');
         $this->form_validation->set_rules('slot5', 'Member', 'xss_clean');
         $this->form_validation->set_rules('slot6', 'Member', 'xss_clean');
+        $this->form_validation->set_rules('inSeasons', 'Season', 'xss_clean');
+        if ($subSeason)
+        {
+            $this->form_validation->set_rules('slot1', 'Member', 'required|xss_clean');
+            $this->form_validation->set_rules('slot2', 'Member', 'required|xss_clean');
+            $this->form_validation->set_rules('slot3', 'Member', 'required|xss_clean');
+            $this->form_validation->set_rules('slot4', 'Member', 'required|xss_clean');            
+        }
+        else
+        {
+            $this->form_validation->set_rules('slot1', 'Member', 'xss_clean');
+            $this->form_validation->set_rules('slot2', 'Member', 'xss_clean');
+            $this->form_validation->set_rules('slot3', 'Member', 'xss_clean');
+            $this->form_validation->set_rules('slot4', 'Member', 'xss_clean');            
+        }
 
         $isAdmin = $this->ion_auth->is_admin();
         $user = $this->ion_auth->user()->row();
+
+        $this->load->model('Seasons_model');
 
         if ($this->form_validation->run() == true)
         {
@@ -106,8 +127,12 @@ class Team extends MY_Controller
                  'bio' => $this->input->post('bio'),
                  );
              
+            $seasonData = $this->input->post('inSeasons');
+             
              if ($isAdmin || $this->Teams_model->get($user->teamname)->id == $teamid)
              {
+                 $this->Seasons_model->updateTeamInSeasons($teamid, $seasonData);
+                 
                  $this->Teams_model->edit($teamid, $captain, $contact, $region, $additional_data);
              }
              
@@ -133,7 +158,10 @@ class Team extends MY_Controller
                 {
                     $team = $this->Teams_model->getById($id);
                 }
-                
+                               
+                $seasons = $this->Seasons_model->GetActiveSeasons($id);
+                $this->data['seasons'] = $seasons;
+                                
                 $this->data['name'] = array(
                 'name'  => 'name',
                 'id'    => 'name',

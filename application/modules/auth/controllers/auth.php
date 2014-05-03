@@ -55,6 +55,11 @@ class Auth extends MY_Controller {
                 }
                 $this->data['users'][$k]->groups = $this->ion_auth->get_users_groups($user->id)->result();
             }
+            
+            //grab seasons
+            $this->load->model('Seasons_model');
+            $seasons = $this->Seasons_model->get_listAsArray(false);
+            $this->data['seasons'] = $seasons;            
 
             $this->_render_page('index', $this->data, $fromajax);
         }
@@ -597,6 +602,199 @@ class Auth extends MY_Controller {
         );
 
         $this->_render_page('auth/edit_user', $this->data);
+    }
+    
+    function seasons()
+    {
+        if (!$this->ion_auth->logged_in() || !$this->ion_auth->is_admin())
+        {
+            redirect('auth', 'refresh');
+        }
+        
+        $this->load->model('Seasons_model');
+        $seasons = $this->Seasons_model->get_listAsArray(false);
+        
+        $this->data = array();
+        $this->data['seasons'] = $seasons;
+        $this->_render_page('auth/seaons', $this->data);
+
+    }
+    
+    function season_activate($id)
+    {
+        if (!$this->ion_auth->logged_in() || !$this->ion_auth->is_admin())
+        {
+            redirect('auth', 'refresh');
+        }
+
+        $this->load->model('Seasons_model');
+        $this->Seasons_model->changeActiveFlag($id, true);
+        redirect('auth', 'refresh');
+    }
+    function season_deactivate($id)
+    {
+        if (!$this->ion_auth->logged_in() || !$this->ion_auth->is_admin())
+        {
+            redirect('auth', 'refresh');
+        }
+
+        $this->load->model('Seasons_model');
+        $this->Seasons_model->changeActiveFlag($id, false);
+        redirect('auth', 'refresh');
+    }
+    
+    function season_edit($id)
+    {
+        if (!$this->ion_auth->logged_in() || !$this->ion_auth->is_admin())
+        {
+            redirect('auth', 'refresh');
+        }
+        
+        get_instance()->load->library('form_validation');
+        $this->load->model('Seasons_model');
+
+        $this->data['title'] = "Create Season";
+
+        $season = $this->Seasons_model->get($id);
+        
+        //validate form input
+        $this->form_validation->set_rules('name', 'Name', 'required|xss_clean');
+        $this->form_validation->set_rules('tag', 'Tag', 'required|xss_clean');
+        $this->form_validation->set_rules('start', 'Open Registration', 'required|xss_clean');
+        $this->form_validation->set_rules('end', 'Close Registration', 'required|xss_clean');
+
+        if (isset($_POST) && !empty($_POST))
+        {
+            // do we have a valid request?
+            if ($this->_valid_csrf_nonce() === FALSE || $id != $this->input->post('id'))
+            {
+                show_error($this->lang->line('error_csrf'));
+            }
+
+            if ($this->form_validation->run() == true)
+            {
+                $name = $this->input->post('name');
+                $tag = $this->input->post('tag');
+                $start    = $this->input->post('start');
+                $end = $this->input->post('end');
+                $active = $this->input->post('active');
+                $additional_data = array();
+
+                $this->Seasons_model->edit($id, $name,$tag,$start,$end);
+                redirect('auth', 'refresh');
+
+            }
+        }
+                       
+        {
+            //display the edit season form
+            $this->data['id'] = array(
+                'id' => $season->id             
+            );
+            
+            $this->data['csrf'] = $this->_get_csrf_nonce();
+
+            //set the flash data error message if there is one
+            $this->data['message'] = (validation_errors() ? validation_errors() : $this->session->flashdata('message'));
+
+           
+            $this->data['name'] = array(
+                'name'  => 'name',
+                'id'    => 'name',
+                'type'  => 'text',
+                'value' => $this->form_validation->set_value('first_name', $season->name),
+            );
+            $this->data['tag'] = array(
+                'name'  => 'tag',
+                'id'    => 'tag',
+                'type'  => 'text',
+                'value' => $this->form_validation->set_value('tag', $season->tag),
+            );
+            $this->data['start'] = array(
+                'name'  => 'start',
+                'id'    => 'start',
+                'type'  => 'text',
+                'value' => $this->form_validation->set_value('start', $season->start),
+            );
+            $this->data['end'] = array(
+                'name'  => 'end',
+                'id'    => 'end',
+                'type'  => 'text',
+                'value' => $this->form_validation->set_value('end', $season->end),
+            );
+
+            $this->_render_page('editseason', $this->data, false);
+        }
+    }
+
+    
+    function create_season()
+    {
+        if (!$this->ion_auth->logged_in() || !$this->ion_auth->is_admin())
+        {
+            redirect('auth', 'refresh');
+        }
+        
+        get_instance()->load->library('form_validation');
+        $this->load->model('Seasons_model');
+
+        $this->data['title'] = "Create Season";
+
+        
+        //validate form input
+        $this->form_validation->set_rules('name', 'Name', 'required|xss_clean');
+        $this->form_validation->set_rules('tag', 'Tag', 'required|xss_clean');
+        $this->form_validation->set_rules('start', 'Open Registration', 'required|xss_clean');
+        $this->form_validation->set_rules('end', 'Close Registration', 'required|xss_clean');
+
+        
+        if ($this->form_validation->run() == true)
+        {
+            $name = $this->input->post('name');
+            $tag = $this->input->post('tag');
+            $start    = $this->input->post('start');
+            $end = $this->input->post('end');
+            $active = $this->input->post('active');
+            $additional_data = array();
+            
+            $this->Seasons_model->add($name,$tag,$start,$end);
+            redirect('auth', 'refresh');
+           
+        }
+        
+        {
+            //display the create user form
+            //set the flash data error message if there is one
+            $this->data['message'] = (validation_errors() ? validation_errors() : $this->session->flashdata('message'));
+
+           
+            $this->data['name'] = array(
+                'name'  => 'name',
+                'id'    => 'name',
+                'type'  => 'text',
+                'value' => $this->form_validation->set_value('name'),
+            );
+            $this->data['tag'] = array(
+                'name'  => 'tag',
+                'id'    => 'tag',
+                'type'  => 'text',
+                'value' => $this->form_validation->set_value('tag'),
+            );
+            $this->data['start'] = array(
+                'name'  => 'start',
+                'id'    => 'start',
+                'type'  => 'text',
+                'value' => $this->form_validation->set_value('start'),
+            );
+            $this->data['end'] = array(
+                'name'  => 'end',
+                'id'    => 'end',
+                'type'  => 'text',
+                'value' => $this->form_validation->set_value('end'),
+            );
+
+            $this->_render_page('createseason', $this->data, false);
+        }
     }
 
     // create a new group

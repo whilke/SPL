@@ -1,0 +1,56 @@
+{% extends _layout %}
+
+{% block content %}
+<div class="row">
+<div class="col-lg-offset-3 col-lg-6">
+<h1>Edit Season</h1>
+
+{% if data.message != "" %}
+<div class="alert alert-info" id="infoMessage">{{ data.message}}</div>
+{% endif%}
+
+{% set l = 'auth/season_edit/' ~ data.id.id %}
+{{l|form_open()}}
+    <p>
+        <strong>Name:</strong>
+        {{data.name|bs_form_input()}}
+    </p>
+
+    <p>
+        <strong>Tag:</strong>
+        {{data.tag|bs_form_input()}}
+    </p>
+
+    <p>
+    <div class='row'>
+        <div class='col-md-4'>
+            <strong>Open Registration:</strong>
+            {{data.start|bs_form_input()}}
+        </div>        
+        <div class='col-md-4'>
+            <strong>Close Registration:</strong>
+            {{data.end|bs_form_input()}}
+        </div>        
+    </div>
+    </p>
+
+    {{data.id|form_hidden}}
+    {{data.csrf|form_hidden}}
+
+    {% set lsubbtn = 'Submit' %}
+    {{'submit'|bs_form_submit(lsubbtn)}}
+
+{{form_close()}}
+
+{% endblock %}
+    
+    
+{% block js %}
+<script type='text/javascript'>
+    $(document).ready(function(){
+        $( "#start" ).datepicker();
+    
+        $( "#end" ).datepicker();
+    });
+</script>    
+{% endblock %}

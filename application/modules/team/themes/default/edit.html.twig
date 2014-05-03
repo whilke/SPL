@@ -63,7 +63,21 @@
         </div>
     </div>
 </div>
-            
+<div class='row'>
+<div class='col-md-6 col-md-offset-3'>
+    <h3 class='text-center'>Register for an open season</h3>
+     {% set spltter = '' %}
+     {% for season in data.seasons %}
+        {% if season.inSeason != true %}
+            {% set chkVal = '' %}
+        {% else %}
+            {% set chkVal = 'checked' %}
+        {% endif %}
+        {{spltter}} {{season.name}} : {{'inSeasons[]'|form_checkbox(season.id, FALSE, chkVal)}}        
+        {% set spltter = ' | ' %}
+      {% endfor %}
+</div>            
+</div>
     <div style='text-align:center;'>
     {{'submit'|bs_form_submit('Submit')}}
     </div>

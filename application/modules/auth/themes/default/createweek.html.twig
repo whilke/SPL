@@ -1,0 +1,48 @@
+{% extends _layout %}
+
+{% block content %}
+<div class="row">
+<div class="col-lg-offset-3 col-lg-6">
+<h1>Create Week for {{data.season.name}}</h1>
+
+{% if data.message != "" %}
+<div class="alert alert-info" id="infoMessage">{{ data.message}}</div>
+{% endif%}
+
+{% set s = 'auth/create_season_week/' ~ data.seasonId %}
+{{s|form_open()}}
+    <p>
+        <strong>Tag:</strong>
+        {{data.tag|bs_form_input()}}
+    </p>
+
+    <p>
+    <div class='row'>
+        <div class='col-md-4'>
+            <strong>Start:</strong>
+            {{data.start|bs_form_input()}}
+        </div>        
+        <div class='col-md-4'>
+            <strong>End:</strong>
+            {{data.end|bs_form_input()}}
+        </div>        
+    </div>
+    </p>
+   
+    {% set lsubbtn = 'Submit' %}
+    {{'submit'|bs_form_submit(lsubbtn)}}
+
+{{form_close()}}
+
+{% endblock %}
+    
+    
+{% block js %}
+<script type='text/javascript'>
+    $(document).ready(function(){
+        $( "#start" ).datepicker();
+    
+        $( "#end" ).datepicker();
+    });
+</script>    
+{% endblock %}

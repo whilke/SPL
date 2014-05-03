@@ -42,6 +42,36 @@
 
 {{form_close()}}
 
+<h2>Modify Weekly Bracket</h2>
+{% set l = 'auth/season_week_edit/' ~ data.id.id %}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Bracket Tag</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Seed</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for week in data.weeks %}
+        <tr>
+            <td>{{data.tag.value}}:{{week.tag}}</td>
+            <td>{{week.start}}</td>
+            <td>{{week.end}}</td>
+            <td>
+                {% set s = 'auth/season_week_seed/' ~ week.id    %}
+                {{s|anchor('Seed')}}
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{% set l1 = 'Create New Weekly Bracket' %}
+{% set s = 'auth/create_season_week/' ~ data.id.id    %}
+{{s|anchor(l1)}}
 {% endblock %}
     
     

@@ -722,11 +722,75 @@ class Auth extends MY_Controller {
                 'type'  => 'text',
                 'value' => $this->form_validation->set_value('end', $season->end),
             );
+            
+            $weeks = $this->Seasons_model->getWeeksForSeason($id);
+            $this->data['weeks'] = $weeks;
 
             $this->_render_page('editseason', $this->data, false);
         }
     }
 
+    function create_season_week($seasonId)
+    {
+        if (!$this->ion_auth->logged_in() || !$this->ion_auth->is_admin())
+        {
+            redirect('auth', 'refresh');
+        }
+        
+        get_instance()->load->library('form_validation');
+        $this->load->model('Seasons_model');
+
+        $this->data['title'] = "Create Weekly Bracket";
+        $this->data['seasonId'] = $seasonId;
+        
+        //validate form input
+        $this->form_validation->set_rules('tag', 'Tag', 'required|xss_clean');
+        $this->form_validation->set_rules('start', 'Start of Week', 'required|xss_clean');
+        $this->form_validation->set_rules('end', 'End of Week', 'required|xss_clean');
+        
+        if ($this->form_validation->run() == true)
+        {
+            $tag = $this->input->post('tag');
+            $start    = $this->input->post('start');
+            $end = $this->input->post('end');
+            $additional_data = array();
+            
+            $this->Seasons_model->addWeek($seasonId,$tag,$start,$end);
+            redirect('auth/season_edit/' . $seasonId, 'refresh');           
+        }        
+      
+        {
+            $season = $this->Seasons_model->get($seasonId);
+            $this->data['season'] = $season;
+
+            //set the flash data error message if there is one
+            $this->data['message'] = (validation_errors() ? validation_errors() : $this->session->flashdata('message'));
+
+           
+            $this->data['tag'] = array(
+                'name'  => 'tag',
+                'id'    => 'tag',
+                'type'  => 'text',
+                'value' => $this->form_validation->set_value('tag'),
+            );
+            $this->data['start'] = array(
+                'name'  => 'start',
+                'id'    => 'start',
+                'type'  => 'text',
+                'value' => $this->form_validation->set_value('start'),
+            );
+            $this->data['end'] = array(
+                'name'  => 'end',
+                'id'    => 'end',
+                'type'  => 'text',
+                'value' => $this->form_validation->set_value('end'),
+            );
+
+            $this->_render_page('createweek', $this->data, false);
+        }
+        
+        
+    }
     
     function create_season()
     {
@@ -739,7 +803,6 @@ class Auth extends MY_Controller {
         $this->load->model('Seasons_model');
 
         $this->data['title'] = "Create Season";
-
         
         //validate form input
         $this->form_validation->set_rules('name', 'Name', 'required|xss_clean');

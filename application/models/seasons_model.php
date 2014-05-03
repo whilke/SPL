@@ -235,10 +235,47 @@ class Seasons_model extends CI_Model
            foreach ($seasonIds as $seasonId) {
                $this->RegisterTeamToSeason($teamId, $seasonId);
            }            
+        }                  
+    }
+    
+    function addWeek($seasonId, $tag, $start, $end)
+    {
+        $sDate = new DateTime($start);
+        $eDate = new DateTime($end);
+        $data = array(
+            'tag'=>$tag,
+            'start'=> date_format($sDate, "Y-m-d H:i:s"),
+            'end'=>date_format($eDate, "Y-m-d H:i:s"),
+            'season_id' => $seasonId,
+        );
+        
+        $this->db->insert('weeks', $data);
+    }
+    
+    function getWeeksForSeason($seasonId)
+    {
+         $query = $this->db->
+               select('weeks.id, weeks.tag,weeks.start,weeks.end')->
+               from('weeks')->
+               where('weeks.season_id', $seasonId)->
+               get();
+         
+        $arr = Array();
+        foreach($query->result() as $row)
+        {
+            $oDate = new DateTime($row->start);
+            $row->start = $oDate->format('m/d/Y');
+            $oDate = new DateTime($row->end);
+            $row->end = $oDate->format('m/d/Y');            
+            
+            $arr[] = array(
+                'id'=> $row->id, 
+                'tag' => $row->tag,
+                'start' => $row->start,
+                'end' => $row->end,
+                    );
         }
-
-
-                  
+        return $arr;
     }
 
 }

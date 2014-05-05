@@ -23,6 +23,11 @@ class Main extends MY_Controller
     {
         $this->twiggy->template('bfbtournament')->display();
     }
+    
+        function bfbheropool()
+    {
+        $this->twiggy->template('bfbheropool')->display();
+    }
         
     function contact()
     {

@@ -1,0 +1,159 @@
+.hero
+{
+    min-width: 128px;
+    min-height: 128px;
+    width:128px;
+    height:128px;
+}
+.hero-ace
+{
+
+
+background:
+url(/assets/images/heroes.png);
+background-position: 0px 0px;
+}
+
+.hero-bastion
+{
+
+
+background:
+url(/assets/images/heroes.png) ;
+background-position: -128px 0px;
+}
+
+.hero-bo
+{
+
+
+background:
+url(/assets/images/heroes.png) ;
+background-position: -256px 0px;
+}
+
+.hero-caprice
+{
+
+
+background:
+url(/assets/images/heroes.png) ;
+background-position: -384px 0px;
+}
+
+.hero-carter
+{
+
+
+background:
+url(/assets/images/heroes.png) ;
+background-position: -512px 0px;
+}
+
+.hero-claudessa
+{
+
+
+background:
+url(/assets/images/heroes.png) ;
+background-position: 0px -128px;
+}
+
+.hero-fetter
+{
+
+
+background:
+url(/assets/images/heroes.png) ;
+background-position: -128px -128px;
+}
+
+.hero-hale
+{
+
+
+background:
+url(/assets/images/heroes.png) ;
+background-position: -256px -128px;
+}
+
+.hero-malady
+{
+
+
+background:
+url(/assets/images/heroes.png) ;
+background-position: -384px -128px;
+}
+
+.hero-minerva
+{
+
+
+background:
+url(/assets/images/heroes.png) ;
+background-position: -512px -128px;
+}
+
+.hero-moxie
+{
+
+
+background:
+url(/assets/images/heroes.png) ;
+background-position: 0px -256px;
+}
+
+.hero-ray
+{
+
+
+background:
+url(/assets/images/heroes.png) ;
+background-position: -128px -256px;
+}
+
+.hero-rook
+{
+
+
+background:
+url(/assets/images/heroes.png) ;
+background-position: -256px -256px;
+}
+
+.hero-shank
+{
+
+
+background:
+url(/assets/images/heroes.png) ;
+background-position: -384px -256px;
+}
+
+.hero-tinder
+{
+
+
+background:
+url(/assets/images/heroes.png) ;
+background-position: -512px -256px;
+}
+
+.hero-vermillion
+{
+
+
+background:
+url(/assets/images/heroes.png) ;
+background-position: 0px -384px;
+}
+
+.hero-vex
+{
+
+
+background:
+url(/assets/images/heroes.png) ;
+background-position: -128px -384px;
+}

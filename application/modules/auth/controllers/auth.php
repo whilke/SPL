@@ -729,6 +729,57 @@ class Auth extends MY_Controller {
             $this->_render_page('editseason', $this->data, false);
         }
     }
+    
+    function scheduler($teams){
+    // Check for even number or add a bye
+        if (count($teams)%2 != 0){
+            array_push($teams,"bye");
+        }
+    // Splitting the teams array into two arrays
+        $away = array_splice($teams,(count($teams)/2));
+        $home = $teams;
+    // The actual scheduling based on round robin
+        for ($i=0; $i < count($home)+count($away)-1; $i++){
+            for ($j=0; $j<count($home); $j++){
+                $round[$i][$j]["Home"]=$home[$j];
+                $round[$i][$j]["Away"]=$away[$j];
+            }
+    // Check if total numbers of teams is > 2 otherwise shifting the arrays is not neccesary
+            if(count($home)+count($away)-1 > 2){
+                array_unshift($away,array_shift(array_splice($home,1,1)));
+                array_push($home,array_pop($away));
+            }
+        }
+        return $round;
+    }     
+    
+    function season_week_seed($weekId)
+    {
+        if (!$this->ion_auth->logged_in() || !$this->ion_auth->is_admin())
+        {
+            redirect('auth', 'refresh');
+        }
+
+        $this->load->model('Seasons_model');
+
+        $week = $this->Seasons_model->getWeek($weekId);
+        $seasonId = $week->season_id;
+        $season = $this->Seasons_model->get($seasonId);
+        $registeredTeams = $this->Seasons_model->GetTeamsInSeason($seasonId);
+        
+        $schedule = $this->scheduler($registeredTeams);
+        
+        foreach($schedule AS $round => $games )
+        {
+            echo($round). "<BR>";
+            foreach($games AS $play)
+            {
+                echo $play["Home"]->name." - ".$play["Away"]->name."<BR>";
+            }
+        }
+        
+        
+    }
 
     function create_season_week($seasonId)
     {

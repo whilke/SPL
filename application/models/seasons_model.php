@@ -184,21 +184,21 @@ class Seasons_model extends CI_Model
         $this->db->delete('seasons_teams', $data);
     }
     
-    function GetTeamsInSeason($teamId)
+    function GetTeamsInSeason($seasonId)
     {
         $query = $this->db->
-               select('season_teams.id, seasons_teams.team_id, seasons_teams.season_id')->
-               from('season_teams')->
+               select('teams.*')->
+               from('seasons_teams')->
+               join('teams', 'teams.id = seasons_teams.team_id')->
+               join('users', 'users.id = teams.userid')->
+               where('seasons_teams.season_id', $seasonId)->
+               where('users.active', true)->
                get();
         
         $arr = Array();
         foreach($query->result() as $row)
-        {            
-            $arr[] = array(
-                'id'=> $row->id, 
-                'team_id' => $row->team_id,
-                'season_id' => $row->season_id,
-                );
+        {         
+            $arr[] = $row;
         }
         return $arr;                       
     }
@@ -250,6 +250,27 @@ class Seasons_model extends CI_Model
         );
         
         $this->db->insert('weeks', $data);
+    }
+    
+    function getWeek($weekId)
+    {        
+        $query = $this->db->
+               select('weeks.id,weeks.season_id,weeks.tag,weeks.start,weeks.end')->
+               from('weeks')->
+               where('weeks.id', $weekId)->
+               get();
+
+        if ($query->num_rows() === 1)
+        {
+            $week = $query->row();
+
+            $oDate = new DateTime($week->start);
+            $week->start = $oDate->format('m/d/Y');
+            $oDate = new DateTime($week->end);
+            $week->end = $oDate->format('m/d/Y');            
+            return $week;
+        }         
+         
     }
     
     function getWeeksForSeason($seasonId)

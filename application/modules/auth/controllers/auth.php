@@ -753,7 +753,7 @@ class Auth extends MY_Controller {
         return $round;
     }     
     
-    function season_week_seed($weekId)
+    function season_seed($seasonId)
     {
         if (!$this->ion_auth->logged_in() || !$this->ion_auth->is_admin())
         {
@@ -762,23 +762,29 @@ class Auth extends MY_Controller {
 
         $this->load->model('Seasons_model');
 
-        $week = $this->Seasons_model->getWeek($weekId);
-        $seasonId = $week->season_id;
         $season = $this->Seasons_model->get($seasonId);
+        $weeks = $this->Seasons_model->getWeeksForSeason($seasonId);
         $registeredTeams = $this->Seasons_model->GetTeamsInSeason($seasonId);
         
         $schedule = $this->scheduler($registeredTeams);
         
         foreach($schedule AS $round => $games )
         {
-            echo($round). "<BR>";
+            $localWeek = $weeks[$round];
             foreach($games AS $play)
-            {
-                echo $play["Home"]->name." - ".$play["Away"]->name."<BR>";
+            {            
+                $team1 = $play["Home"];
+                $team2 = $play["Away"];
+                
+                if ($team1 == 'bye' || $team2 == 'bye') continue;
+                
+                $this->Seasons_model->newMatch($seasonId, $localWeek['id'], $team1->id, $team2->id, 'G1');
+                $this->Seasons_model->newMatch($seasonId, $localWeek['id'], $team2->id, $team1->id, 'G2');                
             }
         }
         
-        
+        redirect('auth/season_edit/'.$seasonId,'refresh');
+              
     }
 
     function create_season_week($seasonId)

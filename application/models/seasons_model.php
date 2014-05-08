@@ -127,6 +127,49 @@ class Seasons_model extends CI_Model
         return TRUE;      
     }
     
+    function GetCurrentSeason()
+    {
+        $query = $this->db->
+               select('seasons.*')->
+               from('seasons')->
+               where('current', true)->
+               get();
+        
+        if ($query->num_rows() === 1)
+        {
+            $season = $query->row();
+
+            $oDate = new DateTime($season->start);
+            $season->start = $oDate->format('m/d/Y');
+            $oDate = new DateTime($season->end);
+            $season->end = $oDate->format('m/d/Y');            
+            return $season;
+        }
+        
+        return NULL;   
+    }
+    
+    function GetAllSeasons()
+    {
+        $query = $this->db->
+               select('seasons.id, seasons.start, seasons.end, seasons.name')->
+               from('seasons')->
+               where('active', true)->
+               get();
+        
+        $arr = Array();
+        foreach($query->result() as $row)
+        {
+            $oDate = new DateTime($row->start);
+            $row->start = $oDate->format('m/d/Y');
+            $oDate = new DateTime($row->end);
+            $row->end = $oDate->format('m/d/Y');                        
+            $arr[] = $row;
+        }
+        return $arr;        
+        
+    }
+    
     function GetActiveSeasons($teamId=0)
     {
         $query = $this->db->
@@ -135,6 +178,41 @@ class Seasons_model extends CI_Model
                where('active', true)->
                where('start <=', date('Y-m-d'))->
                where('end  >=', date('Y-m-d'))->
+               get();
+        
+        $arr = Array();
+        foreach($query->result() as $row)
+        {
+            $oDate = new DateTime($row->start);
+            $row->start = $oDate->format('m/d/Y');
+            $oDate = new DateTime($row->end);
+            $row->end = $oDate->format('m/d/Y');
+            
+            $bInSeason = false;
+            if ($teamId != 0)
+            {
+                if ($this->isTeamInSeason($teamId, $row->id))
+                    $bInSeason = true;
+                
+            }
+            
+            $arr[] = array(
+                'id'=> $row->id, 
+                'name' => $row->name,
+                'start' => $row->start,
+                'end' => $row->end,
+                'inSeason' => $bInSeason,
+                    );
+        }
+        return $arr;        
+    }
+    
+    function GetRunningSeason($teamId=0)
+    {
+        $query = $this->db->
+               select('seasons.id, seasons.start, seasons.end, seasons.name')->
+               from('seasons')->
+               where('active', true)->
                get();
         
         $arr = Array();
@@ -298,5 +376,162 @@ class Seasons_model extends CI_Model
         }
         return $arr;
     }
+    
+    function newMatch($seasonId, $weekid, $homeTeam, $awayTeam, $name)
+    {
+        
+        $week = $this->getWeek($weekid);
+        $date = new DateTime($week->end);
+        $date->sub(new DateInterval('P2D'));
+                
+        $data = array(
+            'name'=>$name,
+            'season_id'=>$seasonId,
+            'week_id'=> $weekid,
+            'home_team_id'=>$homeTeam,
+            'away_team_id'=>$awayTeam,
+            'gamedate' => date_format($date, "Y-m-d H:i:s"),
+            'active' => true
+        );
+        
+        $this->db->insert('matches', $data);
+    }
+    
+    function getSeasonStats($teamId, $seasonId)
+    {
+        $season = $this->get($seasonId);
+        
+        $query = $this->db->
+          select('m.id, m.home_team_id, m.away_team_id,'
+                  . 'm.home_team_points as home_points, m.away_team_points as away_points, '
+                  . 'sth.code as home_code, sta.code as away_code')->
+          from('matches m ')->
+          join('states sth', 'sth.id = m.home_team_state_id', 'left outer')->
+          join('states sta', 'sta.id = m.away_team_state_id', 'left outer')->
+          where('m.season_id = '. $seasonId ." AND (m.home_team_id=".$teamId . " OR m.away_team_id=".$teamId.") and m.active=0")->
+          get();        
+        
+        $arr = new stdClass();
+        $arr->id =  $seasonId;
+        $arr->name = $season->name;
+        $arr->points = 0;
+        $arr->wins = 0;
+        $arr->loss = 0;
+        
+        foreach($query->result() as $row)
+        {
+           
+           if ($row->home_team_id == $teamId)
+           {
+               $arr->points += $row->home_points;
+               if ($row->home_code == 'W')
+                   $arr->wins++;
+               else
+                   $arr->loss++;
+           }
+           else
+           {
+               $arr->points += $row->away_points;
+               if ($row->away_code == 'W')
+                   $arr->wins++;
+               else
+                   $arr->loss++;               
+           }
+        }
+        
+        $total = ($arr->wins + $arr->loss);
+        if ($total == 0)
+        {
+            $arr->perc = 0;        
+        }
+        else
+        {
+            $arr->perc = $arr->wins / ($arr->wins + $arr->loss) * 100.0;        
+        }
 
+        return $arr;        
+    }
+    
+    function getMatchesForPortal($teamId)
+    {
+        $season = $this->GetCurrentSeason();
+        $seasonId = $season->id;
+        
+        $query = $this->db->
+          select('ht.name as homeTeam, at.name as awayTeam, w.tag as weektag, s.tag as seasontag, matches.*, hs.code as hscode, '
+                  . 'hs.desc as hsdesc, aw.code as awcode, aw.desc as awdesc')->
+          from('matches')->
+          join('states hs', 'hs.id = matches.home_team_state_id', 'left outer')->
+          join('states aw', 'aw.id = matches.away_team_state_id', 'left outer')->
+          join('weeks w', 'w.id = matches.week_id', 'left outer')->
+          join('seasons s', 's.id = matches.season_id', 'left outer')->
+          join('teams ht', 'ht.id = matches.home_team_id', 'left outer')->
+          join('teams at', 'at.id = matches.away_team_id', 'left outer')->
+          where('matches.season_id = '. $seasonId ." AND (home_team_id=".$teamId . " OR away_team_id=".$teamId.")")->
+          order_by('gamedate')->
+          get();
+
+        $arr = Array();
+        foreach($query->result() as $row)
+        {
+            $oDate = new DateTime($row->gamedate);
+            $row->gamedate = $oDate->format('m/d/Y H:m:s');
+            
+            $arr[] = $row;
+        }
+        return $arr;        
+    }
+    
+    function getMatchesForSeason($seasonId)
+    {
+        $season = $this->get($seasonId);
+        $seasonId = $season->id;
+        
+        $query = $this->db->
+          select('ht.name as homeTeam, at.name as awayTeam, w.tag as weektag, s.tag as seasontag, matches.*, hs.code as hscode, '
+                  . 'hs.desc as hsdesc, aw.code as awcode, aw.desc as awdesc')->
+          from('matches')->
+          join('states hs', 'hs.id = matches.home_team_state_id', 'left outer')->
+          join('states aw', 'aw.id = matches.away_team_state_id', 'left outer')->
+          join('weeks w', 'w.id = matches.week_id', 'left outer')->
+          join('seasons s', 's.id = matches.season_id', 'left outer')->
+          join('teams ht', 'ht.id = matches.home_team_id', 'left outer')->
+          join('teams at', 'at.id = matches.away_team_id', 'left outer')->
+          where('matches.season_id', $seasonId)->
+          order_by('gamedate')->
+          get();
+
+        $arr = Array();
+        foreach($query->result() as $row)
+        {
+            $oDate = new DateTime($row->gamedate);
+            $row->gamedate = $oDate->format('m/d/Y H:m:s');
+            
+            $arr[] = $row;
+        }
+        return $arr;        
+    }
+    
+      
+    function getTeamsByPoints($seasonId)
+    {
+        $teams = $this->GetTeamsInSeason($seasonId);
+        $stats = Array();
+        foreach($teams AS $team)
+        {
+            $stat = $this->getSeasonStats($team->id,$seasonId);
+            $stat->teamName = $team->name;
+            $stat->teamId = $team->id;
+            $stats[] = $stat;
+        }
+        
+        usort($stats, "teamPointSort");
+        return $stats;
+    }
+}
+
+function teamPointSort($a, $b)
+{
+    if ($a->points == $b->points) return 0;
+    return ($a->points < $b->points) ? 1 : -1;
 }

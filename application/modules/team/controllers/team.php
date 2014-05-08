@@ -49,7 +49,28 @@ class Team extends MY_Controller
             }
         }
 
+        $this->load->model('Seasons_model');
+        
+        $matches = $this->Seasons_model->getMatchesForPortal($teamid);
+        $this->twiggy->set('matches', $matches);
+
         $this->twiggy->set('team', $team);
+        
+        $seasons = $this->Seasons_model->GetAllSeasons();
+        $activeSeason = $this->Seasons_model->GetRunningSeason($teamid);
+        
+        $total_points = 0;
+        $arr = Array();
+        foreach($seasons AS $season)
+        {
+            $stats = $this->Seasons_model->getSeasonStats($teamid, $season->id);
+            $arr[] = $stats;
+            
+            if ($season->id == $activeSeason[0]['id'])
+                $total_points = $stats->points;
+        }
+        $this->twiggy->set('season_stats', $arr);
+        $this->twiggy->set('season_points', $total_points);
         $this->twiggy->template('portal')->display();
 
     }

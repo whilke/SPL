@@ -15,7 +15,7 @@
                     <h3 class="panel-title">Season Points</h3>
                 </div>
                 <div class="panel-body">
-                    <div style="text-align:center;">0</div>
+                    <div style="text-align:center;">{{season_points}}</div>
                 </div>
             </div> 
         </div>
@@ -43,18 +43,14 @@
                             </tr>
                         </thead>
                         <tbody>
+                        {% for stat in season_stats %}
                             <tr>
-                                <td>Season 1</td>
-                                <td>0 - 0</td>
-                                <td>0%</td>
-                                <td>0</td>
+                                <td>{{stat.name}}</td>
+                                <td>{{stat.wins}} - {{stat.loss}}</td>
+                                <td>{{stat.perc}}%</td>
+                                <td>{{stat.points}}</td>
                             </tr>
-                            <tr>
-                                <td>All Time</td>
-                                <td>0 - 0</td>
-                                <td>0%</td>
-                                <td>0</td>
-                            </tr>
+                        {% endfor %}
                         </tbody>
                     </table>
                 </div>
@@ -89,17 +85,42 @@
             </div>
         </div>
     </div>
-    <div class="col-md-8 col-md-offset-2">   
-        <table id="matches">
+    <div class="col-md-10 col-md-offset-1">   
+        <table id="matches" class="table table-bordered table-hover" style="border: 0px;">
             <thead>
                 <tr>
-                    <th align='center' width='300px'>Versus</th>
-                    <th align='center' width='50px'>Win</th>
-                    <th align='center' width='50px'>Loss</th>
-                    <th align='center' width='100px'>Result</th>
-                    <th align='center' width='200px'>Match ID</th>
+                    <th class="text-center" style='width:800px;'>( Home vs Away )</th>
+                    <th class="text-center"  style='width:300px'>Date</th>
+                    <th class="text-center"  style='width:100px'>Result</th>
+                    <th class="text-center"  style='width:100px'>Points</th>
+                    <th class="text-center"  style='width:200px'>Match ID</th>
                 </tr>
             </thead>
+            <tbody>
+                {% for match in matches %}
+                    <tr>
+                        <td>{{match.homeTeam}} vs {{match.awayTeam}}</td>
+                        <td class="text-center">{{match.gamedate}}</td>
+                        
+                        {% if match.home_team_id == team.id %}
+                        <td class="text-center">{{match.hscode}}</td>
+                        {% else %}
+                        <td class="text-center">{{match.awcode}}</td>
+                        {% endif %}
+                        
+                        {% if match.active == true %}
+                            <td></td>
+                        {% else %}
+                        {% if match.home_team_id == team.id %}
+                        <td class="text-center">{{match.home_team_points}}</td>
+                        {% else %}
+                        <td class="text-center">{{match.away_team_points}}</td>
+                        {% endif %}
+                        {% endif %}
+                        <td class="text-center"><a href="">{{match.seasontag}}:{{match.weektag}}:{{match.name}}</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
         </table>
     </div>
 {% endblock %}

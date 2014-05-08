@@ -51,7 +51,6 @@
             <th>Bracket Tag</th>
             <th>Start Date</th>
             <th>End Date</th>
-            <th>Seed</th>
         </tr>
     </thead>
     <tbody>
@@ -60,10 +59,6 @@
             <td>{{data.tag.value}}:{{week.tag}}</td>
             <td>{{week.start}}</td>
             <td>{{week.end}}</td>
-            <td>
-                {% set s = 'auth/season_week_seed/' ~ week.id    %}
-                {{s|anchor('Seed')}}
-            </td>
         </tr>
     {% endfor %}
     </tbody>
@@ -72,6 +67,11 @@
 {% set l1 = 'Create New Weekly Bracket' %}
 {% set s = 'auth/create_season_week/' ~ data.id.id    %}
 {{s|anchor(l1)}}
+|||
+
+{% set s = 'auth/season_seed/' ~ data.id.id    %}
+{{s|anchor('Seed Season','id=seed_season')}}
+
 {% endblock %}
     
     
@@ -81,6 +81,10 @@
         $( "#start" ).datepicker();
     
         $( "#end" ).datepicker();
+        
+        $('#seed_season').click(function(){
+    return confirm("Are you sure you want to seed this season? DON'T RUN THIS TWICE.");
+})
     });
 </script>    
 {% endblock %}

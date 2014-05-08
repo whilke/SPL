@@ -1,0 +1,41 @@
+{% extends _layout %}
+{% block content %}
+<div class="row">
+    <div class="col-lg-offset-1 col-lg-10">
+    
+        <h2>Current Season Schedule</h2>
+
+        <table id="matches" class="table table-bordered table-hover" style="border: 0px;">
+            <thead>
+                <tr>
+                    <th class="text-center" style='width:800px;'>( Home vs Away )</th>
+                    <th class="text-center"  style='width:300px'>Date</th>
+                    <th class="text-center"  style='width:100px'>Result</th>
+                    <th class="text-center"  style='width:100px'>Points</th>
+                    <th class="text-center"  style='width:200px'>Match ID</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for match in matches %}
+                    <tr>
+                        <td><span style="color:red;">{{match.homeTeam}}</span> vs <span style="color:green;">{{match.awayTeam}}</span></td>
+                        <td class="text-center">{{match.gamedate}}</td>
+                        
+                        <td class="text-center"><span style="color:red;">{{match.hscode}}</span>
+                            <span style="color:green;">{{match.awcode}}</span></td>
+                        
+                        {% if match.active == true %}
+                            <td></td>
+                        {% else %}
+                            <td class="text-center"><span style="color:red;">{{match.home_team_points}}</span>
+                                <span style="color:green;">{{match.away_team_points}}</span></td>
+                        {% endif %}
+                        <td class="text-center"><a href="">{{match.seasontag}}:{{match.weektag}}:{{match.name}}</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+    </div>
+</div>
+{% endblock %}

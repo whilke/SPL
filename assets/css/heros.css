@@ -1,16 +1,27 @@
 .hero
 {
-    min-width: 128px;
-    min-height: 128px;
     width:128px;
     height:128px;
+}
+
+.hero-small
+{
+    margin-left:-32px;
+    margin-right: -32px;
+    margin-top:-32px;
+    margin-bottom: -32px;
+    width:128px;
+    height:128px;
+    -webkit-transform: scale(0.5);
+    transform: scale(0.5);
+    -ms-transform: scale(0.5);
 }
 .hero-ace
 {
 
 
-background:
-url(/assets/images/heroes.png);
+background: black
+url(/assets/images/heroes.png) no-repeat 0 0 ;
 background-position: 0px 0px;
 }
 
@@ -60,6 +71,14 @@ background-position: 0px -128px;
 }
 
 .hero-fetter
+{
+
+
+background:
+url(/assets/images/heroes.png) ;
+background-position: -128px -128px;
+}
+.hero-fetterstone
 {
 
 
@@ -133,8 +152,12 @@ background-position: -384px -256px;
 
 .hero-tinder
 {
-
-
+background:
+url(/assets/images/heroes.png) ;
+background-position: -512px -256px;
+}
+.hero-ladytinder
+{
 background:
 url(/assets/images/heroes.png) ;
 background-position: -512px -256px;

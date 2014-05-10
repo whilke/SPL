@@ -243,7 +243,21 @@ class UploadHandler
             .$version_path.rawurlencode($file_name);
     }
 
-    protected function set_additional_file_properties($file) {
+    function Parse ($contents) {
+        $contents = str_replace(array("\n", "\r", "\t"), '', $contents);
+        $contents = trim(str_replace('"', "'", $contents));
+        $simpleXml = simplexml_load_string($contents);
+        $json = json_encode($simpleXml);
+        return $json;
+    }
+    protected function read_replay_info($file, $file_path) {
+        $path = 'zip://'. $file_path .'#replayinfo';
+        $result = file_get_contents($path); 
+        $result = $this->Parse($result);
+        return $result;
+    }
+    
+    protected function set_additional_file_properties($file, $file_path) {
         $file->deleteUrl = $this->options['script_url']
             .$this->get_query_separator($this->options['script_url'])
             .$this->get_singular_param_name()
@@ -255,7 +269,13 @@ class UploadHandler
         if ($this->options['access_control_allow_credentials']) {
             $file->deleteWithCredentials = true;
         }
+        
+        if ($this->options['isk2r'] == true){
+            $file->ReplayInfo = $this->read_replay_info($file, $file_path);
+        }        
     }
+    
+
 
     // Fix for overflowing signed 32 bit integers,
     // works for sizes up to 2^32-1 bytes (4 GiB - 1):
@@ -438,7 +458,10 @@ class UploadHandler
                     $this->get_upload_path($name))) {
                 break;
             }
-            $name = $this->upcount_name($name);
+            if ($this->options['isk2r'] == true)
+                break;
+            else
+                $name = $this->upcount_name($name);
         }
         return $name;
     }
@@ -1068,7 +1091,7 @@ class UploadHandler
                     $file->error = 'abort';
                 }
             }
-            $this->set_additional_file_properties($file);
+            $this->set_additional_file_properties($file, $file_path);
         }
         return $file;
     }

@@ -1,0 +1,101 @@
+{% extends _layout %}
+{% block content %}
+<div class="col-md-offset-0 col-md-12">
+
+    <h2 class="text-center">Match {{match.seasontag}}:{{match.weektag}}:{{match.name}}</h2><br/>
+
+    {% if match.active == FALSE %}
+    <div class="row">
+        <div class="col-md-5 col-md-offset-0" style="text-align: center;">  
+            <p class="text-center">{{home_team.name}}</p>
+            <div class="row">
+            <table style="display: inline-block;">
+                <tbody>
+                    <tr>
+                        {% for stat in stats %}
+                            {% if stat.team_id == home_team.id %}
+                                <td><div class="hero-{{stat.hero}} hero-small" data-toggle="tooltip" data-placement="bottom" title="{{stat.player}}"></div></td>
+                            {% endif %}                            
+                        {% endfor %}
+                    </tr>
+                </tbody>
+            </table>        
+            </div>
+            <div class="row">
+                <h2>{{match.hscode}} [{{match.home_team_points}} pts]</h2>
+            </div>
+        </div>
+        <div  class="col-md-2" style="margin-top: 20px;">
+            <div class="text-center">
+                <h2>VS</h2>
+                {% if match.strife_match_id != "" %}
+                <a href="/files/M{{match.strife_match_id}}.k2r">replay</a>
+                {% endif %}
+            </div>
+        </div>
+        <div class="row">
+        <div class="col-md-5 col-md-offset-0" style="text-align: center;">
+            <p class="text-center">{{away_team.name}}</p>
+            <div class="row">
+            <table style="display: inline-block;">
+                <tbody>
+                    <tr>
+                        {% for stat in stats %}
+                            {% if stat.team_id == away_team.id %}
+                                <td><div class="hero-{{stat.hero}} hero-small" data-toggle="tooltip" data-placement="bottom" title="{{stat.player}}"></div></td>
+                            {% endif %}                            
+                        {% endfor %}
+                    </tr>
+                </tbody>
+            </table>        
+            </div>
+            <div class="row">
+                <h2>{{match.awcode}} [{{match.away_team_points}} pts]</h2>
+            </div>
+        </div>
+    </div>       
+    </div>
+    {% else %}
+        <div class="col-md-5 col-md-offset-0" style="text-align: center;">  
+            <p class="text-center"><h3>{{home_team.name}}</h3></p>
+        </div>
+        <div  class="col-md-2" style="margin-top: 20px;">
+            <div class="text-center">
+                <h2>VS</h2>
+                Scheduled: {{match.gamedate}}
+                {% if match.proposeddate != "" %}
+                Proposed: {{match.proposeddate}}
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-md-5 col-md-offset-0" style="text-align: center;">  
+            <p class="text-center"><h3>{{away_team.name}}</h3></p>
+        </div>
+        
+    {% endif %}
+    {% if match.active == TRUE %}
+    <div class="col-md-12 text-center">
+    <br/>
+    <br/>
+    <br/>
+    {% set s = 'standings/edit_match/' ~ match.id %}
+    {% set s2 = 'standings/standings_ajax/ion_standings_dialog/edit_match/' ~ match.id %}
+    <a class="btn btn-primary" 
+       href="{{s|site_url}}" rel="async" 
+       ajaxify="{{s2|site_url}}">Report match</a>
+    </div>
+        
+    {% elseif user.isAdmin == TRUE %}
+
+    <div class="col-md-12 text-center">
+    <br/>
+    <br/>
+    <br/>
+        {% set s = 'standings/edit_match/' ~ match.id %}
+        {% set s2 = 'standings/standings_ajax/ion_standings_dialog/edit_match/' ~ match.id %}
+        <a href="{{s|site_url}}" rel="async" 
+        ajaxify="{{s2|site_url}}" id="reportMatch" class="btn btn-primary">Admin Edit</a>
+    </div>
+    {% endif %}   
+</div>
+{% endblock %}

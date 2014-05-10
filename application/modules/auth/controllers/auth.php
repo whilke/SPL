@@ -299,17 +299,6 @@ class Auth extends MY_Controller {
             }
             else
             {
-                // do we have a valid request?
-                if ($this->_valid_csrf_nonce() === FALSE || $user->id != $this->input->post('user_id'))
-                {
-
-                    //something fishy might be up
-                    $this->ion_auth->clear_forgotten_password_code($code);
-
-                    show_error($this->lang->line('error_csrf'));
-
-                }
-                else
                 {
                     // finally change the password
                     $identity = $user->{$this->config->item('identity', 'ion_auth')};

@@ -4,25 +4,30 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/home/bill/github/spl/assets/css/jplayer.blue.monday.css</file>
-            <file>file:/home/bill/github/spl/application/modules/auth/themes/default/createseason.html.twig</file>
-            <file>file:/home/bill/github/spl/application/modules/auth/themes/default/editseason.html.twig</file>
+            <file>file:/home/bill/github/spl/assets/css/bootstrap.min.css</file>
+            <file>file:/home/bill/github/spl/application/models/stats_model.php</file>
             <file>file:/home/bill/github/spl/index.php</file>
-            <file>file:/home/bill/github/spl/assets/css/main.css</file>
-            <file>file:/home/bill/github/spl/application/modules/standings/themes/default/schedule.html.twig</file>
+            <file>file:/home/bill/github/spl/application/modules/standings/themes/default/match.html.twig</file>
+            <file>file:/home/bill/github/spl/application/themes/default/createuser.html.twig</file>
+            <file>file:/home/bill/github/spl/application/models/ion_auth_model.php</file>
             <file>file:/home/bill/github/spl/application/modules/standings/controllers/standings.php</file>
-            <file>file:/home/bill/github/spl/application/modules/auth/themes/default/index.html.twig</file>
-            <file>file:/home/bill/github/spl/application/third_party/MX/Controller.php</file>
+            <file>file:/home/bill/github/spl/application/helpers/MY_form_helper.php</file>
             <file>file:/home/bill/github/spl/application/themes/default/_layouts/index.html.twig</file>
+            <file>file:/home/bill/github/spl/application/modules/standings/controllers/standings_ajax.php</file>
             <file>file:/home/bill/github/spl/application/modules/team/controllers/team.php</file>
+            <file>file:/home/bill/github/spl/application/libraries/jQuery_file_upload/Uploadhandler.php</file>
             <file>file:/home/bill/github/spl/application/modules/auth/controllers/auth.php</file>
+            <file>file:/home/bill/github/spl/system/core/Input.php</file>
             <file>file:/home/bill/github/spl/assets/css/heros.css</file>
+            <file>file:/home/bill/github/spl/application/modules/upload/controllers/upload_ajax.php</file>
             <file>file:/home/bill/github/spl/application/modules/team/themes/default/edit.html.twig</file>
             <file>file:/home/bill/github/spl/application/models/teams_model.php</file>
+            <file>file:/home/bill/github/spl/application/themes/default/login.html.twig</file>
             <file>file:/home/bill/github/spl/application/modules/team/themes/default/portal.html.twig</file>
             <file>file:/home/bill/github/spl/application/models/seasons_model.php</file>
-            <file>file:/home/bill/github/spl/application/modules/standings/themes/default/index.html.twig</file>
-            <file>file:/home/bill/github/spl/application/modules/auth/themes/default/createweek.html.twig</file>
+            <file>file:/home/bill/github/spl/system/core/Loader.php</file>
+            <file>file:/home/bill/github/spl/application/modules/auth/views/edit_user.php</file>
+            <file>file:/home/bill/github/spl/application/modules/standings/themes/default/edit_match.html.twig</file>
         </group>
     </open-files>
 </project-private>

@@ -1,0 +1,196 @@
+{% extends _layout %}
+
+{% block content %}
+<div class="row">
+<div class="col-lg-offset-3 col-lg-6">
+<h1>Match Results</h1>
+<br/>
+
+{% if data.message != "" %}
+<div class="alert alert-info" id="infoMessage">{{data.message}}</div>
+{% endif %}
+
+    {% set arr = 'standings/edit_match/' ~ match.id ~ '/' ~ fromajax %}
+
+{{arr|form_open}}
+    <p>
+        Match ID
+        {{data.matchid|bs_form_input()}}
+    </p>
+    <p>
+        <div class="js-control" data-progress-holder=".progress" data-results-holder=".results">
+            <p>Match Replay</p>
+            <p><input id="file-upload" type="file" name="files[]" single></input></p>
+            <div class="progress">
+                <div class="progress-bar"></div>
+            </div>
+            <hr>
+            <div class="results"></div>            
+        </div>
+    </p>
+    <p>
+        Team Glory
+        {{'gloryteam'|bs_form_dropdown(data.teams, data.gloryteam)}}
+    </p>
+    <p>
+        Team Valor
+        {{'valorteam'|bs_form_dropdown(data.teams, data.valorteam)}}
+    </p>
+    <p>
+        Override
+        {{'override'|form_checkbox('1', FALSE, 'id="override"')}}
+        <span style='font-size:11px;'>(use this to forfeit or if the match did not complete with replay)</span>
+    </p>
+    <div id='overrideDiv'>
+    <p>
+        Glory Outcome
+        {{'glory_state'|bs_form_dropdown(data.states, data.glory_state)}}
+    </p>
+    <p>
+        Valor Outcome
+        {{'valor_state'|bs_form_dropdown(data.states, data.valor_state)}}
+    </p>
+    </div>
+    <input type='hidden' id='matchjson' name='matchjson'></input>
+    {{'submit'|bs_form_submit('Submit')}}
+{{form_close()}}
+
+</div>
+</div>
+<script src="{{'js/fileupload.js'|assets_url()}}"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+     $("#overrideDiv").toggle();
+    $("#override").click(function(){
+        $("#overrideDiv").toggle();
+    }); 
+    
+    $('[name=gloryteam]').change( function(){
+        $gidx = $('[name=gloryteam]').prop("selectedIndex");
+        $vidx = $('[name=valorteam]').prop("selectedIndex");
+        
+        if ($gidx == 0)
+            $vidx = 1;
+        else
+            $vidx = 0;
+        
+        $('[name=valorteam]').prop("selectedIndex", $vidx);
+    });
+    $('[name=valorteam]').change( function(){
+        $gidx = $('[name=gloryteam]').prop("selectedIndex");
+        $vidx = $('[name=valorteam]').prop("selectedIndex");
+        
+        if ($vidx == 0)
+            $gidx = 1;
+        else
+            $gidx = 0;
+        
+        $('[name=gloryteam]').prop("selectedIndex", $gidx);
+        
+    });
+
+    uploadURL = '{{'upload/upload_ajax/upload'|site_url}}';
+
+        $('#file-upload').fileupload({
+            url: uploadURL,
+            dataType: 'json',
+            submit: function(e, data) {
+                $fileName =data.files[0].name;
+                $fileName = $fileName.substr(1, $fileName.lastIndexOf('.')-1) || $fileName;
+                $fileName = $fileName.trim();
+                $matchId = $("#matchid").val().replace(".","").trim();
+                if ($matchId != $fileName)
+                {
+                    var $control = $(this).closest('.js-control');
+                    $results = $control.find($control.data('results-holder'));
+                    $results.html([
+                        '<div class="alert alert-danger">',
+                            'Replay File does not match the Match ID',
+                        '</div>'
+                    ].join(''));
+                    return false;                
+                }                
+            },
+            progressall: function(e, data) {
+                var progress = parseInt(data.loaded / data.total * 100, 10),
+                    $control = $(this).closest('.js-control'),
+                    $progress = $control.find($control.data('progress-holder'));
+                $progress.find('.progress-bar').css({ width: progress + '%' });
+            },
+            done: function(e, data) {
+                var $control = $(this).closest('.js-control');
+                    $results = $control.find($control.data('results-holder'));
+                $.each(data.result.files, function (index, file) {
+                    if (file.url) {
+                        $replayInfo = jQuery.parseJSON(file.ReplayInfo);
+                        $realMatchId = $replayInfo['@attributes'].matchid;
+                        $matchId = $("#matchid").val().replace(".","").trim();
+                        if ($realMatchId != $matchId)
+                        {
+                            $results.html([
+                                '<div class="alert alert-danger">',
+                                    'Replay File does not match the Match ID',
+                                '</div>'
+                            ].join(''));
+                            return false;                
+                        }   
+                        
+                        $winner = $replayInfo['@attributes'].winner;
+                        if ($winner == 'Hellbourne')
+                            $winner = 'Valor';
+                        else
+                            $winner = 'Glory';
+
+                        
+                        $replayObj = {};
+                        $replayObj.matchid = $matchId;
+                        $replayObj.winner = $winner;
+                        $replayObj.players = [];
+                        
+                        //build the player data.
+                        $.each( $replayInfo.player, function( index, value ){
+                            $player = value['@attributes'];
+                            
+                            $newPlayer = {};
+                            $newPlayer.name = $player.name;
+                            $newPlayer.accountid = $player.accountid;
+                            $newPlayer.team = $player.team;
+                            $newPlayer.heroname = $player.heroname;
+                            $newPlayer.familiar = $player.familiar;
+                            $replayObj.players.push($newPlayer);
+                        });
+                        
+                        $objStr = JSON.stringify($replayObj);
+                        
+                        $('#matchjson').val($objStr);
+                        
+                        $results.html([
+                            '<div class="media alert alert-success">',
+                                '<div class="media-body">',
+                                    '<h4 class="text-center">Winner: ', $winner , '</h4>',
+                                '</div>',
+                            '</div>'
+                        ].join(''));
+                    } else if (file.error) {
+                        $results.html([
+                            '<div class="alert alert-danger">',
+                                file.name, ': ', file.error,
+                            '</div>'
+                        ].join(''));
+                    }
+                });
+            },
+            fail: function(e, data) {
+                var $control = $(this).closest('.js-control');
+                    $results = $control.find($control.data('results-holder'));
+                $.each(data.files, function (index, file) {
+                    $results.html('<div class="alert alert-danger">File upload failed.</div>');
+                });
+            }
+        }).prop('disabled', !$.support.fileInput);
+
+});
+
+</script>
+       
+{% endblock %}

@@ -281,6 +281,26 @@ class Seasons_model extends CI_Model
         return $arr;                       
     }
     
+    function getTeamsNotInSeason($seasonId)
+    {
+        $query = $this->db->
+               select('teams.*')->
+               from('seasons_teams')->
+               join('teams', 'teams.id = seasons_teams.team_id', 'right outer')->
+               join('users', 'users.id = teams.userid')->
+               where('seasons_teams.season_id is null', null)->
+               where('users.active', true)->
+               where('users.teamname !=', 'Admin')->
+               get();
+        
+        $arr = Array();
+        foreach($query->result() as $row)
+        {         
+            $arr[] = $row;
+        }
+        return $arr;                       
+    }
+    
     function isTeamInSeason($teamId, $seasonId)
     {
          $query = $this->db->
@@ -527,6 +547,78 @@ class Seasons_model extends CI_Model
         
         usort($stats, "teamPointSort");
         return $stats;
+    }
+    
+    function getMatch($id)
+    {
+        $query = $this->db->
+          select('ht.name as homeTeam, at.name as awayTeam, w.tag as weektag, s.tag as seasontag, '
+                  . 'matches.*, hs.code as hscode, '
+                  . 'hs.desc as hsdesc, aw.code as awcode, aw.desc as awdesc')->
+          from('matches')->
+          join('states hs', 'hs.id = matches.home_team_state_id', 'left outer')->
+          join('states aw', 'aw.id = matches.away_team_state_id', 'left outer')->
+          join('weeks w', 'w.id = matches.week_id', 'left outer')->
+          join('seasons s', 's.id = matches.season_id', 'left outer')->
+          join('teams ht', 'ht.id = matches.home_team_id', 'left outer')->
+          join('teams at', 'at.id = matches.away_team_id', 'left outer')->
+          where('matches.id', $id)->
+          get();
+        
+            if ($query->num_rows() === 1)
+            {
+                $match = $query->row();
+
+                $oDate = new DateTime($match->gamedate);
+                $match->gamedate = $oDate->format('m/d/Y');
+                if ($match->proposeddate != null)
+                {
+                    $oDate = new DateTime($match->proposeddate);
+                    $match->proposeddate = $oDate->format('m/d/Y');                                
+                }
+                return $match;
+            }        
+        
+    }
+    
+    function editMatch($match)
+    {        
+        $this->db->trans_begin();
+        
+        $data = new stdClass();
+        $data->home_team_state_id = $match->home_team_state_id;
+        $data->away_team_state_id = $match->away_team_state_id;
+        $data->home_team_points = $match->home_team_points;
+        $data->away_team_points = $match->away_team_points;
+        $data->strife_match_id = $match->strife_match_id;
+        $data->active = $match->active;
+         
+        $this->db->update('matches', $data, array('id' => $match->id));
+         
+        if ($this->db->trans_status() === FALSE)
+        {
+            $this->db->trans_rollback();
+            return FALSE;
+        }
+
+        $this->db->trans_commit();
+        return TRUE;                
+    }
+    
+    function getStates()
+    {
+        $query = $this->db->
+            select('states.*')->
+            from('states')->
+            get();
+        
+        $arr = Array();
+        foreach($query->result() as $row)
+        {
+            $arr[$row->id] = $row->desc;
+        }
+        return $arr;
+
     }
 }
 

@@ -117,7 +117,9 @@
                         <td class="text-center">{{match.away_team_points}}</td>
                         {% endif %}
                         {% endif %}
-                        <td class="text-center"><a href="">{{match.seasontag}}:{{match.weektag}}:{{match.name}}</a></td>
+                        
+                        {% set l = 'standings/match/' ~ match.id %}                        
+                        <td class="text-center"><a href="{{l|site_url}}">{{match.seasontag}}:{{match.weektag}}:{{match.name}}</a></td>
                     </tr>
                 {% endfor %}
             </tbody>

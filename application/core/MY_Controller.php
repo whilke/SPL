@@ -75,12 +75,22 @@ class Ajax_Controller extends MY_Controller {
         if ($this->ion_auth->logged_in())
         {
             $user = $this->ion_auth->user()->row();
+            $isAdmin = $this->ion_auth->is_admin();
             
-            $this->twiggy->set('user', array('uname' => $user->username, 'isvalid' => 'true'), TRUE);
+            $this->twiggy->set('user', array(
+                'uname' => $user->teamname, 
+                'isvalid' => 'true', 
+                'isAdmin' => $isAdmin 
+               ), TRUE);
         }
         else
         {
-            $this->twiggy->set('user', array('uname' => '', 'isvalid' => 'false'), TRUE);
+            $this->twiggy->set('user', array(
+                'uname' => '', 
+                'isvalid' => 'false',
+                'isAdmin' => 'false'
+                
+             ), TRUE);
         }
 
     }

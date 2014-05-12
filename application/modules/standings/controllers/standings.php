@@ -17,11 +17,13 @@ class Standings extends MY_Controller
         $this->load->model('Seasons_model');
         
         $season = $this->Seasons_model->GetCurrentSeason();
-
-        $stats = $this->Seasons_model->getTeamsByPoints($season->id);
-        $this->twiggy->set('stats', $stats);
+        if ($season != null)
+        {
+            $stats = $this->Seasons_model->getTeamsByPoints($season->id);
+            $this->twiggy->set('stats', $stats);
+        }
         
-        $teams = $this->Seasons_model->getTeamsNotInSeason($season->id);
+        $teams = $this->Seasons_model->getTeamsNotInSeason(0);
         $this->twiggy->set('notTeams', $teams);
                 
         $this->twiggy->template('index')->display();
@@ -33,8 +35,11 @@ class Standings extends MY_Controller
         $this->load->model('Seasons_model');
         
         $season = $this->Seasons_model->GetCurrentSeason();
-        $matches = $this->Seasons_model->getMatchesForSeason($season->id);
-        $this->twiggy->set('matches', $matches);
+        if ($season != null)
+        {
+            $matches = $this->Seasons_model->getMatchesForSeason($season->id);
+            $this->twiggy->set('matches', $matches);            
+        }
                 
         $this->twiggy->template('schedule')->display();
     }

@@ -5,12 +5,12 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/home/bill/github/spl/assets/css/bootstrap.min.css</file>
-            <file>file:/home/bill/github/spl/application/models/stats_model.php</file>
             <file>file:/home/bill/github/spl/index.php</file>
             <file>file:/home/bill/github/spl/application/modules/standings/themes/default/match.html.twig</file>
             <file>file:/home/bill/github/spl/application/themes/default/createuser.html.twig</file>
             <file>file:/home/bill/github/spl/application/models/ion_auth_model.php</file>
             <file>file:/home/bill/github/spl/application/modules/standings/controllers/standings.php</file>
+            <file>file:/home/bill/github/spl/application/third_party/MX/Controller.php</file>
             <file>file:/home/bill/github/spl/application/helpers/MY_form_helper.php</file>
             <file>file:/home/bill/github/spl/application/themes/default/_layouts/index.html.twig</file>
             <file>file:/home/bill/github/spl/application/modules/standings/controllers/standings_ajax.php</file>
@@ -28,6 +28,7 @@
             <file>file:/home/bill/github/spl/system/core/Loader.php</file>
             <file>file:/home/bill/github/spl/application/modules/auth/views/edit_user.php</file>
             <file>file:/home/bill/github/spl/application/modules/standings/themes/default/edit_match.html.twig</file>
+            <file>file:/home/bill/github/spl/application/modules/standings/themes/default/index.html.twig</file>
         </group>
     </open-files>
 </project-private>

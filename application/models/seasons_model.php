@@ -475,6 +475,12 @@ class Seasons_model extends CI_Model
     function getMatchesForPortal($teamId)
     {
         $season = $this->GetCurrentSeason();
+        if ($season == null) 
+        {
+            $arr = Array();
+            return $arr;
+        }
+        
         $seasonId = $season->id;
         
         $query = $this->db->

@@ -450,7 +450,17 @@ class Ion_auth
 
         return $this->in_group($admin_group, $id);
     }
+    
+    public function is_manager($id=false)
+    {
+        return $this->in_group(array(1,3,4), $id);
+    }
 
+    public function is_global_manager($id=false)
+    {
+        return $this->in_group(array(1,3), $id);
+    }
+    
     /**
      * in_group
      *

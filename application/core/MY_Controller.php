@@ -20,20 +20,42 @@ class MY_Controller extends MX_Controller {
         {
             $user = $this->ion_auth->user()->row();
             $isAdmin = $this->ion_auth->is_admin();
+            $isGlobalManager = false;
+            $isManager = false;
+            if (!$isAdmin)
+            {
+                $isGlobalManager = $this->ion_auth->in_group(3);
+                if (!$isGlobalManager)
+                {
+                    $isManager = $this->ion_auth->in_group(4);
+                }
+                else
+                {
+                    $isManager = true;
+                }
+            }
+            else
+            {
+                $isGlobalManager = true;
+                $isManager = true;
+            }
             
             $this->twiggy->set('user', array(
                 'uname' => $user->teamname, 
-                'isvalid' => 'true', 
-                'isAdmin' => $isAdmin 
+                'isvalid' => true, 
+                'isAdmin' => $isAdmin, 
+                'isGlobalManager' => $isGlobalManager, 
+                'isManager' => $isManager
                ), TRUE);
         }
         else
         {
             $this->twiggy->set('user', array(
                 'uname' => '', 
-                'isvalid' => 'false',
-                'isAdmin' => 'false'
-                
+                'isvalid' => false,
+                'isAdmin' => false, 
+                'isGlobalManager' => false, 
+                'isManager' => false                 
              ), TRUE);
         }
     }
@@ -72,15 +94,36 @@ class Ajax_Controller extends MY_Controller {
         $this->load->library('response');
         $this->load->library('authentication', NULL, 'ion_auth');
         
-        if ($this->ion_auth->logged_in())
+       if ($this->ion_auth->logged_in())
         {
             $user = $this->ion_auth->user()->row();
             $isAdmin = $this->ion_auth->is_admin();
+            $isGlobalManager = false;
+            $isManager = false;
+            if (!$isAdmin)
+            {
+                $isGlobalManager = $this->ion_auth->in_group(3);
+                if (!$isGlobalManager)
+                {
+                    $isManager = $this->ion_auth->in_group(4);
+                }
+                else
+                {
+                    $isManager = true;
+                }
+            }
+            else
+            {
+                $isGlobalManager = true;
+                $isManager = true;
+            }
             
             $this->twiggy->set('user', array(
                 'uname' => $user->teamname, 
                 'isvalid' => 'true', 
-                'isAdmin' => $isAdmin 
+                'isAdmin' => $isAdmin, 
+                'isGlobalManager' => $isGlobalManager, 
+                'isManager' => $isManager
                ), TRUE);
         }
         else
@@ -88,11 +131,12 @@ class Ajax_Controller extends MY_Controller {
             $this->twiggy->set('user', array(
                 'uname' => '', 
                 'isvalid' => 'false',
-                'isAdmin' => 'false'
-                
+                'isAdmin' => 'false', 
+                'isGlobalManager' => 'false', 
+                'isManager' => 'false'                 
              ), TRUE);
         }
-
+ 
     }
 }
 

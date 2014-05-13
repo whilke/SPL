@@ -127,7 +127,7 @@ class Team extends MY_Controller
             $this->form_validation->set_rules('slot4', 'Member', 'xss_clean');            
         }
 
-        $isAdmin = $this->ion_auth->is_admin();
+        $isAdmin = $this->ion_auth->is_global_manager();
         $user = $this->ion_auth->user()->row();
 
         $this->load->model('Seasons_model');

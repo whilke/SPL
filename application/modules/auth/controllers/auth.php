@@ -32,7 +32,7 @@ class Auth extends MY_Controller {
             //redirect them to the login page
             redirect('auth/login', 'refresh');
         }
-        elseif (!$this->ion_auth->is_admin())
+        elseif (!$this->ion_auth->is_manager())
         {
             //redirect them to the home page because they must be an administrator to view this
             redirect('/', 'refresh');
@@ -335,7 +335,7 @@ class Auth extends MY_Controller {
         {
             $activation = $this->ion_auth->activate($id, $code);
         }
-        else if ($this->ion_auth->is_admin())
+        else if ($this->ion_auth->is_global_manager())
         {
             $activation = $this->ion_auth->activate($id);
         }
@@ -383,7 +383,7 @@ class Auth extends MY_Controller {
                 }
 
                 // do we have the right userlevel?
-                if ($this->ion_auth->logged_in() && $this->ion_auth->is_admin())
+                if ($this->ion_auth->logged_in() && $this->ion_auth->is_global_manager())
                 {
                     $this->ion_auth->deactivate($id);
                 }
@@ -595,7 +595,7 @@ class Auth extends MY_Controller {
     
     function seasons()
     {
-        if (!$this->ion_auth->logged_in() || !$this->ion_auth->is_admin())
+        if (!$this->ion_auth->logged_in() || !$this->ion_auth->is_manager())
         {
             redirect('auth', 'refresh');
         }
@@ -611,7 +611,7 @@ class Auth extends MY_Controller {
     
     function season_activate($id)
     {
-        if (!$this->ion_auth->logged_in() || !$this->ion_auth->is_admin())
+        if (!$this->ion_auth->logged_in() || !$this->ion_auth->is_global_manager())
         {
             redirect('auth', 'refresh');
         }
@@ -622,7 +622,7 @@ class Auth extends MY_Controller {
     }
     function season_deactivate($id)
     {
-        if (!$this->ion_auth->logged_in() || !$this->ion_auth->is_admin())
+        if (!$this->ion_auth->logged_in() || !$this->ion_auth->is_global_manager())
         {
             redirect('auth', 'refresh');
         }
@@ -634,7 +634,7 @@ class Auth extends MY_Controller {
     
     function season_edit($id)
     {
-        if (!$this->ion_auth->logged_in() || !$this->ion_auth->is_admin())
+        if (!$this->ion_auth->logged_in() || !$this->ion_auth->is_global_manager())
         {
             redirect('auth', 'refresh');
         }
@@ -778,7 +778,7 @@ class Auth extends MY_Controller {
 
     function create_season_week($seasonId)
     {
-        if (!$this->ion_auth->logged_in() || !$this->ion_auth->is_admin())
+        if (!$this->ion_auth->logged_in() || !$this->ion_auth->is_global_manager())
         {
             redirect('auth', 'refresh');
         }

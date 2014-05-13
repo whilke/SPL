@@ -67,10 +67,12 @@
 {% set l1 = 'Create New Weekly Bracket' %}
 {% set s = 'auth/create_season_week/' ~ data.id.id    %}
 {{s|anchor(l1)}}
-|||
 
-{% set s = 'auth/season_seed/' ~ data.id.id    %}
+{% if user.isAdmin == TRUE %}
+|||
+{% set s = 'auth/season_seed/' ~ data.id.id %}
 {{s|anchor('Seed Season','id=seed_season')}}
+{% endif %}
 
 {% endblock %}
     

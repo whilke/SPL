@@ -147,7 +147,7 @@
                         <li class="dropdown">
                           <a class="myNavLinks" style="padding-top:0px;" href="#" class="dropdown-toggle" data-toggle="dropdown">{{user.uname}} <b class="caret"></b></a>
                           <ul class="dropdown-menu">
-                            {% if user.isAdmin == TRUE %}
+                            {% if user.isManager == TRUE %}
                             <li><a class="myNavLinks" style="padding-top:0px;" href="{{'auth/index'|site_url}}">Admin</a></li>
                             {% else %}
                             <li><a class="myNavLinks" style="padding-top:0px;" href="{{'team/edit'|site_url}}">Edit Team</a></li>

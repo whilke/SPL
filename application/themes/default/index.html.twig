@@ -6,7 +6,7 @@
       <div id="jquery_jplayer_1" class="jp-jplayer""></div>
     </div>
   </div>
-
+<script src="{{'js/jquery.countdown.js'|assets_url()}}"></script>
 <script type="text/javascript">
     
     $(document).ready(function(){
@@ -31,16 +31,14 @@
                     width: "0px",
                     height: "0px"
                 }});
-                $(".flap").show();
+                $("#flap").show();
                 }                
       });      
 
       
       $('#playBtn').click(function(){
-
-             $("#extruderAds").closeMbExtruder();
              
-             $(".flap").hide();
+             $("#flap").hide();
 
             $("#jquery_jplayer_1").jPlayer("option", {"size" : {
                 width: $(window).width() +"px",
@@ -51,37 +49,44 @@
     });
 </script>
 
- <div class="jumbotron">
-     <div class="text-center"><a href="{{'main/bfbtournament'|site_url}}">Battle For Bot Lane Tournament is now open!</a></div><br/>
- <p> I'm sure you're asking yourself what this is all about, and while we are not ready to completely roll 
-         out the website and league, we wanted to at least tell you what our general plans are.         
-     </p>
-     
-     <p> <strong>So, just what is the Strife Pro League?</strong> Well, It's our intention to run a professional strife 
-         league in the form of seasons. Within these seasons teams will play against one another in the league with the goal
-         of earning points. At the end of the season we'll invite the top teams (determined by total points) 
-         to compete in a end of season tournament, seeded by that same point total</p>
-     
-     <p> <strong>Are these weekly tournaments?</strong> No, the league is not a weekly tournament, but instead a series of games
-         you play against other teams to earn points. We do not have a strict play time policy. You'll in fact have several days to
-         coordinate with your matched up teams to complete your games. We feel this will open up the ability for teams to complete
-         games every week.
-     </p>
-     
-     <p><strong>Are there any prizes in the league?</strong> While today we do not have any confirmed prizes, I can tell you that
-         our intentions are to do so. We are working hard to secure a prize pool for season one, and when we have something that
-         we are happy with, you all will be the first to know. The more active teams that we have participating equates to us
-         having a higher chance at building a prize pool though.
-     </p>
-     
-     <p><strong>What now?</strong> If you have a team that is interested in joining the league, setup an account and get your team
-         registered. We are currently finishing up the complete league rules, and will be posting them soon. We are hard at work 
-         on the website and back end systems so that we can get season one underway within the new couple of weeks.
-     </p>
-     
-     <p>Welcome to the Strife Pro League</p>
- </div>
+<div id="flap" name="flap">
+<div class="row">
+    <div class="col-md-12">
+        <h3><strong>Rockets have been launched</strong> <span style="font-size: 14px;">[May 12th 2014]</span></h3>
+        <hr>
+         <p>Strife Beta Series One is now open for registration. If you have a team already in the system, just edit your
+         team profile and sign up for the very first SPL run series. If you don't have a team signed up yet, you have six days to
+         get one put together, so start calling your friends.</p>
+         <p>This is going to be a bit of a mad first series, as there looks to be a lot of new teams in the scene, and we will surely
+         run into a few stumbling blocks along the way. All I can ask is that you trust that we will resolve issues as quickly as possibly,
+         and do our very best in making this a challenging and fun adventure for every team out there.</p>
+         <p>Registration for the Strife Beta Series One will close on <strong>5/18/2014 00:00:00 GMT</strong></p>
+         <br/>
+         <div class='text-center'><div class="countdown-styled"></div></div>
+         <p>Welcome to the series.</p>
+    </div>       
+</div>
+
 <div style="text-align: center">
     <a href="javascript:void(0)" id="playBtn">Play Trailer</a>
 </div>
+</div>
+<script type="text/javascript">
+$(function() {
+        $('.countdown-styled').countdown({
+        date: "May 18, 2014 00:00:00 GMT",
+        render: function(data) {
+          var el = $(this.el);
+          el.empty()
+            .append("<div>" + this.leadingZeros(data.days, 2) + " <span>days</span></div>")
+            .append("<div>" + this.leadingZeros(data.hours, 2) + " <span>hrs</span></div>")
+            .append("<div>" + this.leadingZeros(data.min, 2) + " <span>min</span></div>")
+            .append("<div>" + this.leadingZeros(data.sec, 2) + " <span>sec</span></div>");
+        }
+    });
+        
+});
+</script>
+   
+    
 {% endblock %}

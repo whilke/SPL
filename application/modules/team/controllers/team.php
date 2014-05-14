@@ -29,6 +29,7 @@ class Team extends MY_Controller
     public function portal($teamid=0)
     {
         $team = null;
+        $userTeamId = 0;
         if ($teamid == 0)
         {
             if (!$this->ion_auth->logged_in())
@@ -39,19 +40,32 @@ class Team extends MY_Controller
             $user = $this->ion_auth->user()->row();
             $team = $this->Teams_model->get($user->teamname);
             $teamid = $team->id;
+            $userTeamId = $team->id;
         }
         else
-        {
+        {           
             $team = $this->Teams_model->getById($teamid);
             if ($team == NULL)
             {
                 redirect('/', 'refresh');
             }
+            
+            if ($this->ion_auth->logged_in() && !$this->ion_auth->is_manager())
+            {
+                $user = $this->ion_auth->user()->row();
+                $uTeam = $this->Teams_model->get($user->teamname);
+                $userTeamId = $uTeam->id;
+            }
         }
+        
+        $isManager = $this->ion_auth->is_manager();
+        $hideStats = true;
+        if ($isManager ||  $teamid == $userTeamId)
+            $hideStats = false;
 
         $this->load->model('Seasons_model');
         
-        $matches = $this->Seasons_model->getMatchesForPortal($teamid);
+        $matches = $this->Seasons_model->getMatchesForPortal($teamid, !$isManager);
         $this->twiggy->set('matches', $matches);
 
         $this->twiggy->set('team', $team);
@@ -63,7 +77,7 @@ class Team extends MY_Controller
         $arr = Array();
         foreach($seasons AS $season)
         {
-            $stats = $this->Seasons_model->getSeasonStats($teamid, $season->id);
+            $stats = $this->Seasons_model->getSeasonStats($teamid, $season->id, $hideStats);
             $arr[] = $stats;
             
             if ($season->id == $activeSeason[0]['id'])
@@ -109,6 +123,7 @@ class Team extends MY_Controller
         $this->form_validation->set_rules('contact', 'Contact', 'required|xss_clean');
         $this->form_validation->set_rules('region', 'Region', 'required|xss_clean');
         $this->form_validation->set_rules('bio', 'Bio', 'xss_clean');
+        $this->form_validation->set_rules('logo', 'Logo', 'xss_clean');
         $this->form_validation->set_rules('slot5', 'Member', 'xss_clean');
         $this->form_validation->set_rules('slot6', 'Member', 'xss_clean');
         $this->form_validation->set_rules('inSeasons', 'Season', 'xss_clean');
@@ -146,6 +161,7 @@ class Team extends MY_Controller
                  'slot5' => $this->input->post('slot5'),
                  'slot6' => $this->input->post('slot6'),
                  'bio' => $this->input->post('bio'),
+                 'logo' => $this->input->post('logo'),
                  );
              
             $seasonData = $this->input->post('inSeasons');
@@ -206,7 +222,13 @@ class Team extends MY_Controller
                     'name'  => 'bio',
                     'id'    => 'bio',
                     'value' => $this->form_validation->set_value('bio', $team->bio),
-                );         
+                );      
+                $this->data['logo'] = array(
+                    'name'  => 'logo',
+                    'id'    => 'logo',
+                    'type'  => 'hidden',
+                    'value' => $this->form_validation->set_value('logo', $team->logo),
+                );   
                 $this->data['slot1'] = array(
                     'name'  => 'slot1',
                     'id'    => 'slot1',

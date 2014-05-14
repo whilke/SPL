@@ -7,8 +7,14 @@
                 <div class="panel-heading">
                     <h3 class="panel-title">Logo</h3>
                 </div>
-                <div class="panel-body" style="height:222px">
-                </div>
+                {% if team.logo != ""%}
+                    <div class="panel-body">
+                        <img class="img-responsive center-block" style="margin-top:-10px;margin-bottom:-10px" src="{{team.logo}}"/>
+                    </div>
+                {% else %}
+                    <div class="panel-body" style="height:220px;">
+                    </div>
+                {% endif %}
             </div> 
             <div class="panel panel-info">
                 <div class="panel-heading">
@@ -124,5 +130,6 @@
                 {% endfor %}
             </tbody>
         </table>
+        <div style="font-size:10px;color:grey;" class="text-right">(*stats are delayed by one week)</div>
     </div>
 {% endblock %}

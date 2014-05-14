@@ -453,6 +453,14 @@ class UploadHandler
         }
         // Keep an existing filename if this is part of a chunked upload:
         $uploaded_bytes = $this->fix_integer_overflow(intval($content_range[1]));
+        
+        if ($this->options['isImg'] == true)
+        {
+            $ext = strtolower(pathinfo($name, PATHINFO_EXTENSION));
+            $name = "T" . $this->options['teamid'] . "." . $ext;
+            return $name;
+        }
+        
         while(is_file($this->get_upload_path($name))) {
             if ($uploaded_bytes === $this->get_file_size(
                     $this->get_upload_path($name))) {

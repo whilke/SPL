@@ -1,7 +1,10 @@
 <html>
 <body>
-    <h1><?php echo sprintf(lang('email_activate_heading'), $identity);?></h1>
-    <p>If you have any questions, please email us as support@strifeproleague.com, or use our contact form on the website.</p>
-    <p>Please activate your account via: <?php echo sprintf(lang('email_activate_subheading'), anchor('auth/activate/'. $id .'/'. $activation, lang('email_activate_link')));?></p>
+<p>Welcome to the Strife Pro League <?php echo $identity; ?>,</p>
+<p>You must activate your account by following this link: <?php echo anchor('auth/activate/'. $id .'/'. $activation); ?></p>
+<p>&nbsp;</p>
+<p>If you have any questions, issues, or concerns please use the Contact Us link on the website.</p>
+<p>&nbsp;</p>
+<div id="_rc_sig">&nbsp;</div>
 </body>
 </html>

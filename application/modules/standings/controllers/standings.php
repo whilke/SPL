@@ -16,10 +16,12 @@ class Standings extends MY_Controller
         $this->load->model('Teams_model');
         $this->load->model('Seasons_model');
         
+        $isManager = $this->ion_auth->is_manager();
+        
         $season = $this->Seasons_model->GetCurrentSeason();
         if ($season != null)
         {
-            $stats = $this->Seasons_model->getTeamsByPoints($season->id);
+            $stats = $this->Seasons_model->getTeamsByPoints($season->id, !$isManager);
             $this->twiggy->set('stats', $stats);
         }
         
@@ -33,11 +35,12 @@ class Standings extends MY_Controller
     public function schedule()
     {
         $this->load->model('Seasons_model');
+        $isManger = $this->ion_auth->is_manager();
         
         $season = $this->Seasons_model->GetCurrentSeason();
         if ($season != null)
         {
-            $matches = $this->Seasons_model->getMatchesForSeason($season->id);
+            $matches = $this->Seasons_model->getMatchesForSeason($season->id, !$isManger);
             $this->twiggy->set('matches', $matches);            
         }
                 

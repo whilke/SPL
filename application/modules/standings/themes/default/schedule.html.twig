@@ -3,7 +3,7 @@
 <div class="row">
     <div class="col-lg-offset-1 col-lg-10">
     
-        <h2>Current Strife Series Schedule</h2>
+        <h2>Current Strife Series Schedule <span style="font-size:10px;color:grey;">(*stats are delayed by one week)</span></h2>
 
         <table id="matches" class="table table-bordered table-hover" style="border: 0px;">
             <thead>
@@ -18,7 +18,11 @@
             <tbody>
                 {% for match in matches %}
                     <tr>
-                        <td><span style="color:red;">{{match.homeTeam}}</span> vs <span style="color:green;">{{match.awayTeam}}</span></td>
+                    {% set s = 'team/portal/' ~ match.home_team_id    %}
+                    {% set s2 = 'team/portal/' ~ match.away_team_id    %}
+                        
+                    <td><a style="color:red;" href="{{s|site_url}}">{{match.homeTeam}}</a> vs 
+                        <a style="color:green;" href="{{s2|site_url}}">{{match.awayTeam}}</a</td>
                         <td class="text-center">{{match.gamedate}}</td>
                         
                         <td class="text-center"><span style="color:red;">{{match.hscode}}</span>

@@ -417,9 +417,16 @@ class Seasons_model extends CI_Model
         $this->db->insert('matches', $data);
     }
     
-    function getSeasonStats($teamId, $seasonId)
+    function getSeasonStats($teamId, $seasonId, $hideStats=true)
     {
         $season = $this->get($seasonId);
+
+        $date = new DateTime();
+        $date->sub(new DateInterval('P8D'));
+        if (!$hideStats)
+            $date->add(new DateInterval('P1Y'));
+            
+
         
         $query = $this->db->
           select('m.id, m.home_team_id, m.away_team_id,'
@@ -428,7 +435,9 @@ class Seasons_model extends CI_Model
           from('matches m ')->
           join('states sth', 'sth.id = m.home_team_state_id', 'left outer')->
           join('states sta', 'sta.id = m.away_team_state_id', 'left outer')->
+          join('weeks w', 'w.id = m.week_id', 'left outer')->
           where('m.season_id = '. $seasonId ." AND (m.home_team_id=".$teamId . " OR m.away_team_id=".$teamId.") and m.active=0")->
+          where('w.end <', date_format($date, "Y-m-d H:i:s"))->
           get();        
         
         $arr = new stdClass();
@@ -472,7 +481,7 @@ class Seasons_model extends CI_Model
         return $arr;        
     }
     
-    function getMatchesForPortal($teamId)
+    function getMatchesForPortal($teamId, $hideStats=true)
     {
         $season = $this->GetCurrentSeason();
         if ($season == null) 
@@ -481,10 +490,20 @@ class Seasons_model extends CI_Model
             return $arr;
         }
         
+        $date = new DateTime();
+        $date->add(new DateInterval('P2W'));
+        if (!$hideStats)
+        {
+        $date->add(new DateInterval('P1Y'));
+            
+        }
+
         $seasonId = $season->id;
         
         $query = $this->db->
-          select('ht.name as homeTeam, at.name as awayTeam, w.tag as weektag, s.tag as seasontag, matches.*, hs.code as hscode, '
+          select('ht.name as homeTeam, at.name as awayTeam, w.tag as weektag, s.tag as seasontag, w.end as endweek, '
+                  . 'matches.*, '
+                  . 'hs.code as hscode, '
                   . 'hs.desc as hsdesc, aw.code as awcode, aw.desc as awdesc')->
           from('matches')->
           join('states hs', 'hs.id = matches.home_team_state_id', 'left outer')->
@@ -494,27 +513,54 @@ class Seasons_model extends CI_Model
           join('teams ht', 'ht.id = matches.home_team_id', 'left outer')->
           join('teams at', 'at.id = matches.away_team_id', 'left outer')->
           where('matches.season_id = '. $seasonId ." AND (home_team_id=".$teamId . " OR away_team_id=".$teamId.")")->
+          where('matches.gamedate <=', date_format($date, "Y-m-d H:i:s"))->
           order_by('gamedate')->
           get();
+
+        $today = new DateTime();
 
         $arr = Array();
         foreach($query->result() as $row)
         {
             $oDate = new DateTime($row->gamedate);
             $row->gamedate = $oDate->format('m/d/Y H:m:s');
+
+            $weekDate = new DateTimE($row->endweek);
+            $weekDate->add(new DateInterval('P8D'));
+            if ($weekDate > $today)
+            {
+                if ($row->active == false && $hideStats)
+                {
+                    $row->hscode = 'H';
+                    $row->awcode = 'H';
+                    $row->hsdesc = 'Hidden';
+                    $row->awdesc = 'Hidden';
+                    $row->home_team_points = '';
+                    $row->away_team_points = '';                    
+                }
+            }
             
             $arr[] = $row;
         }
         return $arr;        
     }
     
-    function getMatchesForSeason($seasonId)
+    function getMatchesForSeason($seasonId, $hideStats=true)
     {
         $season = $this->get($seasonId);
         $seasonId = $season->id;
         
+        $date = new DateTime();
+        $date->add(new DateInterval('P2W'));
+        if (!$hideStats)
+        {
+            $date->add(new DateInterval('P1Y'));            
+        }
+
+        
         $query = $this->db->
-          select('ht.name as homeTeam, at.name as awayTeam, w.tag as weektag, s.tag as seasontag, matches.*, hs.code as hscode, '
+          select('ht.name as homeTeam, at.name as awayTeam, w.tag as weektag, s.tag as seasontag, '
+                  . 'matches.*, w.end as endweek, hs.code as hscode, '
                   . 'hs.desc as hsdesc, aw.code as awcode, aw.desc as awdesc')->
           from('matches')->
           join('states hs', 'hs.id = matches.home_team_state_id', 'left outer')->
@@ -524,28 +570,47 @@ class Seasons_model extends CI_Model
           join('teams ht', 'ht.id = matches.home_team_id', 'left outer')->
           join('teams at', 'at.id = matches.away_team_id', 'left outer')->
           where('matches.season_id', $seasonId)->
+          where('matches.gamedate <=', date_format($date, "Y-m-d H:i:s"))->
           order_by('gamedate')->
           get();
 
+        $today = new DateTime();
+        
+        $intervalDate = new DateInterval('P8D');        
         $arr = Array();
         foreach($query->result() as $row)
         {
             $oDate = new DateTime($row->gamedate);
             $row->gamedate = $oDate->format('m/d/Y H:m:s');
-            
+
+            $weekDate = new DateTimE($row->endweek);
+            $weekDate->add($intervalDate);
+            if ($weekDate > $today)
+            {
+                if ($row->active == false && $hideStats)
+                {
+                    $row->hscode = 'H';
+                    $row->awcode = 'H';
+                    $row->hsdesc = 'Hidden';
+                    $row->awdesc = 'Hidden';
+                    $row->home_team_points = '';
+                    $row->away_team_points = '';                    
+                }
+            }
+             
             $arr[] = $row;
         }
         return $arr;        
     }
     
       
-    function getTeamsByPoints($seasonId)
+    function getTeamsByPoints($seasonId, $hideStats=true)
     {
         $teams = $this->GetTeamsInSeason($seasonId);
         $stats = Array();
         foreach($teams AS $team)
         {
-            $stat = $this->getSeasonStats($team->id,$seasonId);
+            $stat = $this->getSeasonStats($team->id,$seasonId, $hideStats);
             $stat->teamName = $team->name;
             $stat->teamId = $team->id;
             $stats[] = $stat;

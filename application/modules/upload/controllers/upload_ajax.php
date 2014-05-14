@@ -73,6 +73,18 @@ class Upload_ajax extends Ajax_Controller {
         $this->load->config('upload', TRUE);
         $config = $this->config->item('photo', 'upload');
         $config['isk2r'] = true;
+        $config['isImg'] = false;
+
+        $this->load->library('uploader', $config);
+    }
+    
+    function uploadimage($teamid)
+    {
+        $this->load->config('upload', TRUE);
+        $config = $this->config->item('photo', 'upload');
+        $config['isk2r'] = false;
+        $config['isImg'] = true;
+        $config['teamid'] = $teamid;
         $this->load->library('uploader', $config);
     }
 }

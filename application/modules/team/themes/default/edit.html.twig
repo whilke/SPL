@@ -57,8 +57,16 @@
                 {{'region'|bs_form_dropdown(regArr, data.region)}}
             </p>
              <p>
-                Bio:
-                {{data.bio|bs_form_textarea()}}
+                <div class="js-control" data-progress-holder=".progress" data-results-holder=".results">
+                    <p>Logo</p>
+                    <p><button id="delLogo" onClick="javascript://;">Delete</button><input id="file-upload" type="file" name="files[]" single></input>                        
+                    </p>
+                    <div class="progress">
+                        <div class="progress-bar"></div>
+                    </div>
+                    <hr>
+                    <div class="results" id="logoImg"></div>            
+                </div>
             </p>        
         </div>
     </div>
@@ -85,5 +93,80 @@
 {% set arr = {'id': team.id} %}
 {{arr|form_hidden}}    
 
+{{data.logo|bs_form_input()}}
+
 {{form_close()}}
+
+<script src="{{'js/fileupload.js'|assets_url()}}"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+    {% set l = 'upload/upload_ajax/uploadimage/' ~ team.id %}
+    uploadURL = '{{l|site_url}}';
+    
+        logoVal = $("#logo").val();
+        if (logoVal != "")
+        {
+            $results = $("#logoImg");
+             $results.html([
+                            '<div class="text-center">',
+                                '<div class="media-body">',
+                                    '<img src="', logoVal , '"></img>',
+                                '</div>',
+                            '</div>'
+                ].join(''));            
+        }
+
+        $("#delLogo").click(function () {
+            $("#logo").val("");
+             $results = $("#logoImg");
+             $results.html("");    
+             return false;
+        });
+        
+        $('#file-upload').fileupload({
+            url: uploadURL,
+            dataType: 'json',
+            submit: function(e, data) {
+            },
+            progressall: function(e, data) {
+                var progress = parseInt(data.loaded / data.total * 100, 10),
+                    $control = $(this).closest('.js-control'),
+                    $progress = $control.find($control.data('progress-holder'));
+                $progress.find('.progress-bar').css({ width: progress + '%' });
+            },
+            done: function(e, data) {
+                var $control = $(this).closest('.js-control');
+                    $results = $control.find($control.data('results-holder'));
+                $.each(data.result.files, function (index, file) {
+                    if (file.url) {
+                        $("#logo").val(file.logoUrl);
+                        $results.html([
+                            '<div class="text-center">',
+                                '<div class="media-body">',
+                                    '<img src="', file.logoUrl , '"></img>',
+                                '</div>',
+                            '</div>'
+                        ].join(''));
+                    } else if (file.error) {
+                        $results.html([
+                            '<div class="alert alert-danger">',
+                                file.name, ': ', file.error,
+                            '</div>'
+                        ].join(''));
+                    }
+                });
+            },
+            fail: function(e, data) {
+                var $control = $(this).closest('.js-control');
+                    $results = $control.find($control.data('results-holder'));
+                $.each(data.files, function (index, file) {
+                    $results.html('<div class="alert alert-danger">File upload failed.</div>');
+                });
+            }
+        }).prop('disabled', !$.support.fileInput);
+
+});
+
+</script>
+
 {% endblock %}

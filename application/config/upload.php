@@ -10,22 +10,17 @@ $config['photo'] = array(
     'min_file_size' => 1,
 
     // Image resolution restrictions:
-    'max_width' => NULL,
-    'max_height' => NULL,
-    'min_width' => 1,
-    'min_height' => 1,
+    'max_width' => 800,
+    'max_height' => 800,
+    'min_width' => 50,
+    'min_height' => 50,
 
     'image_versions' => array(
-        '' => array(
-            'max_width' => 1920,
-            'max_height' => 1200,
-            'jpeg_quality' => 95
-        ),
-        'thumbnail' => array(
-            'crop' => TRUE,
-            'max_width' => 50,
-            'max_height' => 50
-        )
+        'logo' => array(
+            'max_width' => 210,
+            'max_height' => 210,
+            'png_quality' => 9
+        )   
     )
 );
 

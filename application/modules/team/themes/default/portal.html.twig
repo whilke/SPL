@@ -133,3 +133,32 @@
         <div style="font-size:10px;color:grey;" class="text-right">(*stats are delayed by one week)</div>
     </div>
 {% endblock %}
+
+{% block js %}
+<script src="{{'js/moment.min.js'|assets_url()}}"></script>
+<script type="text/javascript">
+    function getTimezone()
+    {
+        var now = new Date().toString();
+        var TZ = now.indexOf('(') > -1 ?
+        now.match(/\([^\)]+\)/)[0].match(/[A-Z]/g).join('') :
+        now.match(/[A-Z]{3,4}/)[0];
+        if (TZ == "GMT" && /(GMT\W*\d{4})/.test(now)) TZ = RegExp.$1;
+        return TZ;
+    }
+    
+    $( document ).ready(function() {
+        $("#matches").find("td:nth-child(2)").each(function () {
+            var $this = $(this);
+            $schDate = $this.html();
+            if ($schDate != 0)
+            {
+                var strDateTime = $schDate;
+                var myDate = moment(strDateTime);
+                $this.html( myDate.format("MM/DD/YYYY hh:mm A ") + getTimezone() );
+            }
+            
+        });
+    }); 
+</script>
+{% endblock %}

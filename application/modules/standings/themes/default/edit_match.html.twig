@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="row">
-<div class="col-lg-offset-3 col-lg-6">
+<div class="col-md-12">
 <h1>Match Results</h1>
 <br/>
 
@@ -13,11 +13,14 @@
     {% set arr = 'standings/edit_match/' ~ match.id ~ '/' ~ fromajax %}
 
 {{arr|form_open}}
-    <p>
-        Match ID
-        {{data.matchid|bs_form_input()}}
-    </p>
-    <p>
+    <div class="row">
+        <div class="col-md-4">
+            Match ID
+            {{data.matchid|bs_form_input()}}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-8">
         <div class="js-control" data-progress-holder=".progress" data-results-holder=".results">
             <p>Match Replay</p>
             <p><input id="file-upload" type="file" name="files[]" single></input></p>
@@ -27,16 +30,31 @@
             <hr>
             <div class="results"></div>            
         </div>
-    </p>
-    <p>
-        Team Glory
-        {{'gloryteam'|bs_form_dropdown(data.teams, data.gloryteam)}}
-    </p>
-    <p>
-        Team Valor
-        {{'valorteam'|bs_form_dropdown(data.teams, data.valorteam)}}
-    </p>
-    <p>
+        </div>
+    </div>
+    <div class="row">
+    <div class="col-md-6">        
+        <p>
+            Team Glory
+            {{'gloryteam'|bs_form_dropdown(data.teams, data.gloryteam)}}
+        </p>
+        <p>
+            Team Valor
+            {{'valorteam'|bs_form_dropdown(data.teams, data.valorteam)}}
+        </p>
+    </div>
+    <div class="col-md-6">        
+        <p>
+            Glory Hero Ban
+            {{'glory_ban'|bs_form_dropdown(data.heroList, data.glory_ban)}}
+        </p>
+        <p>
+            Valor Hero Ban
+            {{'valor_ban'|bs_form_dropdown(data.heroList, data.valor_ban)}}
+        </p>
+    </div>
+    </div>
+        <p>
         Override
         {{'override'|form_checkbox('1', FALSE, 'id="override"')}}
         <span style='font-size:11px;'>(use this to forfeit or if the match did not complete with replay)</span>

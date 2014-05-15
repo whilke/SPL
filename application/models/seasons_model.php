@@ -397,7 +397,7 @@ class Seasons_model extends CI_Model
         return $arr;
     }
     
-    function newMatch($seasonId, $weekid, $homeTeam, $awayTeam, $name)
+    function newMatch($seasonId, $weekid, $homeTeam, $awayTeam, $server, $name)
     {
         
         $week = $this->getWeek($weekid);
@@ -411,7 +411,8 @@ class Seasons_model extends CI_Model
             'home_team_id'=>$homeTeam,
             'away_team_id'=>$awayTeam,
             'gamedate' => date_format($date, "Y-m-d H:i:s"),
-            'active' => true
+            'active' => true,
+            'server_region' => $server
         );
         
         $this->db->insert('matches', $data);
@@ -523,7 +524,7 @@ class Seasons_model extends CI_Model
         foreach($query->result() as $row)
         {
             $oDate = new DateTime($row->gamedate);
-            $row->gamedate = $oDate->format('m/d/Y H:m:s');
+            $row->gamedate = $oDate->format('m/d/Y H:m:s'). " GMT";
 
             $weekDate = new DateTimE($row->endweek);
             $weekDate->add(new DateInterval('P8D'));
@@ -581,7 +582,7 @@ class Seasons_model extends CI_Model
         foreach($query->result() as $row)
         {
             $oDate = new DateTime($row->gamedate);
-            $row->gamedate = $oDate->format('m/d/Y H:m:s');
+            $row->gamedate = $oDate->format('m/d/Y H:m:s') . " GMT";
 
             $weekDate = new DateTimE($row->endweek);
             $weekDate->add($intervalDate);
@@ -641,11 +642,11 @@ class Seasons_model extends CI_Model
                 $match = $query->row();
 
                 $oDate = new DateTime($match->gamedate);
-                $match->gamedate = $oDate->format('m/d/Y');
+                $match->gamedate = $oDate->format('m/d/Y h:m:s'). " GMT";
                 if ($match->proposeddate != null)
                 {
                     $oDate = new DateTime($match->proposeddate);
-                    $match->proposeddate = $oDate->format('m/d/Y');                                
+                    $match->proposeddate = $oDate->format('m/d/Y h:m:s'). " GMT";                                
                 }
                 return $match;
             }        
@@ -662,6 +663,8 @@ class Seasons_model extends CI_Model
         $data->home_team_points = $match->home_team_points;
         $data->away_team_points = $match->away_team_points;
         $data->strife_match_id = $match->strife_match_id;
+        $data->home_team_ban_hero_id = $match->home_team_ban_hero_id;
+        $data->away_team_ban_hero_id = $match->away_team_ban_hero_id;
         $data->active = $match->active;
          
         $this->db->update('matches', $data, array('id' => $match->id));

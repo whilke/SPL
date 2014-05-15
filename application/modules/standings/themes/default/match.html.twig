@@ -56,22 +56,46 @@
     </div>       
     </div>
     {% else %}
-        <div class="col-md-5 col-md-offset-0" style="text-align: center;">  
+        <div class="col-md-3 col-md-offset-0" style="text-align: center;">  
             <p class="text-center"><h3>{{home_team.name}}</h3></p>
         </div>
-        <div  class="col-md-2" style="margin-top: 20px;">
+        <div  class="col-md-6" style="margin-top: 20px;">
             <div class="text-center">
                 <h2>VS</h2>
-                Scheduled: {{match.gamedate}}
+                <table class="table table-condensed text-left">
+                    <thead >
+                        <tr>
+                            <td style="width:70px;"></td>
+                            <td style="width:150px;"></td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td >Scheduled:</td>
+                        <td id="mscheduleDate" >{{match.gamedate}}</td>
+                    </tr>
                 {% if match.proposeddate != "" %}
-                Proposed: {{match.proposeddate}}
+                    <tr>
+                        <td >Proposed:</td>
+                        <td name="mPropDate">{{match.proposeddate}}</td>
+                    </tr>
                 {% endif %}
+                    <tr>
+                        <td >Server:</td>
+                        <td >{{match.server_region}}</td>
+                    </tr>
+                    <tr>
+                        <td >Home:</td>
+                        <td >{{match.homeTeam}}</td>
+                    </tr>
+
+                    </tbody>                    
+                </table>
             </div>
         </div>
-        <div class="col-md-5 col-md-offset-0" style="text-align: center;">  
+        <div class="col-md-3 col-md-offset-0" style="text-align: center;">  
             <p class="text-center"><h3>{{away_team.name}}</h3></p>
         </div>
-        
     {% endif %}
     {% if match.active == TRUE %}
     <div class="col-md-12 text-center">
@@ -98,4 +122,38 @@
     </div>
     {% endif %}   
 </div>
+        
+{% endblock %}
+   
+{% block js %}
+<script src="{{'js/moment.min.js'|assets_url()}}"></script>
+<script type="text/javascript">
+    function getTimezone()
+    {
+        var now = new Date().toString();
+        var TZ = now.indexOf('(') > -1 ?
+        now.match(/\([^\)]+\)/)[0].match(/[A-Z]/g).join('') :
+        now.match(/[A-Z]{3,4}/)[0];
+        if (TZ == "GMT" && /(GMT\W*\d{4})/.test(now)) TZ = RegExp.$1;
+        return TZ;
+    }
+    
+    $( document ).ready(function() {
+        $schDate = $("#mscheduleDate").html();
+        if ($schDate != 0)
+        {
+            var strDateTime = $schDate;
+            var myDate = moment(strDateTime);
+            $("#mscheduleDate").html( myDate.format("MM/DD/YYYY hh:mm a ") + getTimezone() );
+        }
+        
+        $propDate = $("#mPropDate").html();
+        if ($propDate != 0)
+        {
+            var strDateTime = $propDate;
+            var myDate = moment(strDateTime);
+            $("#mPropDate").html( myDate.format("MM/DD/YYYY hh:mm a ") + getTimezone() );
+        }
+    }); 
+</script>
 {% endblock %}

@@ -114,6 +114,8 @@ class Standings extends MY_Controller
             $id = $id['id'];
         }
         
+        $flashMsg =  "";
+        
         //validate form input
         $this->form_validation->set_rules('matchid', 'Match ID', 'xss_clean');
         $this->form_validation->set_rules('replayfile', 'Replay File', 'xss_clean');
@@ -122,6 +124,8 @@ class Standings extends MY_Controller
         $this->form_validation->set_rules('matchjson', 'Match Json', '');
         $this->form_validation->set_rules('glory_state', 'Glory Outcome', 'xss_clean');
         $this->form_validation->set_rules('valor_state', 'Valor Outcome', 'xss_clean');
+        $this->form_validation->set_rules('glory_ban', 'Glory Ban', 'xss_clean');
+        $this->form_validation->set_rules('valor_ban', 'Valor Ban', 'xss_clean');
 
         $this->load->model('Teams_model');
         $this->load->model('Seasons_model');          
@@ -134,50 +138,93 @@ class Standings extends MY_Controller
         $matchjson =  $this->input->post('matchjson');
         $glory_state = $this->input->post('glory_state');
         $valor_state = $this->input->post('valor_state');
+        $glory_ban = $this->input->post('glory_ban');
+        $valor_ban = $this->input->post('valor_ban');
         $override = $this->input->post('override');
         
         if ($this->form_validation->run() == true)
         {
+            $showDialog = false;
+            if ($override == false && ($glory_ban <= 0 || $valor_ban <= 0))
+            {
+                $flashMsg = "Bans must be selected";
+                $showDialog = true;
+            }
             
-            if (true)
+            if ($override == true && (
+                    $glory_state > 0 && $glory_state < 3 ||
+                    $valor_state > 0 && $valor_state < 3
+                    )
+                )
+            {
+                if ($glory_ban <= 0  || $valor_ban <= 0 )
+                {
+                    $flashMsg = "Bans must be selected";
+                    $showDialog = true;
+                }
+            }
+            
+            if (!$showDialog)
             {
                 $matchObj = json_decode($matchjson);
-                if ($matchObj)
-                {
-                    $realMatchId = $matchObj->matchid;
-                    $winner = $matchObj->winner;
-
-                    $match->strife_match_id = $realMatchId;
-                    
-                    if ($winner == "Glory")
+                if ($matchObj || $override == true)
+                {                    
+                    if ($matchObj)
                     {
-                        $glory_state = "1";
-                        $valor_state = "2";
+                        $realMatchId = $matchObj->matchid;
+                        $winner = $matchObj->winner;
+
+                        $match->strife_match_id = $realMatchId;
+
+                        if ($winner == "Glory")
+                        {
+                            $glory_state = "1";
+                            $valor_state = "2";
+                        }
+                        else
+                        {
+                            $glory_state = "2";
+                            $valor_state = "1";     
+                        }
+
+                        $this->updatePoints($match, $gloryteam, $glory_state, $valor_state);   
+
+                        $players = $matchObj->players;
+                        
+                    }
+                    else if ($override == true)
+                    {
+                        $this->updatePoints($match, $gloryteam, $glory_state, $valor_state);
+                        $players = null;
+                    }
+                    
+                    if ($gloryteam == $match->homeTeam)
+                    {
+                        $match->home_team_ban_hero_id = $glory_ban;
+                        $match->away_team_ban_hero_id = $valor_ban;
                     }
                     else
                     {
-                        $glory_state = "2";
-                        $valor_state = "1";     
+                        $match->away_team_ban_hero_id = $glory_ban;
+                        $match->home_team_ban_hero_id = $valor_ban;
+                        
                     }
-
-                    $this->updatePoints($match, $gloryteam, $glory_state, $valor_state);   
-                    
-                    $players = $matchObj->players;
-                }
-                else if ($override == true)
-                {
-                    $this->updatePoints($match, $gloryteam, $glory_state, $valor_state);
-                    $players = null;
-                }
+                                        
                                 
-                $match->active=false;
-                
-                $this->Seasons_model->editMatch($match);
-                $this->Stats_model->updateMatchStats($id, $gloryteam == $match->homeTeam, 
-                        $match->home_team_id, $match->away_team_id, $players );
-                
-                redirect('standings/match/'.$id, 'refresh'); //use redirects instead of loading views for compatibility with MY_Controller libraries
-                
+                    $match->active=false;
+
+                    $this->Seasons_model->editMatch($match);
+                    $this->Stats_model->updateMatchStats($id, $gloryteam == $match->homeTeam, 
+                            $match->home_team_id, $match->away_team_id, $players );
+
+                    redirect('standings/match/'.$id, 'refresh'); //use redirects instead of loading views for compatibility with MY_Controller libraries
+                    
+                }    
+                else
+                {
+                   $flashMsg = "Replay file must be uploaded";
+                    
+                }
             }
         }
         
@@ -202,10 +249,11 @@ class Standings extends MY_Controller
         
         $this->data['glory_state'] = $this->form_validation->set_value('glory_state');
         $this->data['valor_state'] = $this->form_validation->set_value('glory_state');
-        
+        $this->data['glory_ban'] = $this->form_validation->set_value('glory_ban');
+        $this->data['valor_ban'] = $this->form_validation->set_value('valor_ban');
                      
         
-        $this->data['message'] = (validation_errors() ? validation_errors() : $this->session->flashdata('message'));
+        $this->data['message'] = (validation_errors() ? validation_errors() : $flashMsg);
 
         $this->twiggy->set('match', $match);
         $this->twiggy->set('fromajax', $fromajax);
@@ -213,6 +261,12 @@ class Standings extends MY_Controller
         $states = $this->Seasons_model->getStates();
         $this->data['states'] = $states;
 
+        $heroList = $this->Stats_model->getHeroList();
+        $selectHero = 'Select a hero';
+        array_unshift($heroList,$selectHero);
+        $this->data['heroList'] = $heroList;
+        
+        
         
         $this->twiggy->set('data', $this->data);
         $view = 'edit_match';

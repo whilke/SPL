@@ -155,7 +155,65 @@ class Stats_model extends CI_Model
             $row->hero = strtolower(str_replace("Hero_","", $row->hero));
             $arr[] = $row;
         }
-        return $arr;
+        return $arr;        
+    }
+    
+    function getStatsToParse()
+    {
+        $query = $this->db->
+               select('m.strife_match_id, m.id')->
+               from('matches m')->
+               where('m.replay_processed', 'false')-> 
+               where('m.strife_match_id !=', '')->
+               get();
+        
+        $arr = Array();
+        foreach($query->result() as $row)
+        {
+            $arr[] = $row;
+        }
+        return $arr;        
+        
+    }
+    
+    function update_match_set_adv_stats($matchId, $matchLength)
+    {
+        $data = array();
+        $data['length'] = $matchLength;
+        $data['replay_processed'] = true;
+        
+        $this->db->trans_begin();
+        $this->db->update('matches', $data, array('id' => $matchId));
+        if ($this->db->trans_status() === FALSE)
+        {
+            $this->db->trans_rollback();
+            return FALSE;
+        }
+        $this->db->trans_commit();                    
+
+    }
+    
+    function update_player_match_stats($matchId, $accountId, $player_data)
+    {
+        $data = array();
+        $data['advanced'] = true;
+        $data['total_gold'] = $player_data['gold'];
+        $data['total_creep'] = $player_data['creeps'];
+        $data['total_neut'] = $player_data['neutrals'];
+        $data['kills'] = $player_data['kills'];
+        $data['assists'] = $player_data['assists'];
+        $data['deaths'] = $player_data['deaths'];
+        
+
+        $this->db->trans_begin();
+        $this->db->update('stats', $data, array('player_id' => $accountId, 
+                                           'match_id'=> $matchId));
+        if ($this->db->trans_status() === FALSE)
+        {
+            $this->db->trans_rollback();
+            return FALSE;
+        }
+        $this->db->trans_commit();                    
         
         
     }

@@ -19,12 +19,17 @@ class Main extends MY_Controller
         $this->twiggy->template('rules')->display();
     }
     
+    function prizepool()
+    {
+        $this->twiggy->template('prizepool')->display();        
+    }
+    
     function bfbtournament()
     {
         $this->twiggy->template('bfbtournament')->display();
     }
     
-        function bfbheropool()
+    function bfbheropool()
     {
         $this->twiggy->template('bfbheropool')->display();
     }

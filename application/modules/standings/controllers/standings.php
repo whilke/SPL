@@ -281,4 +281,83 @@ class Standings extends MY_Controller
         
     }
     
+    function propose_time($id, $fromajax=false)
+    {
+        
+        if (!$this->ion_auth->logged_in())
+        {
+            redirect('auth/login', 'refresh');
+        }
+
+        $user = $this->ion_auth->user()->row();
+         
+        if (is_array($id))
+        {
+            $fromajax = $id['fromajax'];
+            $id = $id['id'];
+        }
+        $flashMsg =  "";
+        $this->twiggy->set('fromajax', $fromajax);
+        
+        $this->form_validation->set_rules('check', 'Invalid Data', 'required|xss_clean');
+
+        
+        $this->load->model('Teams_model');
+        $this->load->model('Seasons_model');          
+        $match = $this->Seasons_model->getMatch($id);
+        $this->twiggy->set('match', $match);
+
+        if ($user->teamname != $match->homeTeam || $user->teamname != $match->awayTeam)
+        {
+            redirect('auth/login', 'refresh');            
+        }
+
+
+        $check = $this->input->post('check');
+        $prop_date = $this->input->post('prop_date');
+        $prop_time = $this->input->post('prop_time');
+        
+        if ($this->form_validation->run() == true)
+        {        
+            if ($check == 1)
+            {
+                //this is a new challenge request.                
+                              
+            }
+        }
+        $this->data = array();
+        
+        $this->data['message'] = (validation_errors() ? validation_errors() : $flashMsg);
+
+        
+        
+        $this->data['prop_date'] = array(
+                'name'  => 'prop_date',
+                'id'    => 'prop_date',
+                'type'  => 'text',
+                'value' => $this->form_validation->set_value('prop_date'),
+            );        
+        
+        $this->data['prop_time'] = array(
+                'name'  => 'prop_time',
+                'id'    => 'prop_time',
+                'type'  => 'text',
+                'value' => $this->form_validation->set_value('prop_time'),
+            ); 
+        
+        
+        $this->twiggy->set('data', $this->data);
+        
+        $view = 'propose_time';
+        if ( ! $fromajax)
+        {
+            $x = $this->twiggy->template($view)->display();
+        }
+        else
+        {
+            $this->twiggy->layout('dialog')->template($view)->display();
+        }        
+        
+    }
+    
 }

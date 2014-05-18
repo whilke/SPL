@@ -14,6 +14,7 @@ class Standings_ajax extends Ajax_Controller {
     {
         if (in_array($page, array(
             'edit_match',
+            'propose_time',
         )))
         {
             $this->response->dialog(array(

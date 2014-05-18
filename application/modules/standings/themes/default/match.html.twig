@@ -75,9 +75,36 @@
                         <td id="mscheduleDate" >{{match.gamedate}}</td>
                     </tr>
                 {% if match.proposeddate != "" %}
+                    {% if match.who_proposed_team == user.uname %}
+                    <tr>
+                        <td >Proposed:</td>
+                        <td name="mPropDate">{{match.proposeddate}}
+                            <a href="">Cancel</a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td >Proposed:</td>
+                        <td name="mPropDate">{{match.proposeddate}}
+                        <a href="">Approve</a>
+                        <a href="">Decline</a>
+                        </td>
+                    </tr>
+                    {% endif %}
                     <tr>
                         <td >Proposed:</td>
                         <td name="mPropDate">{{match.proposeddate}}</td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td style="vertical-align: middle !important;" >Proposed:</td>
+                        <td>
+                            {% set l = 'standings/propose_time/' ~ match.id %}                        
+                            {% set l2 = 'standings/standings_ajax/ion_standings_dialog/propose_time/' ~ match.id %}
+                            <a class="btn btn-warning" 
+                               href="{{l|site_url}}" rel="async" 
+                               ajaxify="{{l2|site_url}}">New Time</a>                            
+                        </td>
                     </tr>
                 {% endif %}
                     <tr>

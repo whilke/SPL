@@ -1,0 +1,105 @@
+{% extends _layout %}
+
+{% block content %}
+<div class="row">
+<div class="col-md-12">
+<h1>Match Time System</h1>
+<br/>
+
+{% if data.message != "" %}
+<div class="alert alert-info" id="infoMessage">{{data.message}}</div>
+{% endif %}
+
+{% set arr = 'standings/propose_time/' ~ match.id ~ '/' ~ fromajax %}
+
+{{arr|form_open}}
+    {% if match.proposeddate == ''%}
+        <div class="row">
+            <div class="col-md-8">
+                <strong>Match Proposal <span style="font-size:10px;">(times are local to you)</span></strong>          
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                {{data.prop_date|bs_form_input()}}                   
+            </div>
+            <div class="col-md-4">
+                {{data.prop_time|bs_form_input()}}                   
+            </div>
+        </div>
+        <input type="hidden" name="check" id="check" value="1"/>
+        <br/>
+    {% endif %}
+    {{'submit'|bs_form_submit('Submit')}}
+{{form_close()}}
+
+</div>
+</div>       
+
+<link rel="stylesheet" href="{{'css/jquery.timepicker.css'|assets_url()}}">
+<script src="{{'js/jquery.timepicker.min.js'|assets_url()}}"></script>
+<script src="{{'js/moment.min.js'|assets_url()}}"></script>
+<script type='text/javascript'>
+Date.prototype.addHours= function(h){
+    this.setHours(this.getHours()+h);
+    return this;
+}    
+Date.prototype.subHours= function(h){
+    this.setHours(this.getHours()-h);
+    return this;
+}  
+Date.prototype.getWeek = function(start)
+{
+        //Calcing the starting point
+    start = start || 0;
+    var curr = new Date().subHours( new Date().getTimezoneOffset() / 60  + 24   ); // get current date
+    var first = curr.getDate() - curr.getDay(); // First day is the day of the month - the day of the week
+    var last = first + 7; // last day is the first day + 6
+
+        // Grabbing Start/End Dates
+    var StartDate = new Date(curr.setDate(first));
+    var EndDate = new Date(curr.setDate(last));
+    return [StartDate, EndDate];
+}
+ 
+    var now = new Date();
+    var dates = now.getWeek();
+    var endOfWeek = dates[1];
+    if (now < dates[0])
+        now = dates[0];
+        
+    $(document).ready(function(){
+        $( "#prop_date" ).datepicker
+        ({
+            
+            minDate: now,
+            maxDate: dates[1], 
+            onSelect: function()
+              {
+                  var today = new Date();
+                  var today = moment(today);
+                  if($("#prop_date").val()==today.format("MM/DD/YYYY"))
+                  {
+                      var today = new Date().addHours(2);
+                      var today = moment(today);
+                      
+                    $('#prop_time').timepicker('option', {
+                        'disableTimeRanges': [
+                            ['12am', today.format("h a")]
+                        ]
+                    });     
+                    
+                    $('#prop_time').val("");
+                  }
+                  else
+                  {
+                    $('#prop_time').timepicker('option', {
+                        'disableTimeRanges': []
+                    });                      
+                  }
+              }        
+          });
+        $('#prop_time').timepicker();
+    });
+</script>    
+{% endblock %}

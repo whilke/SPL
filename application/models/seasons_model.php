@@ -322,17 +322,18 @@ class Seasons_model extends CI_Model
     
     function updateTeamInSeasons($teamId, $seasonIds)
     {
-        //first remove this team from all seasons, so it can be re-added.
-        $data = array(
-            'team_id'=>$teamId,
-        );
-         $this->db->delete('seasons_teams', $data);
-         
         if (isset($seasonIds) && !empty($seasonIds)) {
-            //now add them all back.
-           foreach ($seasonIds as $seasonId) {
-               $this->RegisterTeamToSeason($teamId, $seasonId);
-           }            
+            
+            //first remove this team from all seasons, so it can be re-added.
+            $data = array(
+                'team_id'=>$teamId,
+            );
+            $this->db->delete('seasons_teams', $data);
+         
+                //now add them all back.
+               foreach ($seasonIds as $seasonId) {
+                   $this->RegisterTeamToSeason($teamId, $seasonId);
+               }            
         }                  
     }
     

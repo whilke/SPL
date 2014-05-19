@@ -265,11 +265,14 @@ class Seasons_model extends CI_Model
     function GetTeamsInSeason($seasonId)
     {
         $query = $this->db->
-               select('teams.*')->
+               select('teams.*, sg.name as group_name')->
                from('seasons_teams')->
                join('teams', 'teams.id = seasons_teams.team_id')->
                join('users', 'users.id = teams.userid')->
+               join('season_group_teams sgt', 'sgt.team_id = teams.id', 'left outer')->
+               join('season_group sg', 'sg.id = sgt.season_group_id', 'left outer')->
                where('seasons_teams.season_id', $seasonId)->
+               where('sg.season_id', $seasonId)->
                where('users.active', true)->
                get();
         
@@ -398,20 +401,15 @@ class Seasons_model extends CI_Model
         return $arr;
     }
     
-    function newMatch($seasonId, $weekid, $homeTeam, $awayTeam, $server, $name)
+    function newMatch($seasonId, $weekid, $homeTeam, $awayTeam, $server, $date, $name)
     {
-        
-        $week = $this->getWeek($weekid);
-        $date = new DateTime($week->end);
-        $date->sub(new DateInterval('P2D'));
-                
         $data = array(
             'name'=>$name,
             'season_id'=>$seasonId,
             'week_id'=> $weekid,
             'home_team_id'=>$homeTeam,
             'away_team_id'=>$awayTeam,
-            'gamedate' => date_format($date, "Y-m-d H:i:s"),
+            'gamedate' => $date,
             'active' => true,
             'server_region' => $server
         );
@@ -562,7 +560,7 @@ class Seasons_model extends CI_Model
         
         $query = $this->db->
           select('ht.name as homeTeam, at.name as awayTeam, w.tag as weektag, s.tag as seasontag, '
-                  . 'matches.*, w.end as endweek, hs.code as hscode, '
+                  . 'matches.*, w.end as endweek, hs.code as hscode, sg.name as group_name, '
                   . 'hs.desc as hsdesc, aw.code as awcode, aw.desc as awdesc')->
           from('matches')->
           join('states hs', 'hs.id = matches.home_team_state_id', 'left outer')->
@@ -571,8 +569,12 @@ class Seasons_model extends CI_Model
           join('seasons s', 's.id = matches.season_id', 'left outer')->
           join('teams ht', 'ht.id = matches.home_team_id', 'left outer')->
           join('teams at', 'at.id = matches.away_team_id', 'left outer')->
+          join('season_group_teams sgt', 'sgt.team_id = matches.home_team_id', 'left outer')->
+          join('season_group sg', 'sg.id = sgt.season_group_id', 'left outer')->
           where('matches.season_id', $seasonId)->
+          where('sg.season_id', $seasonId)->
           where('matches.gamedate <=', date_format($date, "Y-m-d H:i:s"))->
+          order_by('sg.id')->
           order_by('gamedate')->
           get();
 
@@ -615,6 +617,7 @@ class Seasons_model extends CI_Model
             $stat = $this->getSeasonStats($team->id,$seasonId, $hideStats);
             $stat->teamName = $team->name;
             $stat->teamId = $team->id;
+            $stat->group_name = $team->group_name;
             $stats[] = $stat;
         }
         
@@ -798,10 +801,60 @@ class Seasons_model extends CI_Model
         }
         return $arr;
     }
+    
+    function getGroupsForSeason($seasonId)
+    {
+        $query = $this->db->
+               select('*')->
+               from('season_group sg')->
+               where('sg.season_id', $seasonId)->
+               get();        
+
+        $arr = Array();
+        foreach($query->result() as $row)
+        {
+            $arr[] = $row;
+        }
+        return $arr;        
+    }
+    
+    function getTeamsInGroup($groupId)
+    {
+        $query = $this->db->
+               select('teams.*, sg.name as group_name')->
+               from('seasons_teams')->
+               join('teams', 'teams.id = seasons_teams.team_id')->
+               join('users', 'users.id = teams.userid')->
+               join('season_group_teams sgt', 'sgt.team_id = teams.id', 'left outer')->
+               join('season_group sg', 'sg.id = sgt.season_group_id', 'left outer')->
+               where('sg.id', $groupId)->
+               where('users.active', true)->
+               get();
+
+        $arr = Array();
+        foreach($query->result() as $row)
+        {
+            $arr[] = $row;
+        }
+        return $arr;                
+    }
 }
 
 function teamPointSort($a, $b)
 {
-    if ($a->points == $b->points) return 0;
-    return ($a->points < $b->points) ? 1 : -1;
+    if ($a->group_name == $b->group_name)
+    {
+        if ($a->points == $b->points)
+        {
+            return ($a->teamName < $b->teamName) ? -1: 1;        
+        }
+        return ($a->points < $b->points) ? 1 : -1;        
+    }
+    else
+    {
+        return ($a->group_name < $b->group_name) ? -1: 1;
+    }
+        
+     
+    
 }

@@ -8,8 +8,9 @@
         <table id="matches" class="table table-bordered table-hover" style="border: 0px;">
             <thead>
                 <tr>
+                    <th class="text-center"  style='width:100px'>Group</th>
                     <th class="text-center" style='width:800px;'>( Home vs Away )</th>
-                    <th class="text-center"  style='width:300px'>Date</th>
+                    <th class="text-center"  style='width:350px'>Date</th>
                     <th class="text-center"  style='width:100px'>Result</th>
                     <th class="text-center"  style='width:100px'>Points</th>
                     <th class="text-center"  style='width:200px'>Match ID</th>
@@ -18,6 +19,7 @@
             <tbody>
                 {% for match in matches %}
                     <tr>
+                        <td>{{match.group_name}}</td>
                     {% set s = 'team/portal/' ~ match.home_team_id    %}
                     {% set s2 = 'team/portal/' ~ match.away_team_id    %}
                         
@@ -59,7 +61,7 @@
     }
     
     $( document ).ready(function() {
-        $("#matches").find("td:nth-child(2)").each(function () {
+        $("#matches").find("td:nth-child(3)").each(function () {
             var $this = $(this);
             $schDate = $this.html();
             if ($schDate != 0)

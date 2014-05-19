@@ -753,92 +753,165 @@ class Auth extends MY_Controller {
 
         $season = $this->Seasons_model->get($seasonId);
         $weeks = $this->Seasons_model->getWeeksForSeason($seasonId);
-        $registeredTeams = $this->Seasons_model->GetTeamsInSeason($seasonId);
         
-        $schedule = $this->scheduler($registeredTeams);
-        
-        foreach($schedule AS $round => $games )
+        $dWeeks = Array();
+        foreach($weeks AS $week)
         {
-            $localWeek = $weeks[$round];
-            foreach($games AS $play)
-            {            
-                $team1 = $play["Home"];
-                $team2 = $play["Away"];
-                
-                if ($team1 == 'bye' || $team2 == 'bye') continue;
-                
-                //figure out the correct server based on team choices.
-                $server1 = "ERR";
-                $server2 = "ERR";
-                
-                if (($team1->region == "USE" || $team1->region =="USW") &&
-                    ($team2->region == "USE" || $team2->region =="USW"))
-                {
-                    //US vs US
-                    $server1 = "USE";
-                    $server2 = "USW";
-                }
-                else if ($team1->region == "USE" && $team2->region == "EU")
-                {
-                    //USE vs EU
-                    $server1 = "USE";
-                    $server2 = "EU";                    
-                }
-                else if ($team1->region == "EU" && $team2->region == "USE")
-                {
-                    //EU vs USE
-                    $server1 = "EU";
-                    $server2 = "USE";                    
-                }
-                else if ($team1->region == "SEA" && $team2->region == "SEA")
-                {
-                    //SEA vs SEA
-                    $server1 = "SEA";
-                    $server2 = "SEA";                    
-                }                
-                else if ( ($team1->region == "SEA" && $team2->region == "EU") ||
-                        ($team1->region == "EU" && $team2->region == "SEA") )
-                {
-                    //EU vs SEA
-                    $server1 = "CIS";
-                    $server2 = "CIS";                    
-                }
-                else if ( ($team1->region == "USW" && $team2->region == "EU") ||
-                        ($team1->region == "EU" && $team2->region == "USW") )
-                {
-                    //EU vs USW
-                    $server1 = "USE";
-                    $server2 = "USE";                    
-                }
-                else if ( ($team1->region == "USW" && $team2->region == "EU") ||
-                        ($team1->region == "EU" && $team2->region == "USW") )
-                {
-                    //EU vs USW
-                    $server1 = "USE";
-                    $server2 = "USE";                    
-                }
-                else if ( ($team1->region == "USE" || $team1->region == "USW") &&
-                        $team2->region == "SEA")
-                {
-                    //SEA vs US
-                    $server1 = "USW";
-                    $server2 = "USW";                                        
-                }
-                else if ( ($team2->region == "USE" || $team2->region == "USW") &&
-                        $team1->region == "SEA")
-                {
-                    //SEA vs US
-                    $server1 = "USW";
-                    $server2 = "USW";                                        
-                }
-                                
-                
-                $this->Seasons_model->newMatch($seasonId, $localWeek['id'], $team1->id, $team2->id, $server1, 'G1');
-                $this->Seasons_model->newMatch($seasonId, $localWeek['id'], $team2->id, $team1->id, $server2, 'G2');                
-            }
-        }
+            $dWeeks[] = $week;
+            $dWeeks[] = $week;
+        }        
+        $weeks = $dWeeks;
         
-        redirect('auth/season_edit/'.$seasonId,'refresh');
+        $gameId = 1;
+        //run throgh each group of the season and seed just that.
+        $groups = $this->Seasons_model->getGroupsForSeason($seasonId);
+        foreach($groups AS $group)
+        {
+            $registeredTeams = $this->Seasons_model->getTeamsInGroup($group->id);
+        
+            $schedule = $this->scheduler($registeredTeams);
+
+            foreach($schedule AS $round => $games )
+            {
+                $localWeek = $weeks[$round];
+
+                $date = new DateTime($localWeek['end']);
+                $date->sub(new DateInterval('P2D'));
+                
+                $date_day = $date->format('Y-m-d');
+                $match_day1 = $date_day;
+                $match_day2 = $date_day;
+
+                
+                foreach($games AS $play)
+                {            
+                    $team1 = $play["Home"];
+                    $team2 = $play["Away"];
+
+                    if ($team1 == 'bye' || $team2 == 'bye') continue;
+
+                    //figure out the correct server based on team choices.
+                    $server1 = "ERR";
+                    $server2 = "ERR";
+
+                    if ($team1->region == "EU" && $team2->region == "EU")
+                    {
+                        $server1 = "EU";
+                        $server2 = "EU";
+                        
+                        $match_day1 .= ' 14:00:00';
+                        $match_day2 .= ' 16:00:00';
+                    }
+                    else if (($team1->region == "USE" || $team1->region =="USW") &&
+                        ($team2->region == "USE" || $team2->region =="USW"))
+                    {
+                        //US vs US
+                        $server1 = "USE";
+                        $server2 = "USW";
+                        
+                        $match_day1 .= ' 19:00:00';
+                        $match_day1 .= ' 21:00:00';
+                        
+                    }
+                    else if ($team1->region == "USE" && $team2->region == "EU")
+                    {
+                        //USE vs EU
+                        $server1 = "USE";
+                        $server2 = "EU";    
+
+                        $match_day1 .= ' 16:00:00';
+                        $match_day2 .= ' 18:00:00';
+                        
+                    }
+                    else if ($team1->region == "EU" && $team2->region == "USE")
+                    {
+                        //EU vs USE
+                        $server1 = "EU";
+                        $server2 = "USE";                    
+                        
+                        $match_day1 .= ' 16:00:00';
+                        $match_day2 .= ' 18:00:00';
+                        
+                    }
+                    else if ($team1->region == "SEA" && $team2->region == "SEA")
+                    {
+                        //SEA vs SEA
+                        $server1 = "SEA";
+                        $server2 = "SEA";  
+                        
+                        $match_day1 .= ' 05:00:00';
+                        $match_day2 .= ' 07:00:00';
+                        
+                    }                
+                    else if ( ($team1->region == "SEA" && $team2->region == "EU") ||
+                            ($team1->region == "EU" && $team2->region == "SEA") )
+                    {
+                        //EU vs SEA
+                        $server1 = "CIS";
+                        $server2 = "CIS";   
+                        
+                        $match_day1 .= ' 13:00:00';
+                        $match_day2 .= ' 15:00:00';
+                        
+                    }
+                    else if ( ($team1->region == "USW" && $team2->region == "EU") ||
+                            ($team1->region == "EU" && $team2->region == "USW") )
+                    {
+                        //EU vs USW
+                        $server1 = "USE";
+                        $server2 = "USE";       
+                        
+                        $match_day1 .= ' 19:00:00';
+                        $match_day2 .= ' 21:00:00';
+                        
+                    }
+                    else if ( ($team1->region == "USW" && $team2->region == "EU") ||
+                            ($team1->region == "EU" && $team2->region == "USW") )
+                    {
+                        //EU vs USW
+                        $server1 = "USE";
+                        $server2 = "USE"; 
+                        
+                        $match_day1 .= ' 19:00:00';
+                        $match_day2 .= ' 21:00:00';
+                        
+                    }
+                    else if ( ($team1->region == "USE" || $team1->region == "USW") &&
+                            $team2->region == "SEA")
+                    {
+                        //SEA vs US
+                        $server1 = "USW";
+                        $server2 = "USW";    
+                        
+                        $match_day1 .= ' 21:00:00';
+                        $match_day2 .= ' 23:00:00';
+                        
+                    }
+                    else if ( ($team2->region == "USE" || $team2->region == "USW") &&
+                            $team1->region == "SEA")
+                    {
+                        //SEA vs US
+                        $server1 = "USW";
+                        $server2 = "USW";                                        
+
+                        $match_day1 .= ' 21:00:00';
+                        $match_day2 .= ' 23:00:00';
+                        
+                    }
+                    
+                    $G1 = 'G'. $gameId++;
+                    $G2 = 'G'. $gameId++;
+                    
+                    //echo($group->name . ' ' . $localWeek['id'] .' ' . $team1->name . ' vs ' . $team2->name . ' ' . $match_day1 . ' ' . $match_day2 . '<br/>');
+                    
+                    $this->Seasons_model->newMatch($seasonId, $localWeek['id'], $team1->id, $team2->id, $server1, $match_day1, $G1);
+                    $this->Seasons_model->newMatch($seasonId, $localWeek['id'], $team2->id, $team1->id, $server2, $match_day2, $G2);                
+                }
+            }           
+        }
+
+        exit();
+        //redirect('auth/season_edit/'.$seasonId,'refresh');
               
     }
 

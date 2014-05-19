@@ -1,0 +1,8 @@
+{% extends _layout %}
+
+{% block content %}
+    <p>A new time change request has been created. You have 24 hours to respond to this request, or it will be auto-accepted.</p>
+        
+    {% set l = 'standings/match/' ~ match.id %}                        
+    <p>You should review the updated match via the following link: <a href="{{l|site_url}}">{{l|site_url}}</a></p>
+{% endblock %}

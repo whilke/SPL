@@ -28,7 +28,33 @@
             </div>
         </div>
         <input type="hidden" name="check" id="check" value="1"/>
+        {{data.gmt_prop_date|bs_form_input()}}                   
+        {{data.gmt_prop_time|bs_form_input()}}                   
         <br/>
+    {% else %}
+        {% if match.who_proposed_team == user.uname %}
+            <div class="row">
+                Cancel your pending match time proposal?
+                <p>
+                    Yes
+                    <input type="radio" name="confirm" value="yes" checked="checked" />    
+                    No
+                    <input type="radio" name="confirm" value="no" />
+                </p>                
+            </div>
+            <input type="hidden" name="check" id="check" value="2"/>
+        {% else %}
+            <div class="row">
+                Accept the pending match time proposal?
+                <p>
+                    Yes
+                    <input type="radio" name="confirm" value="yes" checked="checked" />    
+                    No
+                    <input type="radio" name="confirm" value="no" />
+                </p>                
+            </div>
+            <input type="hidden" name="check" id="check" value="3"/>
+        {% endif %}
     {% endif %}
     {{'submit'|bs_form_submit('Submit')}}
 {{form_close()}}
@@ -40,6 +66,18 @@
 <script src="{{'js/jquery.timepicker.min.js'|assets_url()}}"></script>
 <script src="{{'js/moment.min.js'|assets_url()}}"></script>
 <script type='text/javascript'>
+    
+function toUTC(/*Date*/date) {
+    return Date.UTC(
+        date.getFullYear()
+        , date.getMonth()
+        , date.getDate()
+        , date.getHours()
+        , date.getMinutes()
+        , date.getSeconds()
+        , date.getMilliseconds()
+    );
+} 
 Date.prototype.addHours= function(h){
     this.setHours(this.getHours()+h);
     return this;
@@ -61,6 +99,8 @@ Date.prototype.getWeek = function(start)
     var EndDate = new Date(curr.setDate(last));
     return [StartDate, EndDate];
 }
+
+
  
     var now = new Date();
     var dates = now.getWeek();
@@ -69,6 +109,27 @@ Date.prototype.getWeek = function(start)
         now = dates[0];
         
     $(document).ready(function(){
+        
+        $gmt_date = $("#gmt_prop_date").val();
+        $gmt_time = $("#gmt_prop_time").val();
+       
+        $('.btn').click(function() {
+
+            var local_date = $("#prop_date").val();
+            var local_time = $("#prop_time").val();   
+            
+            var local_dt = local_date + " " + local_time;
+            
+            var myDate = moment(local_dt, "MM/DD/YYYY h:mma");
+            myDate.utc();
+            var gmt_date = myDate.format("MM/DD/YYYY");
+            var gmt_time = myDate.format("h:mma");
+            
+            $("#gmt_prop_date").val(gmt_date);
+            $("#gmt_prop_time").val(gmt_time);                        
+        });       
+       
+                
         $( "#prop_date" ).datepicker
         ({
             

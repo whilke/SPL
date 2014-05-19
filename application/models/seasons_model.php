@@ -525,7 +525,7 @@ class Seasons_model extends CI_Model
         foreach($query->result() as $row)
         {
             $oDate = new DateTime($row->gamedate);
-            $row->gamedate = $oDate->format('m/d/Y H:m:s'). " GMT";
+            $row->gamedate = $oDate->format('m/d/Y H:i:s'). " GMT";
 
             $weekDate = new DateTimE($row->endweek);
             $weekDate->add(new DateInterval('P8D'));
@@ -583,7 +583,7 @@ class Seasons_model extends CI_Model
         foreach($query->result() as $row)
         {
             $oDate = new DateTime($row->gamedate);
-            $row->gamedate = $oDate->format('m/d/Y H:m:s') . " GMT";
+            $row->gamedate = $oDate->format('m/d/Y H:i:s') . " GMT";
 
             $weekDate = new DateTimE($row->endweek);
             $weekDate->add($intervalDate);
@@ -622,11 +622,11 @@ class Seasons_model extends CI_Model
         return $stats;
     }
     
-    function getMatch($id)
+    function getMatch($id, $hideStats=true)
     {
         $query = $this->db->
           select('ht.name as homeTeam, at.name as awayTeam, w.tag as weektag, s.tag as seasontag, '
-                  . 'matches.*, hs.code as hscode, '
+                  . 'matches.*, w.end as endweek,hs.code as hscode, '
                   . 'hs.desc as hsdesc, aw.code as awcode, aw.desc as awdesc')->
           from('matches')->
           join('states hs', 'hs.id = matches.home_team_state_id', 'left outer')->
@@ -643,12 +643,31 @@ class Seasons_model extends CI_Model
                 $match = $query->row();
 
                 $oDate = new DateTime($match->gamedate);
-                $match->gamedate = $oDate->format('m/d/Y h:m:s'). " GMT";
+                $match->gamedate = $oDate->format('m/d/Y H:i:s') ." GMT";
                 if ($match->proposeddate != null)
                 {
                     $oDate = new DateTime($match->proposeddate);
-                    $match->proposeddate = $oDate->format('m/d/Y h:m:s'). " GMT";                                
+                    $match->proposeddate = $oDate->format('m/d/Y H:i:s') . " GMT";                                
                 }
+                
+                $today = new DateTime();
+                $intervalDate = new DateInterval('P8D');        
+                $weekDate = new DateTimE($match->endweek);
+                $weekDate->add($intervalDate);
+                if ($weekDate > $today)
+                {
+                    if ($match->active == false && $hideStats)
+                    {
+                        $match->hscode = 'H';
+                        $match->awcode = 'H';
+                        $match->hsdesc = 'Hidden';
+                        $match->awdesc = 'Hidden';
+                        $match->home_team_points = '';
+                        $match->away_team_points = '';                    
+                    }
+                }
+                
+                
                 return $match;
             }        
         
@@ -693,7 +712,91 @@ class Seasons_model extends CI_Model
             $arr[$row->id] = $row->desc;
         }
         return $arr;
+    }
 
+    function confirmMatchProposedTime($match, $formatDates=true)
+    {
+        $this->db->trans_begin();        
+        $data = new stdClass();
+        if ($formatDates)
+        {
+            $data->gamedate  = DateTime::createFromFormat('m/d/Y H:i:s', trim($match->proposeddate, " GMT"))->format('Y-m-d H:i:s');            
+        }
+        else
+        {
+           $data->gamedate = $match->proposeddate;
+        }
+        $data->proposeddate  = null;
+        $data->who_proposed_team_id = null;
+        $data->proposeddate_timestamp = null;
+        $this->db->update('matches', $data, array('id' => $match->id));
+         
+        if ($this->db->trans_status() === FALSE)
+        {
+            $this->db->trans_rollback();
+            return FALSE;
+        }
+
+        $this->db->trans_commit();
+    }    
+    
+    function unsetMatchProposedTime($match)
+    {
+        $this->db->trans_begin();
+        
+        $data = new stdClass();
+        $data->proposeddate  = null;
+        $data->who_proposed_team_id = null;
+        $data->proposeddate_timestamp = null;
+        $this->db->update('matches', $data, array('id' => $match->id));
+         
+        if ($this->db->trans_status() === FALSE)
+        {
+            $this->db->trans_rollback();
+            return FALSE;
+        }
+
+        $this->db->trans_commit();
+        return TRUE;               
+    }
+    
+    function setMatchProposedTime($match, $newTime, $fromWho)
+    {
+        $this->db->trans_begin();
+        
+        $now = new DateTime('now');
+        $data = new stdClass();
+        $data->proposeddate  = DateTime::createFromFormat("m/d/Y h:ia", $newTime)->format('Y-m-d H:i:s');
+        $data->who_proposed_team_id = $fromWho;
+        $data->proposeddate_timestamp = $now->format('Y-m-d H:i:s');
+        $this->db->update('matches', $data, array('id' => $match->id));
+         
+        if ($this->db->trans_status() === FALSE)
+        {
+            $this->db->trans_rollback();
+            return FALSE;
+        }
+
+        $this->db->trans_commit();
+        return TRUE;               
+    }
+    
+    function getAllMatchProposals()
+    {
+        $query = $this->db->
+               select('*')->
+               from('matches')->
+               where('proposeddate is not null', null)->
+               get();        
+
+        $arr = Array();
+        foreach($query->result() as $row)
+        {
+                $match = $query->row();
+                
+            $arr[] = $match;
+        }
+        return $arr;
     }
 }
 

@@ -9,6 +9,15 @@ class Standings extends MY_Controller
         $this->load->helper('url');
         $this->lang->load('auth');
         $this->load->helper('language');
+        
+        $this->load->library('email');
+        
+        $a = array(
+            'mailtype' => 'html',
+        );
+        
+        $this->email->initialize($a);
+        
     }
     
     public function index()
@@ -53,7 +62,37 @@ class Standings extends MY_Controller
         $this->load->model('Seasons_model');
         $this->load->model('Stats_model');
         
-        $match = $this->Seasons_model->getMatch($id);
+        $isManager = $this->ion_auth->is_manager();       
+        $user = $this->ion_auth->user()->row();
+
+        $match = $this->Seasons_model->getMatch($id, !$isManager);
+
+        $isOwner = false;
+        if($user != null && ($match->homeTeam == $user->teamname ||
+           $match->awayTeam == $user->teamname))
+            $isOwner = true;
+
+        if ($isOwner && !$isManager)
+            $match = $this->Seasons_model->getMatch($id, false);
+        
+        if ($match->who_proposed_team_id != '')
+        {
+            $team = $this->Teams_model->getById($match->who_proposed_team_id);
+            if ($team == null)
+            {
+                $team = new stdClass();
+                $team->name = "Admin";
+            }
+            
+            $match->who_proposed_team = $team->name;
+        }
+        else
+        {
+            $match->who_proposed_team = "";
+        }
+        
+        
+        $this->twiggy->set('isOwner', $isOwner);
         $this->twiggy->set('match', $match);
         $stats = $this->Stats_model->getStats($id);
         $this->twiggy->set('stats', $stats);
@@ -107,7 +146,10 @@ class Standings extends MY_Controller
     }
     
     public function edit_match($id, $fromajax=false)
-    {              
+    {          
+        
+        $user = $this->ion_auth->user()->row();
+
         if (is_array($id))
         {
             $fromajax = $id['fromajax'];
@@ -131,6 +173,16 @@ class Standings extends MY_Controller
         $this->load->model('Seasons_model');          
         $this->load->model('Stats_model');
         $match = $this->Seasons_model->getMatch($id);
+        
+        $isOwner = false;
+        if($user != null && ($match->homeTeam == $user->teamname ||
+           $match->awayTeam == $user->teamname))
+            $isOwner = true;
+        
+        if (!$this->ion_auth->is_manager() || $isOwner != true)
+        {
+            
+        }
         
         $matchid    = $this->input->post('matchid');
         $gloryteam  = $this->input->post('gloryteam');
@@ -217,6 +269,21 @@ class Standings extends MY_Controller
                     $this->Stats_model->updateMatchStats($id, $gloryteam == $match->homeTeam, 
                             $match->home_team_id, $match->away_team_id, $players );
 
+                    
+                    $this->twiggy->set('match', $match);
+                    $msg = $this->twiggy->layout('email')->template('match_edit')->render();
+                    
+                    $email = "";
+                    if ($user->teamname == $match->homeTeam)
+                        $email = $this->Teams_model->getEmail($match->away_team_id);
+                    else
+                        $email = $this->Teams_model->getEmail($match->home_team_id);
+
+                    $this->sendEmail('game@strifeproleague.com', $email, 
+                            'Match Status: Reported', $msg);
+                    
+                    
+                    
                     redirect('standings/match/'.$id, 'refresh'); //use redirects instead of loading views for compatibility with MY_Controller libraries
                     
                 }    
@@ -296,6 +363,7 @@ class Standings extends MY_Controller
             $fromajax = $id['fromajax'];
             $id = $id['id'];
         }
+                
         $flashMsg =  "";
         $this->twiggy->set('fromajax', $fromajax);
         
@@ -305,9 +373,28 @@ class Standings extends MY_Controller
         $this->load->model('Teams_model');
         $this->load->model('Seasons_model');          
         $match = $this->Seasons_model->getMatch($id);
+        
+        if ($match->who_proposed_team_id != '')
+        {
+            $team = $this->Teams_model->getById($match->who_proposed_team_id);
+            if ($team == null)
+            {
+                $team = new stdClass();
+                $team->name = "Admin";
+            }
+            
+            $match->who_proposed_team = $team->name;
+        }
+        else
+        {
+            $match->who_proposed_team = "";
+        }
+        
+        
         $this->twiggy->set('match', $match);
 
-        if ($user->teamname != $match->homeTeam || $user->teamname != $match->awayTeam)
+        if ( ($user->teamname != $match->homeTeam && $user->teamname != $match->awayTeam )
+           )                
         {
             redirect('auth/login', 'refresh');            
         }
@@ -316,15 +403,109 @@ class Standings extends MY_Controller
         $check = $this->input->post('check');
         $prop_date = $this->input->post('prop_date');
         $prop_time = $this->input->post('prop_time');
+        $gmt_prop_date = $this->input->post('gmt_prop_date');
+        $gmt_prop_time = $this->input->post('gmt_prop_time');
+        $confirm = $this->input->post('confirm');
         
         if ($this->form_validation->run() == true)
         {        
             if ($check == 1)
             {
-                //this is a new challenge request.                
-                              
+                if ($prop_date == "" || $gmt_prop_time == "")
+                    $flashMsg = "Date and/or time is invalid";
+                else
+                {
+                    //this is a new challenge request.  
+                    
+                    $team = $this->Teams_model->get($user->teamname);
+                    if ($team == null)
+                    {
+                        $team = new stdClass();
+                        $team->id = 0;
+                    }
+                    
+                    $this->twiggy->set('match', $match);
+                    $msg = $this->twiggy->layout('email')->template('matchtime_new')->render();
+                    
+                    $email = "";
+                    if ($user->teamname == $match->homeTeam)
+                        $email = $this->Teams_model->getEmail($match->away_team_id);
+                    else
+                        $email = $this->Teams_model->getEmail($match->home_team_id);
+
+                    $this->sendEmail('game@strifeproleague.com', $email, 
+                            'Match Time System: New Time Request', $msg);
+                                       
+                    $this->Seasons_model->setMatchProposedTime($match, $gmt_prop_date ." ".$gmt_prop_time, $team->id);                    
+                    redirect('standings/match/' . $id, 'refresh');            
+                }
+            }
+            else if ($check == 2)
+            {
+                $flashMsg = 'Invalid Request';
+                //handle team canceling their request.
+                $team = $this->Teams_model->get($user->teamname);
+                if ($team == null)
+                {
+                    $team = new stdClass();
+                    $team->id = 0;
+                }
+                
+                if ($team->id == $match->who_proposed_team_id )
+                {
+                    if ($confirm == 'yes')
+                    {
+                        $this->Seasons_model->unsetMatchProposedTime($match);                    
+                    }
+                    redirect('standings/match/' . $id, 'refresh');                                    
+                }                
+            }
+            else if ($check == 3)
+            {
+                $flashMsg = 'Invalid Request';
+                //handle team canceling their request.
+                $team = $this->Teams_model->get($user->teamname);
+                if ($team == null)
+                {
+                    $team = new stdClass();
+                    $team->id = 0;
+                }
+                
+                if ($team->id != $match->who_proposed_team_id )
+                {
+                    if ($team->id == $match->home_team_id || $team->id == $match->away_team_id)
+                    {
+                        $this->twiggy->set('match', $match);
+                        $msg = "";
+                       
+                        
+                        if ($confirm == 'yes')
+                        {
+                            $msg = $this->twiggy->layout('email')->template('matchtime_accept')->render();
+                            $this->Seasons_model->confirmMatchProposedTime($match);                    
+                        }     
+                        else
+                        {
+                            $msg = $this->twiggy->layout('email')->template('matchtime_reject')->render();
+                            $this->Seasons_model->unsetMatchProposedTime($match);                     
+                        }
+                                                
+                        $email = "";
+                        if ($user->teamname == $match->homeTeam)
+                            $email = $this->Teams_model->getEmail($match->away_team_id);
+                        else
+                            $email = $this->Teams_model->getEmail($match->home_team_id);
+
+                        $this->sendEmail('game@strifeproleague.com', $email, 
+                                'Match Time System: Request Update', $msg);
+                        
+                        
+                        redirect('standings/match/' . $id, 'refresh');                                    
+                    }
+                }                
             }
         }
+        
         $this->data = array();
         
         $this->data['message'] = (validation_errors() ? validation_errors() : $flashMsg);
@@ -335,14 +516,28 @@ class Standings extends MY_Controller
                 'name'  => 'prop_date',
                 'id'    => 'prop_date',
                 'type'  => 'text',
-                'value' => $this->form_validation->set_value('prop_date'),
+                'value' => '',
             );        
         
         $this->data['prop_time'] = array(
                 'name'  => 'prop_time',
                 'id'    => 'prop_time',
                 'type'  => 'text',
-                'value' => $this->form_validation->set_value('prop_time'),
+                'value' => '',
+            ); 
+        
+        
+        $this->data['gmt_prop_date'] = array(
+                'name'  => 'gmt_prop_date',
+                'id'    => 'gmt_prop_date',
+                'type'  => 'hidden',
+                'value' => $this->form_validation->set_value('gmt_prop_date'),
+            ); 
+        $this->data['gmt_prop_time'] = array(
+                'name'  => 'gmt_prop_time',
+                'id'    => 'gmt_prop_time',
+                'type'  => 'hidden',
+                'value' => $this->form_validation->set_value('gmt_prop_time'),
             ); 
         
         
@@ -360,4 +555,21 @@ class Standings extends MY_Controller
         
     }
     
+    private function sendEmail($from, $to, $subject, $message)
+        {
+            $this->email->clear();
+            $this->email->from($from);
+            $this->email->to($to);
+            $this->email->subject($subject);
+            $this->email->message($message);
+
+            if ($this->email->send())
+            {
+                return TRUE;
+            }
+            else
+            {
+                return FALSE;
+            }        
+        }    
 }

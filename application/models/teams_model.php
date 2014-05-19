@@ -115,4 +115,24 @@ class Teams_model extends CI_Model
         $this->db->trans_commit();
         return TRUE;        
     }
+    
+    function getEmail($teamId)
+    {
+        $query = $this->db->
+                select('u.email')->
+                from('teams t')->
+                join('users u', 'u.teamname=t.name')->
+                where('t.id', $teamId)->
+                limit(1)->
+                get();
+        
+        if ($query->num_rows() === 1)
+        {
+            $team = $query->row();
+            return $team->email;
+        }
+        
+        return NULL;
+
+    }
 }

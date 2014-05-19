@@ -1,0 +1,8 @@
+{% extends _layout %}
+
+{% block content %}
+    <p>The below match has been reported and closed out by the other team.</p>
+        
+    {% set l = 'standings/match/' ~ match.id %}                        
+    <p>You should review the updated match via the following link: <a href="{{l|site_url}}">{{l|site_url}}</a></p>
+{% endblock %}

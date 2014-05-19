@@ -1,0 +1,9 @@
+{% extends _layout %}
+
+{% block content %}
+    <p>A recent match time proposal went unanswered, but it was less then 24 hours from the scheduled match time. 
+        Because of this, the proposal has been marked as rejected, and the match time updated.</p>
+        
+    {% set l = 'standings/match/' ~ match.id %}                        
+    <p>You should review the updated match via the following link: <a href="{{l|site_url}}">{{l|site_url}}</a></p>
+{% endblock %}

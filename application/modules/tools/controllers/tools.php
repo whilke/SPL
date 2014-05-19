@@ -5,12 +5,116 @@ class Tools extends MY_Controller
     function __construct()
     {       
         $this->load->database();       
+        $this->load->library('email');
+        
+        $a = array(
+            'mailtype' => 'html',
+        );
+        
+        $this->email->initialize($a);
+        
         $this->load->model('Teams_model');
         $this->load->model('Stats_model');
+        $this->load->model('Seasons_model');
     }
     
     public function index()
     {
+
+    }
+    
+    private function sendEmail($from, $to, $subject, $message)
+    {
+        $this->email->clear();
+        $this->email->from($from);
+        $this->email->to($to);
+        $this->email->subject($subject);
+        $this->email->message($message);
+
+        if ($this->email->send())
+        {
+            return TRUE;
+        }
+        else
+        {
+            return FALSE;
+        }        
+    }
+    
+    public function update_match_props()
+    {
+        if(!$this->input->is_cli_request())
+        {
+            echo "This script can only be accessed via the command line" . PHP_EOL;
+            return;
+        }        
+
+        $now = new DateTime('now');
+        $matches = $this->Seasons_model->getAllMatchProposals();
+        foreach($matches AS $match)
+        {
+            //okay let's see if we are first past the proposed deadline.
+            $time = strtotime($match->proposeddate. ' UTC');
+            $prop_date = date("Y-m-d H:i:s", $time);
+            $prop_date = new DateTime($prop_date);
+            
+            $time = strtotime($match->proposeddate_timestamp);
+            $timestamp = date("Y-m-d H:i:s", $time);
+            $timestamp = new DateTime($timestamp);
+
+            $diff = $now->diff($timestamp);                
+            $days = intval( $diff->format('%d') );
+            if ($now > $prop_date)
+            { 
+                //okay, this match is past the proposed time, check if it's been less
+                //then 24 hours from when this was created.
+               
+                if ($days < 1)
+                {
+                    //auto reject this 
+                    $this->twiggy->set('match', $match);
+
+                    $msg = $this->twiggy->layout('email')->template('matchtime_reject')->render();
+
+                    $email = $this->Teams_model->getEmail($match->home_team_id);                
+                    $this->sendEmail('game@strifeproleague.com', $email, 
+                            'Match Time System: Auto Accepted', $msg);
+
+                    $email = $this->Teams_model->getEmail($match->away_team_id);                
+                    $this->sendEmail('game@strifeproleague.com', $email, 
+                            'Match Time System: Auto Accepted', $msg);
+
+
+                    $this->Seasons_model->confirmMatchProposedTime($match, false);                    
+                    
+                    $this->Seasons_model->unsetMatchProposedTime($match);                    
+                }
+                else
+                {
+                }
+            }
+            else if ($days >= 1)
+            {
+                //we've pasted 24 hours from this proposal.
+                //auto accept it now.
+
+                $this->twiggy->set('match', $match);
+
+                $msg = $this->twiggy->layout('email')->template('matchtime_accept')->render();
+
+                $email = $this->Teams_model->getEmail($match->home_team_id);                
+                $this->sendEmail('game@strifeproleague.com', $email, 
+                        'Match Time System: Auto Accepted', $msg);
+                
+                $email = $this->Teams_model->getEmail($match->away_team_id);                
+                $this->sendEmail('game@strifeproleague.com', $email, 
+                        'Match Time System: Auto Accepted', $msg);
+                
+                                
+                $this->Seasons_model->confirmMatchProposedTime($match, false);                    
+            }
+        }
+
     }
     
     public function parse_stats()

@@ -838,6 +838,44 @@ class Seasons_model extends CI_Model
         }
         return $arr;                
     }
+    
+    function getCurrentWeek($seasonId)
+    {
+        $query = $this->db->
+               select('*')->
+               from('weeks')->
+               where('season_id',$seasonId)->
+               where('start <= now() and end >= now() ',null)->
+               limit(1)->
+               get();
+        
+        if ($query->num_rows() === 1)
+        {
+            $week = $query->row();
+            return $week;
+        }
+
+        return null;
+    }
+    
+    function getTeamsPlayingInWeek($weekId)
+    {
+        $query = $this->db->
+               select('DISTINCT(u.email) as email, t.name, t.id')->
+               from('matches m')->
+               join('teams t','t.id = m.home_team_id')->
+               join('users u','u.teamname = t.name')->
+               where('m.week_id',$weekId)->
+               get();
+        
+        $arr = Array();
+        foreach($query->result() as $row)
+        {
+            $arr[] = $row;
+        }
+        return $arr;                
+
+    }
 }
 
 function teamPointSort($a, $b)
@@ -853,8 +891,5 @@ function teamPointSort($a, $b)
     else
     {
         return ($a->group_name < $b->group_name) ? -1: 1;
-    }
-        
-     
-    
+    }  
 }

@@ -776,7 +776,7 @@ class Auth extends MY_Controller {
                 $localWeek = $weeks[$round];
 
                 $date = new DateTime($localWeek['end']);
-                $date->sub(new DateInterval('P2D'));
+                $date->sub(new DateInterval('P1D'));
                 
                 $date_day = $date->format('Y-m-d');
                 $match_day1 = $date_day;

@@ -41,6 +41,30 @@ class Tools extends MY_Controller
         }        
     }
     
+    public function startweek()
+    {
+        if(!$this->input->is_cli_request())
+        {
+            echo "This script can only be accessed via the command line" . PHP_EOL;
+            return;
+        }      
+        
+        $season = $this->Seasons_model->GetCurrentSeason();
+        $week = $this->Seasons_model->getCurrentWeek($season->id);
+        $teams = $this->Seasons_model->getTeamsPlayingInWeek($week->id);
+        
+        foreach($teams AS $team)
+        {
+            $this->twiggy->set('team', $team);
+
+            $msg = $this->twiggy->layout('email')->template('startweek')->render();
+
+            $this->sendEmail('game@strifeproleague.com', $team->email, 
+                    'SPL: Start of week', $msg);        
+        }
+        
+    }
+    
     public function update_match_props()
     {
         if(!$this->input->is_cli_request())

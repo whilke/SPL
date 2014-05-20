@@ -87,10 +87,13 @@
 </div>            
 </div>
     <div style='text-align:center;'>
+      {% if user.isManager != true %}
       Teams are restricted from changing their roster during a live
       series.<br/> Please request your change with the contact support form
       and we will make the change for you.
-{#    {{'submit'|bs_form_submit('Submit')}} #}
+      {% else %}
+        {{'submit'|bs_form_submit('Submit')}}
+      {% endif %}
     </div>
     
 {% set arr = {'id': team.id} %}

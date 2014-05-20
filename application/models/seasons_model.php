@@ -876,6 +876,42 @@ class Seasons_model extends CI_Model
         return $arr;                
 
     }
+    
+    function getMatchesInWeek($weekId)
+    {
+        $query = $this->db->
+               select('m.*')->
+               from('matches m')->
+               where('m.week_id',$weekId)->
+               get();
+        
+        $arr = Array();
+        foreach($query->result() as $row)
+        {
+            $arr[] = $row;
+        }
+        return $arr;                
+        
+    }
+    
+function changeMatchTime($match)
+    {        
+        $this->db->trans_begin();
+        
+        $data = new stdClass();
+        $data->gamedate = $match->gamedate;
+         
+        $this->db->update('matches', $data, array('id' => $match->id));
+         
+        if ($this->db->trans_status() === FALSE)
+        {
+            $this->db->trans_rollback();
+            return FALSE;
+        }
+
+        $this->db->trans_commit();
+        return TRUE;                
+    }    
 }
 
 function teamPointSort($a, $b)

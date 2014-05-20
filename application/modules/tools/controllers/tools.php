@@ -41,6 +41,70 @@ class Tools extends MY_Controller
         }        
     }
     
+    public function fixMatch($matches, $match)
+    {
+        $hTeam = $match->home_team_id;
+        $aTeam = $match->away_team_id;
+        $date = new DateTime($match->gamedate);
+        while(true)
+        {
+            $date->add(new DateInterval('PT1H'));            
+            $date_str = date_format($date, "Y-m-d H:i:s");
+            //see if this overlaps with another match for these teams now.
+            $bFound = false;
+            foreach($matches AS $cM)
+            {
+                if ($cM->home_team_id == $hTeam || $cM->away_team_id == $aTeam ||
+                   $cM->home_team_id == $aTeam || $cM->away_team_id == $hTeam)
+                {
+                    if ($cM->gamedate == $date_str)
+                    {
+                        $bFound = true;
+                        break;
+                    }
+                }
+            }
+            if ($bFound)
+                continue;
+            
+            break;
+        }  
+        $match->gamedate = date_format($date, "Y-m-d H:i:s");
+        $this->Seasons_model->changeMatchTime($match);
+    }
+    
+    public function fixWeek($weekId)
+    {
+        if(!$this->input->is_cli_request())
+        {
+            echo "This script can only be accessed via the command line" . PHP_EOL;
+            return;
+        }      
+                
+        $matches = $this->Seasons_model->GetMatchesInWeek($weekId);
+        
+        foreach($matches AS $match)
+        {
+            //let's see if there are any other matches that involve these two teams at the same time.
+            $hTeam = $match->home_team_id;
+            $aTeam = $match->away_team_id;
+            foreach($matches AS $cM)
+            {
+                if ($match->id == $cM->id) continue;
+                
+                if ($cM->gamedate == $match->gamedate)
+                {
+                    if ($cM->home_team_id == $hTeam || $cM->away_team_id == $aTeam ||
+                        $cM->home_team_id == $aTeam || $cM->away_team_id == $hTeam)
+                    {
+                        $this->fixMatch($matches, $match);
+                    }
+                }
+            }
+        }
+        
+    }
+    
     public function startweek()
     {
         if(!$this->input->is_cli_request())

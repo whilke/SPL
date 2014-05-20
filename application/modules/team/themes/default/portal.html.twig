@@ -105,7 +105,10 @@
             <tbody>
                 {% for match in matches %}
                     <tr>
-                        <td>{{match.homeTeam}} vs {{match.awayTeam}}</td>
+                        {% set s = 'team/portal/' ~ match.home_team_id    %}
+                        {% set s2 = 'team/portal/' ~ match.away_team_id    %}
+                    <td><a style="color:red;" href="{{s|site_url}}">{{match.homeTeam}}</a> vs 
+                        <a style="color:green;" href="{{s2|site_url}}">{{match.awayTeam}}</a</td>
                         <td class="text-center">{{match.gamedate}}</td>
                         
                         {% if match.home_team_id == team.id %}

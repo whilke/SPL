@@ -1832,6 +1832,19 @@ class Ion_auth_model extends CI_Model
         $this->set_message('group_delete_successful');
         return TRUE;
     }
+    
+    public function add_audit($userId, $query, $tag=null)
+    {
+        $this->load->helper('date');        
+        
+        $data = array();
+        $data['user_id'] = $userId;
+        $data['query'] = $query;
+        $data['tag'] = $tag;
+        $data['timestamp'] = date('Y-m-d H:i:s');
+        
+        $this->db->insert('audit', $data);
+    }
 
     public function set_hook($event, $name, $class, $method, $arguments)
     {

@@ -6,6 +6,34 @@ require APPPATH . 'third_party/MX/Controller.php';
 class MY_Controller extends MX_Controller {
 
     private $_ci;
+    
+    public function __destruct() 
+    {
+        if (isset($this->_ci->db))
+        {
+            if (isset($this->_ci->db->queries))
+            {
+                $queries = $this->_ci->db->queries;
+                foreach($queries AS $query)
+                {
+                    if (strpos($query, 'UPDATE') === 0 ||
+                        strpos($query, 'INSERT') === 0 ||
+                        strpos($query, 'DELETE') === 0     )
+                    {
+                        $userid = 0;
+                        if ($this->ion_auth->logged_in())
+                            $userid = $this->ion_auth->user()->row()->id;
+                        
+                        try {
+                            $this->ion_auth->add_audit($userid, $query);                        
+                        } catch (Exception $ex) {
+
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     public function __construct()
     {

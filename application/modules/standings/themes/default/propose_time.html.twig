@@ -99,14 +99,12 @@ Date.prototype.getWeek = function(start)
     var EndDate = new Date(curr.setDate(last));
     return [StartDate, EndDate];
 }
-
-
  
     var now = new Date();
-    var dates = now.getWeek();
-    var endOfWeek = dates[1];
-    if (now < dates[0])
-        now = dates[0];
+    var startOfWeek = moment('{{match.startWeek}}').toDate();
+    var endOfWeek = moment('{{match.endweek}}').toDate();
+    if (now < startOfWeek)
+        now = startOfWeek;
         
     $(document).ready(function(){
         
@@ -134,7 +132,7 @@ Date.prototype.getWeek = function(start)
         ({
             
             minDate: now,
-            maxDate: dates[1], 
+            maxDate: endOfWeek, 
             onSelect: function()
               {
                   var today = new Date();
@@ -161,6 +159,8 @@ Date.prototype.getWeek = function(start)
               }        
           });
         $('#prop_time').timepicker();
+        $("#prop_time").keypress(function(event) {event.preventDefault();});
+        $("#prop_time").bind("cut copy paste", function(event) {event.preventDefault();});
     });
 </script>    
 {% endblock %}

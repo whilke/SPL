@@ -629,7 +629,7 @@ class Seasons_model extends CI_Model
     {
         $query = $this->db->
           select('ht.name as homeTeam, at.name as awayTeam, w.tag as weektag, s.tag as seasontag, '
-                  . 'matches.*, w.end as endweek,hs.code as hscode, '
+                  . 'matches.*, w.start as startWeek, w.end as endweek,hs.code as hscode, '
                   . 'hs.desc as hsdesc, aw.code as awcode, aw.desc as awdesc')->
           from('matches')->
           join('states hs', 'hs.id = matches.home_team_state_id', 'left outer')->

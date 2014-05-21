@@ -26,12 +26,13 @@ class Tools extends MY_Controller
     private function sendEmail($from, $to, $subject, $message)
     {
         /*
-        if (false)
+        if (true)
         {
             print("Sending email to " . $to . " subj: " . $subject);
             return;
         }
          */
+         
         
         $this->email->clear();
         $this->email->from($from, 'SPL Game');
@@ -372,16 +373,31 @@ class Tools extends MY_Controller
                 $this->Seasons_model->confirmMatchProposedTime($match, false);                    
             }
             
-            //has this match gone 4 hours past the deadline?
-            $time = strtotime($match->gamedate. ' UTC');
-            $prop_date = date("Y-m-d H:i:s", $time);
-            $prop_date = new DateTime($prop_date);
-            
-            $diff = $now->diff($timestamp);               
-            
-
         }
+        $matchs = $this->Seasons_model->getExpiredMatches();
+        foreacH($matchs as $match)
+        {
+            $match->home_team_state_id = $match->away_team_state_id = 5;
+            $match->home_team_points = $match->away_team_points = 0;
+            $match->active =false;
 
+            $this->twiggy->set('match', $match);
+
+            $msg = $this->twiggy->layout('email')->template('matchtime_expire')->render();
+
+            $email = $this->Teams_model->getEmail($match->home_team_id);                
+            $this->sendEmail('game@strifeproleague.com', $email, 
+                    'Match: Expired', $msg);
+
+            $email = $this->Teams_model->getEmail($match->away_team_id);                
+            $this->sendEmail('game@strifeproleague.com', $email, 
+                    'Match: Expired', $msg);
+                        
+            $this->Seasons_model->editMatch($match);
+            
+            
+           
+        }
     }
     
     public function parse_stats()

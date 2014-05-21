@@ -1,0 +1,9 @@
+{% extends _layout %}
+
+{% block content %}
+    <p>A recent match has gone 4 hours past the match time, and has not been reported. Because of this, both teams have been
+    flagged as a no-show for the match. If this was in error, please submit a support ticket to have this resolved.</p>
+        
+    {% set l = 'standings/match/' ~ match.id %}                        
+    <p>You should review the updated match via the following link: <a href="{{l|site_url}}">{{l|site_url}}</a></p>
+{% endblock %}

@@ -801,6 +801,25 @@ class Seasons_model extends CI_Model
         return $arr;
     }
     
+    function getExpiredMatches()
+    {
+        $query = $this->db->
+               select('*')->
+               from('matches')->
+               where('gamedate +interval 4 hour < UTC_TIMESTAMP()', null)->
+               where('active', true)->
+               get();        
+
+        $arr = Array();
+        foreach($query->result() as $row)
+        {
+            $match = $row;  
+            $arr[] = $match;
+        }
+        return $arr;
+    }
+    
+    
     function getGroupsForSeason($seasonId)
     {
         $query = $this->db->

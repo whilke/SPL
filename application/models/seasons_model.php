@@ -453,7 +453,7 @@ class Seasons_model extends CI_Model
            if ($row->home_team_id == $teamId)
            {
                $arr->points += $row->home_points;
-               if ($row->home_code == 'W')
+               if ($row->home_code == 'W' || $row->home_code == 'FW')
                    $arr->wins++;
                else
                    $arr->loss++;
@@ -461,7 +461,7 @@ class Seasons_model extends CI_Model
            else
            {
                $arr->points += $row->away_points;
-               if ($row->away_code == 'W')
+               if ($row->away_code == 'W'  || $row->away_code == 'FW')
                    $arr->wins++;
                else
                    $arr->loss++;               
@@ -795,8 +795,7 @@ class Seasons_model extends CI_Model
         $arr = Array();
         foreach($query->result() as $row)
         {
-                $match = $query->row();
-                
+            $match = $row;  
             $arr[] = $match;
         }
         return $arr;
@@ -877,12 +876,14 @@ class Seasons_model extends CI_Model
 
     }
     
-    function getMatchesInWeek($weekId)
+    function getMatchesInWeek($weekId, $groupId)
     {
         $query = $this->db->
                select('m.*')->
                from('matches m')->
+               join('season_group_teams sgt','sgt.team_id = m.home_team_id' )->
                where('m.week_id',$weekId)->
+               where('sgt.season_group_id', $groupId)->
                get();
         
         $arr = Array();

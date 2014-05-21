@@ -41,6 +41,18 @@ class Tools extends MY_Controller
         }        
     }
     
+    public function createTimeBuckets()
+    {
+        $arr = array();
+        for($i =0; $i < 12; $i+=2)
+        {
+            $o = stdClass();
+            $o->idx = $i;
+            $arr[] = $o;
+        }
+        return $arr;
+    }
+    
     public function fixMatch($matches, $match)
     {
         $hTeam = $match->home_team_id;
@@ -73,7 +85,7 @@ class Tools extends MY_Controller
         $this->Seasons_model->changeMatchTime($match);
     }
     
-    public function fixWeek($weekId)
+    public function fixWeek($weekId, $groupId)
     {
         if(!$this->input->is_cli_request())
         {
@@ -137,7 +149,8 @@ class Tools extends MY_Controller
             return;
         }        
 
-        $now = new DateTime('now');
+        $time = gmdate("Y-m-d H:i:s");
+        $now = new DateTime($time);
         $matches = $this->Seasons_model->getAllMatchProposals();
         foreach($matches AS $match)
         {
@@ -175,13 +188,13 @@ class Tools extends MY_Controller
 
                     $this->Seasons_model->confirmMatchProposedTime($match, false);                    
                     
-                    $this->Seasons_model->unsetMatchProposedTime($match);                    
-                }
-                else
-                {
+                    $this->Seasons_model->unsetMatchProposedTime($match); 
+                    
+                    return;
                 }
             }
-            else if ($days >= 1)
+            
+            if ($days >= 1)
             {
                 //we've pasted 24 hours from this proposal.
                 //auto accept it now.

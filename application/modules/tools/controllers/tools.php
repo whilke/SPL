@@ -308,6 +308,9 @@ class Tools extends MY_Controller
 
         $time = date("Y-m-d H:i:s");
         $now = new DateTime($time);
+        $time = gmdate("Y-m-d H:i:s");
+        $gmnow = new DateTime($time);
+
         $matches = $this->Seasons_model->getAllMatchProposals();
         foreach($matches AS $match)
         {
@@ -322,7 +325,7 @@ class Tools extends MY_Controller
 
             $diff = $now->diff($timestamp);                
             $days = intval( $diff->format('%d') );
-            if ($now > $prop_date)
+            if ($gmnow > $prop_date)
             { 
                 //okay, this match is past the proposed time, check if it's been less
                 //then 24 hours from when this was created.

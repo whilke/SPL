@@ -44,12 +44,64 @@ class Tools extends MY_Controller
     public function createTimeBuckets()
     {
         $arr = array();
-        for($i =0; $i < 12; $i+=2)
+        for($i =0; $i < 24; $i+=2)
         {
-            $o = stdClass();
+            $o = new stdClass();
             $o->idx = $i;
+            $o->matches = array();
+                        
             $arr[] = $o;
         }
+        return $arr;
+    }
+    
+    public function groupMatches($matches)
+    {
+        $arr = array();
+        
+        foreach($matches AS $match)
+        {
+            $hTeam = $match->home_team_id;
+            $aTeam = $match->away_team_id;
+            
+            //see if we have this pair already in the system.
+            $bFound = false;
+            foreach($arr as $group)
+            {
+                if ($group->g1->hTeam == $aTeam &&
+                    $group->g1->aTeam == $hTeam)
+                {
+                    $bFound = true;
+                    //we should add this in
+                    $group->g2 = new stdClass();
+                    $group->g2->id = $match->id;
+                    $group->g2->hTeam = $hTeam;
+                    $group->g2->aTeam = $aTeam;
+                    $group->g2->region = $match->server_region;
+                    $group->g2->match = $match;
+                    
+                    break;
+                }
+            }
+            
+            if (!$bFound)
+            {
+                //new match pair.
+                $group = new stdClass();
+                $date = new DateTime($match->gamedate);
+                $group->date = date_format($date, "Y-m-d");
+                $group->g1 = new stdClass();
+                $group->g1->id = $match->id;
+                $group->g1->hTeam = $hTeam;
+                $group->g1->aTeam = $aTeam;
+                $group->g1->region = $match->server_region;
+                $group->g1->match = $match;
+                
+                $arr[] = $group;
+                                
+            }            
+        }
+        
         return $arr;
     }
     
@@ -85,6 +137,91 @@ class Tools extends MY_Controller
         $this->Seasons_model->changeMatchTime($match);
     }
     
+    public function regionStartTime($group)
+    {
+        if ($group->g1->region === $group->g2->region)
+        {
+            if ($group->g1->region === "EU")
+            {
+                return 14;
+            }
+            else if ($group->g1->region === "SEA")
+            {
+                return 4;
+            }
+            else if ($group->g1->region === "CIS")
+            {
+                return 14;
+            }
+            else if ($group->g1->region === "USE")
+            {
+                return 18;
+            }
+            else if ($group->g1->region === "USW")
+            {
+                return 20;
+            }
+        }
+        else
+        {
+            if (
+                    ($group->g1->region === "USE" && $group->g1->region === "USW") ||
+                    ($group->g1->region === "USW" && $group->g1->region === "USE") 
+                )
+            {
+                return 18;
+            }
+            if (
+                    ($group->g1->region === "USE" && $group->g1->region === "EU") ||
+                    ($group->g1->region === "EU" && $group->g1->region === "USE") 
+                )
+            {
+                return 16;
+            }
+
+        }
+     
+        return 12;
+    }
+    
+    public function adjustStart($buckets, $group, $start)
+    {
+        while(true)
+        {
+            $bucket = null;
+            foreach($buckets AS $b)
+            {
+                if ($b->idx == $start)
+                {
+                    $bucket = $b;
+                    break;
+                }
+            }
+            
+            //see if this bucket can fit this match.
+            $bFound = false;
+            foreach($bucket->matches AS $match)
+            {
+                if (
+                        ($match->g1->hTeam == $group->g1->hTeam || $match->g1->hTeam == $group->g1->aTeam) ||
+                        ($match->g1->aTeam == $group->g1->hTeam || $match->g1->aTeam == $group->g1->aTeam)
+                   )
+                {
+                    $bFound = true;
+                    break;
+                }
+            }
+            
+            if (!$bFound)
+            {
+                $bucket->matches[] = $group;
+                return;
+            }
+            
+            $start+=2;
+        }
+    }
+    
     public function fixWeek($weekId, $groupId)
     {
         if(!$this->input->is_cli_request())
@@ -93,27 +230,38 @@ class Tools extends MY_Controller
             return;
         }      
                 
-        $matches = $this->Seasons_model->GetMatchesInWeek($weekId);
+        $matches = $this->Seasons_model->GetMatchesInWeek($weekId, $groupId);
+        $times = $this->createTimeBuckets();        
+        $groups = $this->groupMatches($matches);
         
-        foreach($matches AS $match)
+        foreach($groups as $group)
         {
-            //let's see if there are any other matches that involve these two teams at the same time.
-            $hTeam = $match->home_team_id;
-            $aTeam = $match->away_team_id;
-            foreach($matches AS $cM)
-            {
-                if ($match->id == $cM->id) continue;
-                
-                if ($cM->gamedate == $match->gamedate)
-                {
-                    if ($cM->home_team_id == $hTeam || $cM->away_team_id == $aTeam ||
-                        $cM->home_team_id == $aTeam || $cM->away_team_id == $hTeam)
-                    {
-                        $this->fixMatch($matches, $match);
-                    }
-                }
-            }
+            $region_start = $this->regionStartTime($group);
+            $this->adjustStart($times, $group, $region_start);
         }
+        
+        foreach($times as $blocks)
+        {
+            $m1Time = $blocks->idx;
+            $m2Time = $blocks->idx + 1;
+            
+            foreach($blocks->matches as $local_match)
+            {
+                $date = new DateTime($local_match->date . " " . $m1Time . ":00:00");
+                $match = $local_match->g1->match;                
+                $match->gamedate = date_format($date, "Y-m-d H:i:s");
+                $this->Seasons_model->changeMatchTime($match);
+
+                $date = new DateTime($local_match->date . " " . $m2Time . ":00:00");
+                $match = $local_match->g2->match;                
+                $match->gamedate = date_format($date, "Y-m-d H:i:s");
+                $this->Seasons_model->changeMatchTime($match);
+
+            }
+            
+        }
+        
+        return;
         
     }
     

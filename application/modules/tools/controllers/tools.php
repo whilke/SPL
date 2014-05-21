@@ -25,8 +25,16 @@ class Tools extends MY_Controller
     
     private function sendEmail($from, $to, $subject, $message)
     {
+        /*
+        if (false)
+        {
+            print("Sending email to " . $to . " subj: " . $subject);
+            return;
+        }
+         */
+        
         $this->email->clear();
-        $this->email->from($from);
+        $this->email->from($from, 'SPL Game');
         $this->email->to($to);
         $this->email->subject($subject);
         $this->email->message($message);
@@ -165,22 +173,23 @@ class Tools extends MY_Controller
         else
         {
             if (
-                    ($group->g1->region === "USE" && $group->g1->region === "USW") ||
-                    ($group->g1->region === "USW" && $group->g1->region === "USE") 
+                    ($group->g1->region === "USE" && $group->g2->region === "USW") ||
+                    ($group->g1->region === "USW" && $group->g2->region === "USE") 
                 )
             {
                 return 18;
             }
             if (
-                    ($group->g1->region === "USE" && $group->g1->region === "EU") ||
-                    ($group->g1->region === "EU" && $group->g1->region === "USE") 
+                    ($group->g1->region === "USE" && $group->g2->region === "EU") ||
+                    ($group->g1->region === "EU" && $group->g2->region === "USE") 
                 )
             {
                 return 16;
             }
 
         }
-     
+        print ($group->g1->region);
+        print ($group->g2->region);
         return 12;
     }
     
@@ -297,7 +306,7 @@ class Tools extends MY_Controller
             return;
         }        
 
-        $time = gmdate("Y-m-d H:i:s");
+        $time = date("Y-m-d H:i:s");
         $now = new DateTime($time);
         $matches = $this->Seasons_model->getAllMatchProposals();
         foreach($matches AS $match)
@@ -334,11 +343,8 @@ class Tools extends MY_Controller
                             'Match Time System: Auto Accepted', $msg);
 
 
-                    $this->Seasons_model->confirmMatchProposedTime($match, false);                    
                     
                     $this->Seasons_model->unsetMatchProposedTime($match); 
-                    
-                    return;
                 }
             }
             
@@ -362,6 +368,15 @@ class Tools extends MY_Controller
                                 
                 $this->Seasons_model->confirmMatchProposedTime($match, false);                    
             }
+            
+            //has this match gone 4 hours past the deadline?
+            $time = strtotime($match->gamedate. ' UTC');
+            $prop_date = date("Y-m-d H:i:s", $time);
+            $prop_date = new DateTime($prop_date);
+            
+            $diff = $now->diff($timestamp);               
+            
+
         }
 
     }

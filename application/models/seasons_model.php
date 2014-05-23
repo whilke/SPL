@@ -689,6 +689,7 @@ class Seasons_model extends CI_Model
         $data->home_team_ban_hero_id = $match->home_team_ban_hero_id;
         $data->away_team_ban_hero_id = $match->away_team_ban_hero_id;
         $data->active = $match->active;
+        $data->length = $match->length;
          
         $this->db->update('matches', $data, array('id' => $match->id));
          
@@ -799,6 +800,25 @@ class Seasons_model extends CI_Model
             $arr[] = $match;
         }
         return $arr;
+    }
+    
+    function getEmailListForSeason($seasonId)
+    {
+        $query = $this->db->
+               select('u.email')->
+               from('season_group_teams sgt')->
+               join('teams t', 't.id = sgt.team_id')->
+               join('users u', 'u.teamname = t.name')->
+               join('season_group sg', 'sg.id = sgt.season_group_id')->
+               where('season_id', $seasonId)->
+               get();        
+
+        $arr = Array();
+        foreach($query->result() as $row)
+        {
+            $arr[] = $row->email;
+        }
+        return $arr;        
     }
     
     function getExpiredMatches()

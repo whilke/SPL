@@ -154,6 +154,7 @@ $(document).ready(function() {
                         }   
                         
                         $winner = $replayInfo['@attributes'].winner;
+                        $match_len = $replayInfo['@attributes'].matchlength;
                         if ($winner == 'Hellbourne')
                             $winner = 'Valor';
                         else
@@ -163,6 +164,7 @@ $(document).ready(function() {
                         $replayObj = {};
                         $replayObj.matchid = $matchId;
                         $replayObj.winner = $winner;
+                        $replayObj.length = $match_len;
                         $replayObj.players = [];
                         
                         //build the player data.

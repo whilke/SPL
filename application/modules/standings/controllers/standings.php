@@ -227,6 +227,7 @@ class Standings extends MY_Controller
                         $winner = $matchObj->winner;
 
                         $match->strife_match_id = $realMatchId;
+                        $match->length = $matchObj->length;
 
                         if ($winner == "Glory")
                         {

@@ -400,6 +400,23 @@ class Tools extends MY_Controller
         }
     }
     
+    public function team_email($seasonId)
+    {
+        if(!$this->input->is_cli_request())
+        {
+            echo "This script can only be accessed via the command line" . PHP_EOL;
+            return;
+        }        
+        
+        $emails = $this->Seasons_model->getEmailListForSeason($seasonId);
+        
+        $email_list = "";
+        foreach($emails AS $email){
+            $email_list .= $email . ";";
+        }
+        echo($email_list);
+    }
+    
     public function parse_stats()
     {
         if(!$this->input->is_cli_request())

@@ -7,7 +7,8 @@
     {% if match.active == FALSE %}
     <div class="row">
         <div class="col-md-5 col-md-offset-0" style="text-align: center;">  
-            <p class="text-center">{{home_team.name}}</p>
+            {% set l = 'team/portal/' ~ home_team.id %}                        
+            <p class="text-center"><a href="{{l|site_url}}">{{home_team.name}}</a></p>
             <div class="row">
             <table style="display: inline-block;">
                 <tbody>
@@ -22,7 +23,7 @@
             </table>        
             </div>
             <div class="row">
-                <h2>{{match.hscode}} [{{match.home_team_points}} pts]</h2>
+                <h2>{{match.hsdesc}} [{{match.home_team_points}} pts]</h2>
             </div>
         </div>
         <div  class="col-md-2" style="margin-top: 20px;">
@@ -35,7 +36,8 @@
         </div>
         <div class="row">
         <div class="col-md-5 col-md-offset-0" style="text-align: center;">
-            <p class="text-center">{{away_team.name}}</p>
+            {% set l = 'team/portal/' ~ away_team.id %}                        
+            <p class="text-center"><a href="{{l|site_url}}">{{away_team.name}}</a></p>
             <div class="row">
             <table style="display: inline-block;">
                 <tbody>
@@ -50,7 +52,7 @@
             </table>        
             </div>
             <div class="row">
-                <h2>{{match.awcode}} [{{match.away_team_points}} pts]</h2>
+                <h2>{{match.awdesc}} [{{match.away_team_points}} pts]</h2>
             </div>
         </div>
     </div>       

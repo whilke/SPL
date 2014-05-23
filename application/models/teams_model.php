@@ -36,8 +36,8 @@ class Teams_model extends CI_Model
         $query = $this->db->
                 select('teams.id, teams.name')->
                 from('teams')->
-                where('active', true)->
                 join('users', 'users.id = teams.userid')->
+                where('active', true)->
                 get();
         
         $arr = Array();
@@ -69,10 +69,10 @@ class Teams_model extends CI_Model
     function getById($id)
     {
         $query = $this->db->
-                where('id', $id)->
-                limit(1)->
-                from('teams')->
-                get();
+            from('teams t')->
+            where('id', $id)->
+            limit(1)->
+            get();
         
         if ($query->num_rows() === 1)
         {
@@ -80,8 +80,7 @@ class Teams_model extends CI_Model
             return $team;
         }
         
-        return NULL;
-        
+        return NULL;   
     }
     
     function addNewTeam($teamname, $userid)
@@ -134,5 +133,50 @@ class Teams_model extends CI_Model
         
         return NULL;
 
+    }
+    
+    function getPlayer($playerId)
+    {
+        $query = $this->db->
+            select('*')->
+            from('players p')->
+            where('p.strife_id', $playerId)->
+            limit(1)->
+            get();
+
+           
+        if ($query->num_rows() === 1)
+        {
+            return $query->row();
+        }
+        
+        return NULL;        
+    }
+    
+    function getPlayerMatchStats($playerId)
+    {
+        $query = $this->db->
+            select('m.id,t.name as teamname, m.length / 1000 + 90 as matchlength,'.
+            'ROUND(s.total_gold / (m.length / 1000 / 60 + 1.5))  as gpm,'.
+            's.kills, s.assists, s.deaths,'.
+            'ROUND((s.kills+s.assists)/s.deaths) as kda,'.
+            's.total_creep as creeps,'.
+            's.total_neut as neutrals')->
+            from('players p')->
+            join('stats s','s.player_id = p.strife_id')->
+            join('matches m','m.id = s.match_id')->
+            join('teams t','t.id = s.team_id')->
+            where('p.strife_id', $playerId)->
+            get();
+
+           
+        $arr = Array();
+        foreach($query->result() as $row)
+        {
+            $arr[] = $row;
+        }
+        return $arr;
+        
+        return NULL;          
     }
 }

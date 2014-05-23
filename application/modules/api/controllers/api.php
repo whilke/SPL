@@ -77,10 +77,61 @@ class api extends REST_Controller
         }
         
         $matches = $this->Teams_model->getPlayerMatchStats($id);
+        
         if ($matches == null)
-            $player->matches = null;
+        {
+            $player->matches = new stdClass();
+            $player->AvgStats = new stdClass();
+        }
         else
-            $player->matches = $matches;
+        {
+            $gpm = 0.0;
+            $avgLen = 0.0;
+            $avgKills = 0;
+            $avgDeaths = 0;
+            $avgAssists = 0;
+            $avgkda = 0.0;
+            $avgCreeps = 0;
+            $avgNeut = 0;
+            
+            $totalMatches = 0;
+            foreach($matches AS $match)
+            {
+                $gpm += $match->gpm;
+                $avgLen += $match->matchlength;
+                $avgKills += $match->kills;
+                $avgDeaths += $match->deaths;
+                $avgAssists += $match->assists;
+                $avgCreeps += $match->creeps;
+                $avgNeut += $match->neutrals;
+                
+                $totalMatches++;
+            }
+            
+            $d = $avgDeaths;
+            if ($d == 0) $d = 1;
+            $avgkda = round(($avgKills + $avgAssists) / $d, 1);
+            
+            $gpm =  round($gpm / $totalMatches);
+            $avgLen = round($avgLen / $totalMatches);
+            $avgKills = round($avgKills / $totalMatches);
+            $avgDeaths = round($avgDeaths / $totalMatches);
+            $avgAssists = round($avgAssists / $totalMatches);
+            $avgCreeps = round($avgCreeps / $totalMatches);
+            $avgNeut = round($avgNeut / $totalMatches);
+            
+            $player->AvgStats = new stdClass();
+            $player->AvgStats->gpm = $gpm;
+            $player->AvgStats->kda = $avgkda;
+            $player->AvgStats->matchlength = $avgLen;
+            $player->AvgStats->kills = $avgKills;
+            $player->AvgStats->deaths = $avgDeaths;
+            $player->AvgStats->assists = $avgAssists;
+            $player->AvgStats->creeps = $avgCreeps;
+            $player->AvgStats->neuatrals = $avgNeut;
+            
+            $player->matches = $matches;            
+        }
 
         $this->response($player, 200);                
 

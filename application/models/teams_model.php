@@ -155,19 +155,20 @@ class Teams_model extends CI_Model
     
     function getPlayerMatchStats($playerId)
     {
+        $sql = 'SELECT m.id,t.name as teamname, m.length / 1000 + 90 as matchlength, 
+                    ROUND(s.total_gold / (m.length / 1000 / 60 + 1.5))  as gpm,
+                    s.kills, s.assists, s.deaths,
+                    IF(s.deaths=0, (s.kills+s.assists), ROUND((s.kills+s.assists) / s.deaths,1)) as kda,
+                    s.total_creep as creeps,
+                    s.total_neut as neutrals
+                    FROM spl.players p
+                    join stats s on s.player_id = p.strife_id
+                    join matches m on m.id = s.match_id
+                    join teams t on t.id = s.team_id
+                    where p.strife_id= ?';
+        
         $query = $this->db->
-            select('m.id,t.name as teamname, m.length / 1000 + 90 as matchlength,'.
-            'ROUND(s.total_gold / (m.length / 1000 / 60 + 1.5))  as gpm,'.
-            's.kills, s.assists, s.deaths,'.
-            'ROUND((s.kills+s.assists)/s.deaths) as kda,'.
-            's.total_creep as creeps,'.
-            's.total_neut as neutrals')->
-            from('players p')->
-            join('stats s','s.player_id = p.strife_id')->
-            join('matches m','m.id = s.match_id')->
-            join('teams t','t.id = s.team_id')->
-            where('p.strife_id', $playerId)->
-            get();
+                query($sql, $playerId);
 
            
         $arr = Array();

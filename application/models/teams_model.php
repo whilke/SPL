@@ -189,7 +189,7 @@ class Teams_model extends CI_Model
         return NULL;        
     }
     
-    function getPlayerMatchStats($playerId)
+    function getPlayerMatchStats($playerId, $matchid=0)
     {
         $sql = "SELECT m.id,t.name as teamname, TRIM( LEADING 'Hero_' FROM h.name) as hero, 
                     TRIM( LEADING 'Familiar_' FROM pets.name) as pet,
@@ -205,6 +205,11 @@ class Teams_model extends CI_Model
                     join heroes h on h.id = s.hero_id
                     join pets pets on pets.id = s.pet_id
                     where p.strife_id= ?";
+        
+        if ($matchid != 0)
+        {
+            $sql = $sql . " AND m.id= " . $matchid; 
+        }
         
         $query = $this->db->
                 query($sql, $playerId);

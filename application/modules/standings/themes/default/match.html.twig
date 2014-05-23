@@ -15,7 +15,7 @@
                     <tr>
                         {% for stat in stats %}
                             {% if stat.team_id == home_team.id %}
-                                <td><div class="hero-{{stat.hero}} hero-small" data-toggle="tooltip" data-placement="bottom" title="{{stat.player}}"></div></td>
+                                <td><div title id="hero_port" class="hero-{{stat.hero}} hero-small" data-id="{{stat.strife_id}}"></div></td>
                             {% endif %}                            
                         {% endfor %}
                     </tr>
@@ -44,7 +44,7 @@
                     <tr>
                         {% for stat in stats %}
                             {% if stat.team_id == away_team.id %}
-                                <td><div class="hero-{{stat.hero}} hero-small" data-toggle="tooltip" data-placement="bottom" title="{{stat.player}}"></div></td>
+                                <td><div title id="hero_port"  class="hero-{{stat.hero}} hero-small" data-id="""{{stat.strife_id}}"></div></td>
                             {% endif %}                            
                         {% endfor %}
                     </tr>
@@ -156,6 +156,10 @@
     </div>
     {% endif %}   
 </div>
+
+<div id="hero_pop" style="display: none; position: absolute; width:200px; height:210px; background: #76b9fc">
+    
+</div>
         
 {% endblock %}
    
@@ -188,6 +192,43 @@
             var myDate = moment(strDateTime);
             $("#mPropDate").html( myDate.format("MM/DD/YYYY hh:mm a ") + getTimezone() );
         }
+        
+        $('div[id^="hero_port"]').each( function(idx, obj) {
+            $(this).hover( function(e) { //hover
+            var moveLeft = -30;
+            var moveDown = -120;                
+            {% set s = 'api/player/id/' %}
+            var url = "{{s|site_url}}" + "/" + $(this).data('id')
+                    +"/match/" + {{match.id}} +"?format=json";
+                
+                $.getJSON( url, function(data) {
+                    
+                    var html = "<div style='margin-top:5px;margin-left:5px;margin-bottom:5px;'>";
+                    html += "Player: " + data.name +"<br/>";
+                    html += "Hero: " + data.stats.hero +"<br/>";
+                    html += "Pet: " + data.stats.pet +"<br/>";
+                    html += "GPM: " + data.stats.gpm +"<br/>";
+                    html += "KDA: " + data.stats.kda +"<br/>";
+                    html += "Kills: " + data.stats.kills +"<br/>";
+                    html += "Assists:" + data.stats.assists +"<br/>";
+                    html += "Deaths: " + data.stats.deaths +"<br/>";
+                    html += "Creeps: " + data.stats.creeps +"<br/>";
+                    html += "Neutrals: " + data.stats.neutrals +"<br/>";
+                    html += "</div>"
+                    
+                    $("#hero_pop").html(html);
+
+                   $("#hero_pop").show()
+                    .css('top', e.pageY + moveDown)
+                    .css('left', e.pageX + moveLeft);
+                });
+
+               }, 
+               function(){ //end
+                $("#hero_pop").hide();
+                   
+               });
+        });
     }); 
 </script>
 {% endblock %}

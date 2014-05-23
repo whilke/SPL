@@ -141,7 +141,7 @@ class Stats_model extends CI_Model
     function getStats($matchId)
     {
         $query = $this->db->
-                select('s.id, s.team_id, p.name as player, h.name as hero, pe.name as pet')->
+                select('s.id, s.team_id, p.strife_id, p.name as player, h.name as hero, pe.name as pet')->
                 from('stats s')->
                 join ('players p', 'p.strife_id = s.player_id')->
                 join ('heroes h', 'h.id = s.hero_id')->

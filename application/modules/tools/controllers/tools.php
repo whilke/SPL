@@ -232,6 +232,40 @@ class Tools extends MY_Controller
         }
     }
     
+    public function syncPlayers()
+    {
+        //get all teams.
+        $teams = $this->Teams_model->get_list();
+        
+        foreach($teams AS $team)
+        {
+            $team = $this->Teams_model->getById($team['id']);
+            $p = $this->Teams_model->getPlayerByName($team->captain);
+            if ($p != null)
+                $team->captain_strife_id = $p->strife_id;
+            $p = $this->Teams_model->getPlayerByName($team->slot1);
+            if ($p!= null)
+                $team->slot1_strife_id = $p->strife_id;
+            $p = $this->Teams_model->getPlayerByName($team->slot2);
+            if ($p!= null)
+                $team->slot2_strife_id = $p->strife_id;
+            $p = $this->Teams_model->getPlayerByName($team->slot3);
+            if ($p!= null)
+                $team->slot3_strife_id = $p->strife_id;
+            $p = $this->Teams_model->getPlayerByName($team->slot4);
+            if ($p!= null)
+                $team->slot4_strife_id = $p->strife_id;
+            $p = $this->Teams_model->getPlayerByName($team->slot5);
+            if ($p!= null)
+                $team->slot5_strife_id = $p->strife_id;
+            $p = $this->Teams_model->getPlayerByName($team->slot6);
+            if ($p!= null)
+                $team->slot6_strife_id = $p->strife_id;
+
+            $this->Teams_model->editPlayerLinks($team);
+        }
+        
+    }
     public function fixWeek($weekId, $groupId)
     {
         if(!$this->input->is_cli_request())

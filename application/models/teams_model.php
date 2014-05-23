@@ -115,6 +115,23 @@ class Teams_model extends CI_Model
         return TRUE;        
     }
     
+    function editPlayerLinks($team)
+    {
+        $this->db->trans_begin();
+         
+        $this->db->update('teams', $team, array('id' => $team->id));
+         
+        if ($this->db->trans_status() === FALSE)
+        {
+            $this->db->trans_rollback();
+            return FALSE;
+        }
+
+        $this->db->trans_commit();
+        return TRUE;        
+        
+    }
+    
     function getEmail($teamId)
     {
         $query = $this->db->
@@ -133,6 +150,25 @@ class Teams_model extends CI_Model
         
         return NULL;
 
+    }
+    
+    function getPlayerByName($name)
+    {
+        $query = $this->db->
+            select('*')->
+            from('players p')->
+            where('p.name', $name)->
+            limit(1)->
+            get();
+
+           
+        if ($query->num_rows() === 1)
+        {
+            return $query->row();
+        }
+        
+        return NULL;        
+        
     }
     
     function getPlayer($playerId)
@@ -155,17 +191,20 @@ class Teams_model extends CI_Model
     
     function getPlayerMatchStats($playerId)
     {
-        $sql = 'SELECT m.id,t.name as teamname, m.length / 1000 + 90 as matchlength, 
+        $sql = "SELECT m.id,t.name as teamname, TRIM( LEADING 'Hero_' FROM h.name) as hero, 
+                    TRIM( LEADING 'Familiar_' FROM pets.name) as pet,
+                    m.length / 1000 + 90 as matchlength, 
                     ROUND(s.total_gold / (m.length / 1000 / 60 + 1.5))  as gpm,
                     s.kills, s.assists, s.deaths,
                     IF(s.deaths=0, (s.kills+s.assists), ROUND((s.kills+s.assists) / s.deaths,1)) as kda,
-                    s.total_creep as creeps,
-                    s.total_neut as neutrals
+                    s.total_creep as creeps, s.total_neut as neutrals
                     FROM spl.players p
                     join stats s on s.player_id = p.strife_id
                     join matches m on m.id = s.match_id
                     join teams t on t.id = s.team_id
-                    where p.strife_id= ?';
+                    join heroes h on h.id = s.hero_id
+                    join pets pets on pets.id = s.pet_id
+                    where p.strife_id= ?";
         
         $query = $this->db->
                 query($sql, $playerId);

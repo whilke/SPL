@@ -44,7 +44,7 @@
                     <tr>
                         {% for stat in stats %}
                             {% if stat.team_id == away_team.id %}
-                                <td><div title id="hero_port"  class="hero-{{stat.hero}} hero-small" data-id="""{{stat.strife_id}}"></div></td>
+                                <td><div title id="hero_port"  class="hero-{{stat.hero}} hero-small" data-id="{{stat.strife_id}}"></div></td>
                             {% endif %}                            
                         {% endfor %}
                     </tr>

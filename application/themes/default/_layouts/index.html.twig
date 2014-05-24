@@ -137,7 +137,8 @@
                         <li><a href="{{'main/rules'|site_url}}" class="myNavLinks" style="padding-top:0px;">Rules</a></li>
                         <li><a href="{{'main/prizepool'|site_url}}" class="myNavLinks" style="padding-top:0px;">Prize Pool</a></li>
                   </ul>
-                  <ul class="nav navbar-nav navbar-right">                    
+                  <ul class="nav navbar-nav navbar-right">
+                      <li><a href="/" id="viewerCount" class="hidden-sm" style="color:red; padding-top:0px;height:20px;" ></a></li>
                     {% if user.isvalid != "true" %}
                         <li><a class="myNavLinks" style="padding-top:0px;" href="{{'auth/login'|site_url}}" rel="async" ajaxify="{{'auth/auth_ajax/ion_auth_dialog/login'|site_url}}">Login</a></li>
                         <li><a class="myNavLinks" style="padding-top:0px;" href="{{'auth/create_user'|site_url}}" rel="async" ajaxify="{{'auth/auth_ajax/ion_auth_dialog/create_user'|site_url}}">Signup</a></li>
@@ -195,7 +196,10 @@
         <script src="{{'js/bootstrap.min.js'|assets_url()}}"></script>
         <script src="{{'js/main.js'|assets_url()}}"></script>
         <script src="{{'js/modules/skeleton.js'|assets_url()}}"></script>
-        <!-- Extra javascript -->        
+        <!-- Extra javascript -->  
+        <script type="text/javascript">
+            var skipPlayerLoad = true;
+        </script>
         {% block js %}
         {% endblock %}
         
@@ -206,6 +210,71 @@
                $($(this).attr('href'))[0].scrollIntoView();
                scrollBy(0, -offset);
             });
+  
+$( document ).ready( function() {
+    var player = $("#streamPlayer");
+    var viewcount = $("#viewerCount");
+    if (!viewcount.is(':hidden'))
+    {
+        //normal device so lets start checking if we are live.
+        setTimeout('query_twitch();', 2000);
+    }
+});
+
+var player_loaded = false;
+function query_twitch()
+{
+    $.getJSON( "http://api.justin.tv/api/stream/summary.json?channel=strifeproleague&jsonp=?", function( data ) {
+        if (data.streams_count > 0)
+        {
+            if (!player_loaded && !skipPlayerLoad)
+            {
+                player_loaded = true;
+                
+                var html = ['<br/>',
+    '<div class="" style="margin-left:-70px; float:left;">',
+        '<object type="application/x-shockwave-flash" ',
+        'height="552"', 
+       ' width="930" ',
+      '  id="live_embed_player_flash" ',
+      '  data="http://www.twitch.tv/widgets/live_embed_player.swf?channel=strifeproleague" ',
+      '  bgcolor="#FFFFFF">',
+      '  <param  name="allowFullScreen" ',
+      '          value="true" />',
+       ' <param  name="allowScriptAccess" ',
+      '          value="always" />',
+      '  <param  name="allowNetworking" ',
+       '         value="all" />',
+       ' <param  name="movie" ',
+       '         value="http://www.twitch.tv/widgets/live_embed_player.swf" />',
+       ' <param  name="flashvars" ',
+       '         value="hostname=www.twitch.tv&channel=strifeproleague&auto_play=true&start_volume=70" />',
+      '</object>',
+    '</div>',
+    '<div style="margin-left: 860px;">',
+       ' <iframe frameborder="0" ',
+             '   scrolling="no" ',
+            '    id="chat_embed" ',
+             '   src="http://twitch.tv/chat/embed?channel=strifeproleague&amp;popout_chat=true" ',
+             '   height="552" ',
+              '  width="400">',
+       ' </iframe>  ',                  
+    '</div>',
+    '<hr/>'
+                ].join('\n');
+                var player = $("#streamPlayer");
+                player.html(html);
+            }
+            
+            var viewers = data.viewers_count;
+            $("#viewerCount").html("Live Viewers: " + viewers);
+        }
+    });
+    
+    
+    setTimeout('query_twitch();', 20000);
+}            
+            
         </script>
 
         

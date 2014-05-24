@@ -1,55 +1,10 @@
 {% extends _layout %}
 
 {% block content %}
-   <div id="jp_container_1" class="jp-video" style="position: fixed; left: 0; top: 0;">
-    <div class="jp-type-single">
-      <div id="jquery_jplayer_1" class="jp-jplayer""></div>
-    </div>
-  </div>
 <script src="{{'js/jquery.countdown.js'|assets_url()}}"></script>
-<script type="text/javascript">
-    
-    $(document).ready(function(){
-      $("#jquery_jplayer_1").jPlayer({
-        ready: function () {
-          $(this).jPlayer("setMedia", {
-           flv: "/assets/splash.flv"
-          });        
-        },
-        size:{
-            width: 0,
-            height: 0
-        },
-        swfPath: "/assets",
-         supplied: "flv",
-        error: function (event) {
-                console.log(event.jPlayer.error);
-                console.log(event.jPlayer.error.type);
-                },
-        ended: function (event) {                    
-                $("#jquery_jplayer_1").jPlayer("option", {"size" : {
-                    width: "0px",
-                    height: "0px"
-                }});
-                $("#flap").show();
-                }                
-      });      
-
-      
-      $('#playBtn').click(function(){
-             
-             $("#flap").hide();
-
-            $("#jquery_jplayer_1").jPlayer("option", {"size" : {
-                width: $(window).width() +"px",
-                height: $(window).height() +"px"
-            }});
-            $("#jquery_jplayer_1").jPlayer("play");
-       });        
-    });
-</script>
-
 <div id="flap" name="flap">
+<div id="streamPlayer" class="row hidden-sm">
+</div>
 <div class="row">
     <div class="col-md-12">
         <div>
@@ -87,22 +42,9 @@
 </div>
 
 </div>
+{% endblock %}
+{% block js %}    
 <script type="text/javascript">
-$(function() {
-        $('.countdown-styled').countdown({
-        date: "May 18, 2014 00:00:00 GMT",
-        render: function(data) {
-          var el = $(this.el);
-          el.empty()
-            .append("<div>" + this.leadingZeros(data.days, 2) + " <span>days</span></div>")
-            .append("<div>" + this.leadingZeros(data.hours, 2) + " <span>hrs</span></div>")
-            .append("<div>" + this.leadingZeros(data.min, 2) + " <span>min</span></div>")
-            .append("<div>" + this.leadingZeros(data.sec, 2) + " <span>sec</span></div>");
-        }
-    });
-        
-});
-</script>
-   
-    
+skipPlayerLoad = false;
+</script>     
 {% endblock %}

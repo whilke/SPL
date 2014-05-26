@@ -551,7 +551,7 @@ class Seasons_model extends CI_Model
         $seasonId = $season->id;
         
         $date = new DateTime();
-        //$date->add(new DateInterval('P2W'));
+        $date->add(new DateInterval('P2W'));
         if (!$hideStats)
         {
             $date->add(new DateInterval('P1Y'));            

@@ -1,0 +1,38 @@
+{% extends _layout %}
+
+{% block content %}
+<div class="row">
+<div class="col-lg-offset-2 col-lg-8">
+<h1>ReplyMessage</h1>
+
+{% if data.message != "" %}
+<div class="alert alert-info" id="infoMessage">{{ data.message}}</div>
+{% endif%}
+
+{% set l = 'mail/reply/' ~ id  %}       
+{{l|form_open()}}
+
+<p>
+    Subject   
+    {{data.subject|bs_form_input()}}
+</p>
+<p>
+    Message 
+    {{data.msg|bs_form_textarea()}}
+</p>
+
+<div class="pull-right">{{'submit'|bs_form_submit('Reply')}}</div>
+{{form_close()}}
+
+
+</div>
+</div>
+
+<script type="text/javascript">
+$(document).ready(function(){
+    setTimeout('$("#msg").focus();', 20000);
+
+    
+});
+</script>
+{% endblock %}

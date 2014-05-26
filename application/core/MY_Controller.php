@@ -43,6 +43,7 @@ class MY_Controller extends MX_Controller {
         
         $this->load->library('session');
         $this->load->library('authentication', NULL, 'ion_auth');
+        $this->load->library('mahana_messaging');
         
         if ($this->ion_auth->logged_in())
         {
@@ -68,12 +69,18 @@ class MY_Controller extends MX_Controller {
                 $isManager = true;
             }
             
+            $msg = $this->mahana_messaging->get_msg_count($user->id);
+            $count = 0;
+            if ($msg['err'] == 0)
+                $count = $msg['retval'];
+            
             $this->twiggy->set('user', array(
                 'uname' => $user->teamname, 
                 'isvalid' => true, 
                 'isAdmin' => $isAdmin, 
                 'isGlobalManager' => $isGlobalManager, 
-                'isManager' => $isManager
+                'isManager' => $isManager,
+                'mailCount' => $count
                ), TRUE);
         }
         else
@@ -83,7 +90,8 @@ class MY_Controller extends MX_Controller {
                 'isvalid' => false,
                 'isAdmin' => false, 
                 'isGlobalManager' => false, 
-                'isManager' => false                 
+                'isManager' => false,                 
+                'mailCount' => 0
              ), TRUE);
         }
     }

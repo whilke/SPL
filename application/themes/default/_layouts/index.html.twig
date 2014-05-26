@@ -143,6 +143,14 @@
                         <li><a class="myNavLinks" style="padding-top:0px;" href="{{'auth/login'|site_url}}" rel="async" ajaxify="{{'auth/auth_ajax/ion_auth_dialog/login'|site_url}}">Login</a></li>
                         <li><a class="myNavLinks" style="padding-top:0px;" href="{{'auth/create_user'|site_url}}" rel="async" ajaxify="{{'auth/auth_ajax/ion_auth_dialog/create_user'|site_url}}">Signup</a></li>
                     {% else %}
+                    
+                    <li id="mailCount"{% if user.mailCount == 0%}style="display: none"{%endif%} >
+                        <a href="{{'mail'|site_url}}" style="padding-top:0px;margin-top:2px;height:20px;">
+                            <span id="mailCountText" style="font-size:16px;color:red;">{{user.mailCount}}</span> 
+                            <img style="margin-top:-5px;" width="15" height="15" src="{{'images/new_mail.png'|assets_url()}}" />
+                        </a>
+                    </li>
+                    
                         <li class="dropdown">
                           <a class="myNavLinks" style="padding-top:0px;" href="#" class="dropdown-toggle" data-toggle="dropdown">{{user.uname}} <b class="caret"></b></a>
                           <ul class="dropdown-menu">
@@ -152,6 +160,7 @@
                             <li><a class="myNavLinks" style="padding-top:0px;" href="{{'team/edit'|site_url}}">Edit Team</a></li>
                             <li><a href="{{'team/portal'|site_url}}">Team Portal</a></li>
                             {% endif %}
+                            <li><a href="{{'mail'|site_url}}">Messages</a></li>
                             <li><a class="myNavLinks" style="padding-top:0px;" href="{{'auth/logout'|site_url}}">Logout</a></li>
                           </ul>
                         </li>
@@ -217,13 +226,28 @@ $( document ).ready( function() {
     if (!viewcount.is(':hidden'))
     {
         //normal device so lets start checking if we are live.
-        setTimeout('query_twitch();', 2000);
+        setTimeout('query_twitch();', 10);
     }
 });
+
+function checkMsgCount()
+{
+    
+    $.getJSON( "{{'mail/ajax_msgcount'|site_url}}", function( data ) {
+        if (data.count > 0)
+        {
+            $("#mailCount").show();
+            $("#mailCountText").html(data.count);
+        }
+        
+    });
+}
 
 var player_loaded = false;
 function query_twitch()
 {
+    checkMsgCount();
+    
     $.getJSON( "http://api.justin.tv/api/stream/summary.json?channel=strifeproleague&jsonp=?", function( data ) {
         if (data.streams_count > 0)
         {
@@ -232,9 +256,9 @@ function query_twitch()
                 player_loaded = true;
                 
                 var html = ['<br/>',
-    '<div class="" style="margin-left:-70px; float:left;">',
+    '<div class="col-md-8 col-md-offset-1" >',
         '<object type="application/x-shockwave-flash" ',
-        'height="552"', 
+        'height="550"', 
        ' width="930" ',
       '  id="live_embed_player_flash" ',
       '  data="http://www.twitch.tv/widgets/live_embed_player.swf?channel=strifeproleague" ',
@@ -251,19 +275,21 @@ function query_twitch()
        '         value="hostname=www.twitch.tv&channel=strifeproleague&auto_play=true&start_volume=70" />',
       '</object>',
     '</div>',
-    '<div style="margin-left: 860px;">',
+    '<div class="col-md-8 col-md-offset-1">',
        ' <iframe frameborder="0" ',
              '   scrolling="no" ',
             '    id="chat_embed" ',
              '   src="http://twitch.tv/chat/embed?channel=strifeproleague&amp;popout_chat=true" ',
-             '   height="552" ',
-              '  width="400">',
+             '   height="300" ',
+              '  width="930">',
        ' </iframe>  ',                  
     '</div>',
     '<hr/>'
                 ].join('\n');
                 var player = $("#streamPlayer");
                 player.html(html);
+                
+                $("#flap").hide();
             }
             
             var viewers = data.viewers_count;

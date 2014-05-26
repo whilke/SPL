@@ -1,0 +1,31 @@
+{% extends _layout %}
+
+{% block content %}
+<div class="row">
+<div class="col-lg-offset-2 col-lg-8">
+<h1>New Message</h1>
+<p>To: {{team.name}}</p>
+
+{% if data.message != "" %}
+<div class="alert alert-info" id="infoMessage">{{ data.message}}</div>
+{% endif%}
+
+{% set l = 'mail/create/' ~ id  %}       
+{{l|form_open()}}
+
+<p>
+    Subject   
+    {{data.subject|bs_form_input()}}
+</p>
+<p>
+    Message 
+    {{data.msg|bs_form_textarea()}}
+</p>
+
+<div class="pull-right">{{'submit'|bs_form_submit('Send')}}</div>
+{{form_close()}}
+
+
+</div>
+</div>
+{% endblock %}

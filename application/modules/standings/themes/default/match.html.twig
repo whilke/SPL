@@ -176,6 +176,31 @@
         return TZ;
     }
     
+    function updateHeroPort(data, e)
+    {
+        var moveLeft = -30;
+        var moveDown = -120;                
+
+        var html = "<div style='margin-top:5px;margin-left:5px;margin-bottom:5px;'>";
+        html += "Player: " + data.name +"<br/>";
+        html += "Hero: " + data.stats.hero +"<br/>";
+        html += "Pet: " + data.stats.pet +"<br/>";
+        html += "GPM: " + data.stats.gpm +"<br/>";
+        html += "KDA: " + data.stats.kda +"<br/>";
+        html += "Kills: " + data.stats.kills +"<br/>";
+        html += "Assists:" + data.stats.assists +"<br/>";
+        html += "Deaths: " + data.stats.deaths +"<br/>";
+        html += "Creeps: " + data.stats.creeps +"<br/>";
+        html += "Neutrals: " + data.stats.neutrals +"<br/>";
+        html += "</div>"
+
+        $("#hero_pop").html(html);
+
+        $("#hero_pop").show()
+            .css('top', e.pageY + moveDown)
+            .css('left', e.pageX + moveLeft);
+    }
+    
     $( document ).ready(function() {
         $schDate = $("#mscheduleDate").html();
         if ($schDate != 0)
@@ -195,34 +220,23 @@
         
         $('div[id^="hero_port"]').each( function(idx, obj) {
             $(this).hover( function(e) { //hover
-            var moveLeft = -30;
-            var moveDown = -120;                
             {% set s = 'api/player/id/' %}
             var url = "{{s|site_url}}" + "/" + $(this).data('id')
                     +"/match/" + {{match.id}} +"?format=json";
                 
-                $.getJSON( url, function(data) {
-                    
-                    var html = "<div style='margin-top:5px;margin-left:5px;margin-bottom:5px;'>";
-                    html += "Player: " + data.name +"<br/>";
-                    html += "Hero: " + data.stats.hero +"<br/>";
-                    html += "Pet: " + data.stats.pet +"<br/>";
-                    html += "GPM: " + data.stats.gpm +"<br/>";
-                    html += "KDA: " + data.stats.kda +"<br/>";
-                    html += "Kills: " + data.stats.kills +"<br/>";
-                    html += "Assists:" + data.stats.assists +"<br/>";
-                    html += "Deaths: " + data.stats.deaths +"<br/>";
-                    html += "Creeps: " + data.stats.creeps +"<br/>";
-                    html += "Neutrals: " + data.stats.neutrals +"<br/>";
-                    html += "</div>"
-                    
-                    $("#hero_pop").html(html);
-
-                   $("#hero_pop").show()
-                    .css('top', e.pageY + moveDown)
-                    .css('left', e.pageX + moveLeft);
-                });
-
+                var hero_this = $(this);
+                var json = hero_this.data('json');
+                if (json == null)
+                {
+                    $.getJSON( url, function(data) {
+                        hero_this.data('json', data);
+                        updateHeroPort(data, e);           
+                    });
+                }    
+                else
+                {
+                    updateHeroPort(json, e);           
+                }
                }, 
                function(){ //end
                 $("#hero_pop").hide();

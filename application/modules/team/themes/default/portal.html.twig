@@ -1,6 +1,13 @@
 {% extends _layout %}
 {% block content %}
-    <h2 style='text-align:center;'>{{team.name}} ( {{team.region}} )</h2><br/>
+    {% set s = 'mail/create/' ~ team.id   %}
+    {% set s2 = 'mail/mail_ajax/ion_mail_dialog/create/' ~ team.id %}
+    <h2 style='text-align:center;'>{{team.name}} ( {{team.region}} ) 
+        <a href="{{s|site_url}}" rel="async" ajaxify="{{s2|site_url}}">
+            <img width="50px" height="50px" src="{{'images/mail.png'|assets_url()}}" />
+        </a>
+    </h2> 
+    <br/>
     <div class="col-md-12">        
         <div class="col-md-4">
             <div class="panel panel-info">

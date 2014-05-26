@@ -475,7 +475,7 @@ class Seasons_model extends CI_Model
         }
         else
         {
-            $arr->perc = $arr->wins / ($arr->wins + $arr->loss) * 100.0;        
+            $arr->perc = round($arr->wins / ($arr->wins + $arr->loss) * 100.0);        
         }
 
         return $arr;        

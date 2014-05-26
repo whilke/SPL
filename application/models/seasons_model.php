@@ -422,7 +422,7 @@ class Seasons_model extends CI_Model
         $season = $this->get($seasonId);
 
         $date = new DateTime();
-        $date->sub(new DateInterval('P8D'));
+        //$date->sub(new DateInterval('P8D'));
         if (!$hideStats)
             $date->add(new DateInterval('P1Y'));
             
@@ -526,7 +526,7 @@ class Seasons_model extends CI_Model
             $row->gamedate = $oDate->format('m/d/Y H:i:s'). " GMT";
 
             $weekDate = new DateTimE($row->endweek);
-            $weekDate->add(new DateInterval('P8D'));
+            //$weekDate->add(new DateInterval('P8D'));
             if ($weekDate > $today)
             {
                 if ($row->active == false && $hideStats)
@@ -551,7 +551,7 @@ class Seasons_model extends CI_Model
         $seasonId = $season->id;
         
         $date = new DateTime();
-        $date->add(new DateInterval('P2W'));
+        //$date->add(new DateInterval('P2W'));
         if (!$hideStats)
         {
             $date->add(new DateInterval('P1Y'));            
@@ -588,7 +588,7 @@ class Seasons_model extends CI_Model
             $row->gamedate = $oDate->format('m/d/Y H:i:s') . " GMT";
 
             $weekDate = new DateTimE($row->endweek);
-            $weekDate->add($intervalDate);
+            //$weekDate->add($intervalDate);
             if ($weekDate > $today)
             {
                 if ($row->active == false && $hideStats)
@@ -656,7 +656,7 @@ class Seasons_model extends CI_Model
                 $today = new DateTime();
                 $intervalDate = new DateInterval('P8D');        
                 $weekDate = new DateTimE($match->endweek);
-                $weekDate->add($intervalDate);
+                //$weekDate->add($intervalDate);
                 if ($weekDate > $today)
                 {
                     if ($match->active == false && $hideStats)

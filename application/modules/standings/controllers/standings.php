@@ -329,9 +329,11 @@ class Standings extends MY_Controller
         $states = $this->Seasons_model->getStates();
         $this->data['states'] = $states;
 
-        $heroList = $this->Stats_model->getHeroList();
-        $selectHero = 'Select a hero';
-        array_unshift($heroList,$selectHero);
+        $heroList[0] = 'Select a hero';
+        $heroes = $this->Stats_model->getHeroList();
+        foreach($heroes AS $hero)
+            $heroList[] = $hero;
+        $test = $heroList;
         $this->data['heroList'] = $heroList;
         
         

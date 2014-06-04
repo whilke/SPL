@@ -217,5 +217,27 @@ class Stats_model extends CI_Model
         
         
     }
+    
+        
+    function GetHeroPlayStats($seasonId)
+    {
+        $sql="
+            select TRIM( LEADING 'Hero_' FROM h.name) as name, 
+            s.team_id, m.home_team_id, m.away_team_id, m.home_team_state_id, m.away_team_state_id from stats s
+            join heroes h on h.id = s.hero_id
+            join matches m on m.id = s.match_id
+            order by name
+        ";
+        
+        $query = $this->db->
+                query($sql, $seasonId);
+           
+        $arr = Array();
+        foreach($query->result() as $row)
+        {
+            $arr[] = $row;
+        }
+        return $arr;        
+    }
    
 }

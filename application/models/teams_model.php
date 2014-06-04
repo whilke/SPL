@@ -189,7 +189,51 @@ class Teams_model extends CI_Model
         return NULL;        
     }
     
-    function getPlayerMatchStats($playerId, $matchid=0)
+    function getTeamForPlayer($playerId)
+    {
+        $sql= "SELECT t.name  FROM 
+        stats s
+        join players p on p.strife_id = s.player_id
+        join teams t on t.id = s.team_id
+        where p.strife_id=?
+        order by match_id desc
+        LIMIT 1";
+        
+        $query = $this->db->
+                query($sql, $playerId);
+
+           
+        if ($query->num_rows() === 1)
+        {
+            return $query->row();
+        }
+        
+        return NULL;   
+    }
+    
+    function getActivePlayersInSeason($seasonId)
+    {
+        $sql = "select DISTINCT(p.name) as name, p.strife_id
+	from players p
+	join stats s on s.player_id = p.strife_id
+	join matches m on m.id = s.match_id
+	where m.seasoN_id=?";
+        
+        $query = $this->db->
+                query($sql, $seasonId);
+
+           
+        $arr = Array();
+        foreach($query->result() as $row)
+        {
+            $arr[] = $row;
+        }
+        return $arr;
+        
+        return NULL;    
+    }
+    
+    function getPlayerMatchStats($playerId, $matchid=0, $seasonId=0)
     {
         $sql = "SELECT m.id,t.name as teamname, TRIM( LEADING 'Hero_' FROM h.name) as hero, 
                     TRIM( LEADING 'Familiar_' FROM pets.name) as pet,
@@ -209,6 +253,10 @@ class Teams_model extends CI_Model
         if ($matchid != 0)
         {
             $sql = $sql . " AND m.id= " . $matchid; 
+        }
+        else if ($seasonId != 0)
+        {
+            $sql = $sql . " AND m.season_id= " . $seasonId;             
         }
         
         $query = $this->db->

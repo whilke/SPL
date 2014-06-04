@@ -1,0 +1,136 @@
+{% extends _layout %}
+
+{% block content %}
+<br/>
+<div class="col-md-12">
+<ul class="nav nav-tabs">
+  <li class="active"><a href="#gpm" data-toggle="tab">GPM</a></li>
+  <li><a href="#kda" data-toggle="tab">KDA</a></li>
+  <li><a href="#creeps" data-toggle="tab">Creeps</a></li>
+  <li><a href="#heropicks" data-toggle="tab">Hero Stats</a></li>
+</ul>
+    
+<!-- Tab panes -->
+<div class="tab-content"  >
+    <div class="tab-pane active" id="gpm">
+        <div class="col-md-8 col-md-offset-2">
+        <table id="gpm-table" style="margin-bottom:-75px; padding-bottom: 75px;">
+            <thead>
+                <tr>
+                    <th style="color: black;">Player</th>
+                    <th style="color: black;">Team</th>
+                    <th style="color: black;">GPM</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for stat in stats %}
+                    <tr>
+                        <td>{{stat.name}}</td>
+                        <td>{{stat.team}}</td>
+                        <td>{{stat.stats.gpm}}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        </div>
+    </div>
+    <div class="tab-pane" id="kda">
+        <div class="col-md-10 col-md-offset-1">
+        <table id="kda-table" style="margin-bottom:-75px; padding-bottom: 75px;">
+            <thead>
+                <tr>
+                    <th style="color: black;">Player</th>
+                    <th style="color: black;">Team</th>
+                    <th style="color: black;">KDA</th>
+                    <th style="color: black;">Kills</th>
+                    <th style="color: black;">Assists</th>
+                    <th style="color: black;">Deaths</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for stat in stats %}
+                    <tr>
+                        <td>{{stat.name}}</td>
+                        <td>{{stat.team}}</td>
+                        <td>{{stat.stats.kda}}</td>
+                        <td>{{stat.stats.kills}}</td>
+                        <td>{{stat.stats.assists}}</td>
+                        <td>{{stat.stats.deaths}}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        </div>
+    </div>
+    <div class="tab-pane" id="creeps">
+        <div class="col-md-8 col-md-offset-2">
+        <table id="creeps-table" style="margin-bottom:-75px; padding-bottom: 75px;">
+            <thead>
+                <tr>
+                    <th style="color: black;">Player</th>
+                    <th style="color: black;">Team</th>
+                    <th style="color: black;">Creeps</th>
+                    <th style="color: black;">Nuetrals</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for stat in stats %}
+                    <tr>
+                        <td>{{stat.name}}</td>
+                        <td>{{stat.team}}</td>
+                        <td>{{stat.stats.creeps}}</td>
+                        <td>{{stat.stats.neuatrals}}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        </div>
+    </div>
+    <div class="tab-pane" id="heropicks">
+        <div class="col-md-5 col-md-offset-3">
+        <table id="heropicks-table" style="margin-bottom:-75px; padding-bottom: 75px;">
+            <thead>
+                <tr>
+                    <th style="color: black;">Hero</th>
+                    <th style="color: black;">Picked</th>
+                    <th style="color: black;">Win %</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for hero in herostats %}
+                    <tr>
+                        <td>{{hero.name}}</td>
+                        <td>{{hero.count}}</td>
+                        <td>{{hero.winper}}%</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+$(document).ready(function(){
+    $('#gpm-table').dataTable( {
+  "lengthMenu": [ [25, 50, -1], [25, 50, "All"] ],
+  "order": [ 2, 'desc' ]
+    } );
+
+    $('#kda-table').dataTable( {
+  "lengthMenu": [ [25, 50, -1], [25, 50, "All"] ],
+  "order": [ 2, 'desc' ]
+    } );
+
+    $('#creeps-table').dataTable( {
+  "lengthMenu": [ [25, 50, -1], [25, 50, "All"] ],
+  "order": [ 2, 'desc' ]
+    } );
+    
+    $('#heropicks-table').dataTable( {
+  "lengthMenu": [ [25, 50, -1], [25, 50, "All"] ],
+  "order": [ 2, 'desc' ],
+    } );    
+});
+</script>
+{% endblock %}

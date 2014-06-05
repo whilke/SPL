@@ -51,7 +51,7 @@ class Stats_model extends CI_Model
             {
                 $data['name'] = $stat->name;
                 $this->db->trans_begin();
-                $this->db->update('players', $data, array('id' => $stat->accountid));
+                $this->db->update('players', $data, array('strife_id' => $stat->accountid));
                 if ($this->db->trans_status() === FALSE)
                 {
                     $this->db->trans_rollback();

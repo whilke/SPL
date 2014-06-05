@@ -63,11 +63,28 @@ class Team extends MY_Controller
         if ($isManager ||  $teamid == $userTeamId)
             $hideStats = false;
 
+        //check if this user is the team owner.
+        $isTeamOwner = false;
+        if (isset($user))
+        {
+            $isTeamOwner = $this->ion_auth->in_group( array(5), $user->id);
+            if ($isTeamOwner)
+            {
+                if ($teamid != $userTeamId)
+                    $isTeamOwner = false;
+            }
+        }
+        
+        if ($isManager)
+            $isTeamOwner = true;
+        
         $this->load->model('Seasons_model');
         
         $matches = $this->Seasons_model->getMatchesForPortal($teamid, !$isManager);
         $this->twiggy->set('matches', $matches);
 
+                
+        $this->twiggy->set('isTeamOwner', $isTeamOwner);
         $this->twiggy->set('team', $team);
         
         $seasons = $this->Seasons_model->GetAllSeasons();
@@ -88,12 +105,7 @@ class Team extends MY_Controller
         $this->twiggy->template('portal')->display();
 
     }
-    
-    function standings()
-    {
-        
-    }
-    
+       
     public function edit($id=0)
     {
         get_instance()->load->library('form_validation');
@@ -272,4 +284,15 @@ class Team extends MY_Controller
                 
     }
     
+    function upgrade($userName, $fromAjax=false)
+    {
+        if (is_array($userName))
+        {
+            $fromajax = $userName['fromajax'];
+            $userName = $userName['userName'];
+        }        
+        $userName = rawurldecode($userName);
+        
+        
+    }
 }

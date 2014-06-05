@@ -56,13 +56,34 @@ class Teams_model extends CI_Model
                 from('teams')->
                 get();
         
+        
         if ($query->num_rows() === 1)
         {
             $team = $query->row();
-            return $team;
+            
+            //fixup a basic team to support player objects.
+            $realTeam = new stdClass();
+            $realTeam->id = $team->id;
+            $realTeam->name = $team->name;
+            $realTeam->logo = $team->logo;
+            $realTeam->contact = $team->contact;
+            $realTeam->region = $team->region;
+            $realTeam->players = array();
+            
+            //check each slot for a real account.
+            $this->_mergePlayerToTeam($realTeam, $team->captain, $team->captain_strife_id);
+            $this->_mergePlayerToTeam($realTeam, $team->slot1, $team->slot1_strife_id);
+            $this->_mergePlayerToTeam($realTeam, $team->slot2, $team->slot2_strife_id);
+            $this->_mergePlayerToTeam($realTeam, $team->slot3, $team->slot3_strife_id);
+            $this->_mergePlayerToTeam($realTeam, $team->slot4, $team->slot4_strife_id);
+            $this->_mergePlayerToTeam($realTeam, $team->slot5, $team->slot5_strife_id, true);
+            $this->_mergePlayerToTeam($realTeam, $team->slot6, $team->slot6_strife_id, true);
+            
+            return $realTeam;
         }
         
-        return NULL;
+        return NULL;   
+
         
     }
     
@@ -77,10 +98,136 @@ class Teams_model extends CI_Model
         if ($query->num_rows() === 1)
         {
             $team = $query->row();
-            return $team;
+            
+            //fixup a basic team to support player objects.
+            $realTeam = new stdClass();
+            $realTeam->id = $team->id;
+            $realTeam->name = $team->name;
+            $realTeam->logo = $team->logo;
+            $realTeam->contact = $team->contact;
+            $realTeam->region = $team->region;
+            $realTeam->players = array();
+            
+            //check each slot for a real account.
+            $this->_mergePlayerToTeam($realTeam, $team->captain, $team->captain_strife_id);
+            $this->_mergePlayerToTeam($realTeam, $team->slot1, $team->slot1_strife_id);
+            $this->_mergePlayerToTeam($realTeam, $team->slot2, $team->slot2_strife_id);
+            $this->_mergePlayerToTeam($realTeam, $team->slot3, $team->slot3_strife_id);
+            $this->_mergePlayerToTeam($realTeam, $team->slot4, $team->slot4_strife_id);
+            $this->_mergePlayerToTeam($realTeam, $team->slot5, $team->slot5_strife_id, true);
+            $this->_mergePlayerToTeam($realTeam, $team->slot6, $team->slot6_strife_id, true);
+            
+            return $realTeam;
         }
         
         return NULL;   
+    }
+    
+    private function _mergePlayerToTeam($team, $slotName, $slotId, $isSub=false)
+    {
+        if ($slotName == null) return;
+        
+        $p = NULL;
+        $plr = $this->_findPlayerForTeam($team->id, $slotName);
+        if ($plr == NULL)
+        {
+            $p = new stdClass();
+            $p->name = $slotName;
+            $p->strife_id = $slotId;
+            $p->converted = false;
+            if ($isSub)
+            {
+                $p->bestGroup = ['isSub' => true];            
+            }
+            else
+            {
+                $p->bestGroup = ['isMember' => true];
+            }
+        }
+        else
+        {
+            $p = new stdClass();
+            $p->name = $plr->username;
+            $p->strife_id = $plr->strife_id;
+            $p->converted = true;
+            $p->bestGroup = $plr->bestGroup;
+        }
+
+        $team->players[] = $p;
+    }
+    private function _findPlayerForTeam($teamid, $pname)
+    {
+        if ($pname == "") return NULL;
+
+        $query = $this->db->
+            from('users u')->
+            where('u.username', $pname)->
+            where('u.team_id', $teamid)->
+            limit(1)->
+            get();
+        
+        if ($query->num_rows() === 1)
+        {
+            $player = $query->row();
+            $player->bestGroup = $this->_findBestGroupForPlayer($player->id);
+            return $player;
+        }
+        return NULL;
+    }
+    
+    private function _findBestGroupForPlayer($playerId)
+    {
+        $query = $this->db->
+            from('users_groups ug')->
+            join('groups g', 'g.id = ug.group_id')->
+            where('ug.user_id', $playerId)->
+            get();
+
+        $bIsSub = false;
+        $bIsMember = false;
+        $bIsManager = false;
+        $bIsOwner = false;
+        
+        foreach($query->result() as $row)
+        {
+            if ($row->name == "teamsub")
+            {
+                $bIsSub = true;
+            }
+            else if ($row->name == "members")
+            {
+                $bIsMember = true;
+            }
+            else if ($row->name == "teampow")
+            {
+                $bIsManager = true;
+            }
+            else if ($row->name == "teamowner")
+            {
+                $bIsOwner = true;            
+            }
+        }
+        
+        if ($bIsOwner)
+        {
+            return ['isOwner'=> true];
+        }
+        else if ($bIsManager)
+        {
+            return ['isManager'=> true];
+        }
+        else if ($bIsMember)
+        {
+            return ['isMember'=> true];
+        }
+        else if ($bIsSub)
+        {
+            return ['isSub'=> true];
+        }
+        else
+        {
+            return ['isSub'=> false];
+        }
     }
     
     function addNewTeam($teamname, $userid)

@@ -75,7 +75,9 @@
                     <h3 class="panel-title">Captain</h3>
                 </div>
                 <div class="panel-body">
-                    {{team.captain}}
+                    {% for player in team.players if player.bestGroup.isOwner %}
+                        <a href="#">{{player.name}}</a>
+                    {% endfor %}
                 </div>
             </div>
            <div class="panel panel-info">
@@ -83,17 +85,31 @@
                     <h3 class="panel-title">Active Roster</h3>
                 </div>
                 <div class="panel-body">
-                    {{team.slot1}}<br/>
-                    {{team.slot2}}<br/>
-                    {{team.slot3}}<br/>
-                    {{team.slot4}}<br/>
+                    {% for player in team.players if player.bestGroup.isMember %}
+                        {% if player.converted == false and isTeamOwner == true %}
+                            {% set s = 'team/upgrade/' ~ player.name   %}
+                            {% set s2 = 'team/team_ajax/ion_team_dialog/upgrade/' ~ player.name %}
+                            <a class="btn btn-warning center-block" href="{{s|site_url}}" rel="async" ajaxify="{{s2|site_url}}">
+                                Upgrade {{player.name}} 
+                            </a>
+                        {% else %}
+                            <a href="#">{{player.name}}</a>
+                        {% endif %}
+                        <br/>
+                    {% endfor %}
                 </div>
                 <div class="panel-heading">
                     <h3 class="panel-title">Active Subs</h3>
                 </div>
                 <div class="panel-body">
-                    {{team.slot5}}<br/>
-                    {{team.slot6}}<br/>
+                    {% for player in team.players if player.bestGroup.isSub %}
+                        {% if player.converted == false and isTeamOwner == true %}
+                            <a class="btn btn-warning center-block" href="#">Upgrade {{player.name}} </a>
+                        {% else %}
+                            <a href="#">{{player.name}}</a>
+                        {% endif %}
+                        <br/>
+                    {% endfor %}
                 </div>
             </div>
         </div>

@@ -50,6 +50,36 @@ class Tools extends MY_Controller
         }        
     }
     
+    
+    public function migrateOwners()
+    {
+        $this->load->model('Ion_auth_model');
+        
+        $season = $this->Seasons_model->GetCurrentSeason();
+        $rawteams = $this->Seasons_model->getTeamsByPoints($season->id, false);
+        //scrub out teams below our point cap
+        $teams = array();
+        foreach($rawteams AS $team)
+        {
+            if ($team->points > 150)
+                $teams[] = $team;
+        }
+        
+        //now go through this list of teams and upgrade the captain to the owner.
+        foreach($teams AS $team)
+        {
+            $id = $team->teamId;
+            //find the userid set with this.
+            $teamBlob = $this->Teams_model->getById($id);
+            $userName = $teamBlob->players[0]->name;
+         
+            $oUser = $this->Ion_auth_model->where('teamname',$teamBlob->name)->limit(1)->users()->row();
+            $this->Ion_auth_model->update($oUser->id, ['username'=>$userName, 'team_id'=>$id]);  
+            $this->Ion_auth_model->add_to_group(5, $oUser->id);
+        }
+        
+    }
+    
     public function createTimeBuckets()
     {
         $arr = array();

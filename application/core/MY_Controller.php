@@ -102,6 +102,22 @@ class MY_Controller extends MX_Controller {
              ), TRUE);
         }
     }
+    
+/**
+     * Model Loader
+     *
+     * Overwrites the default behaviour
+     *
+     * @param   string  the name of the class
+     * @param   string  name for the model
+     * @param   bool    database connection
+     * @return  void
+     */
+    function model ($model, $name = '', $db_conn = FALSE) {
+        if (is_array($model) || !class_exists($model)) {
+            parent::model($model, $name, $db_conn);
+        }
+    }    
 
     /**
      * Load Javascript inside the page's body

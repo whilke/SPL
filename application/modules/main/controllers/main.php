@@ -7,6 +7,7 @@ class Main extends MY_Controller
         parent::__construct();
         
         $this->load->library('session');
+        $this->load->model('Teams_model');
     }
     
     function index()

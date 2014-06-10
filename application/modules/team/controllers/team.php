@@ -17,7 +17,8 @@ class Team extends MY_Controller
         $this->lang->load('auth');
         $this->load->helper('language');
 
-        
+        $this->load->model('Teams_model');
+
     }
     
     public function index()

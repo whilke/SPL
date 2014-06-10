@@ -6,6 +6,7 @@ class Auth extends MY_Controller {
 
     function __construct()
     {
+
         parent::__construct();
         $this->load->library('authentication', NULL, 'ion_auth');
         $this->load->library('form_validation');
@@ -25,8 +26,8 @@ class Auth extends MY_Controller {
 
     //redirect if needed, otherwise display the user list
     function index($fromajax=false)
-    {
-
+    {        
+        $this->load->model('Teams_model');
         if (!$this->ion_auth->logged_in())
         {
             //redirect them to the login page

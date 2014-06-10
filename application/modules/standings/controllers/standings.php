@@ -17,7 +17,8 @@ class Standings extends MY_Controller
         );
         
         $this->email->initialize($a);
-        
+        $this->load->model('Teams_model');
+
     }
     
     public function index()

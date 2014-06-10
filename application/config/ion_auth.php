@@ -110,6 +110,7 @@ $config['forgot_password_expiration'] = 0;                   // The number of mi
 $config['use_ci_email'] = TRUE; // Send Email using the builtin CI email class, if false it will return the code and the identity
 $config['email_config'] = array(
     'mailtype' => 'html',
+    'protocol' => 'sendmail',
 );
 
 /*

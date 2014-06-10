@@ -605,18 +605,18 @@ class Ion_auth_model extends CI_Model
      * @return bool
      * @author Mathew
      **/
-    public function teamname_check($teamname = '')
+    public function username_check($username = '')
     {
-        $this->trigger_events('teamname_check');
+        $this->trigger_events('username_check');
 
-        if (empty($teamname))
+        if (empty($username))
         {
             return FALSE;
         }
 
         $this->trigger_events('extra_where');
 
-        return $this->db->where('teamname', $teamname)
+        return $this->db->where('username', $username)
                         ->count_all_results($this->tables['users']) > 0;
     }
 
@@ -764,7 +764,7 @@ class Ion_auth_model extends CI_Model
      * @return bool
      * @author Mathew
      **/
-    public function register($teamname, $password, $email, $additional_data = array(), $groups = array())
+    public function register($username, $password, $email, $additional_data = array(), $groups = array())
     {
         $this->trigger_events('pre_register');
 
@@ -776,21 +776,21 @@ class Ion_auth_model extends CI_Model
             return FALSE;
         }
         
-        if ($this->teamname_check($teamname))
+        if ($this->username_check($username))
         {
-            $this->set_error('account_creation_duplicate_teamname');
+            $this->set_error('account_creation_duplicate_username');
             return FALSE;
         }
 
-        // If teamname is taken, use teamname or teamname2, etc.
-        if ($this->identity_column != 'teamname')
+        // If username is taken, use username or username, etc.
+        if ($this->identity_column != 'username')
         {
-            $original_teamname = $teamname;
-            for($i = 0; $this->teamname_check($teamname); $i++)
+            $original_username = $username;
+            for($i = 0; $this->username_check($username); $i++)
             {
                 if($i > 0)
                 {
-                    $teamname = $original_teamname . $i;
+                    $username = $original_username . $i;
                 }
             }
         }
@@ -802,7 +802,7 @@ class Ion_auth_model extends CI_Model
 
         // Users table.
         $data = array(
-            'teamname'   => $teamname,
+            'username'   => $username,
             'password'   => $password,
             'email'      => $email,
             'ip_address' => $ip_address,
@@ -865,7 +865,7 @@ class Ion_auth_model extends CI_Model
 
         $this->trigger_events('extra_where');
 
-        $query = $this->db->select($this->identity_column . ', teamname, email, id, password, active, last_login')
+        $query = $this->db->select($this->identity_column . ', username, email, id, password, active, last_login')
                           ->where($this->identity_column, $this->db->escape_str($identity))
                           ->limit(1)
                           ->get($this->tables['users']);
@@ -1269,6 +1269,17 @@ class Ion_auth_model extends CI_Model
 
         return $this;
     }
+    
+    public function get_user_team($id=FALSE)
+    {   
+        $this->trigger_events('get_user_team');        
+        $user = $this->user($id)->row();
+        
+        if ($user->team_id == 0) return null;
+
+        $this->load->model('Teams_model');
+        return $this->Teams_model->getById($user->team_id);        
+    }
 
     /**
      * get_users_groups
@@ -1457,7 +1468,7 @@ class Ion_auth_model extends CI_Model
         // Filter the data passed
         $data = $this->_filter_data($this->tables['users'], $data);
 
-        if (array_key_exists('teamname', $data) || array_key_exists('password', $data) || array_key_exists('email', $data))
+        if (array_key_exists('username', $data) || array_key_exists('password', $data) || array_key_exists('email', $data))
         {
             if (array_key_exists('password', $data))
             {
@@ -1590,10 +1601,17 @@ class Ion_auth_model extends CI_Model
     {
 
         $this->trigger_events('pre_set_session');
+        
+        $team = $this->get_user_team($user->id);
+        
+        $tname = '';
+        if ($team != null)
+            $tname = $team->name;
 
         $session_data = array(
             'identity'             => $user->{$this->identity_column},
-            'teamname'             => $user->teamname,
+            'username'             => $user->username,
+            'teamname'             => $tname,
             'email'                => $user->email,
             'user_id'              => $user->id, //everyone likes to overwrite id so we'll use user_id
             'old_last_login'       => $user->last_login
@@ -1679,7 +1697,7 @@ class Ion_auth_model extends CI_Model
 
         //get the user
         $this->trigger_events('extra_where');
-        $query = $this->db->select($this->identity_column.', id, teamname, email, last_login')
+        $query = $this->db->select($this->identity_column.', id, username, email, last_login')
                           ->where($this->identity_column, get_cookie('identity'))
                           ->where('remember_code', get_cookie('remember_code'))
                           ->limit(1)

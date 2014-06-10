@@ -25,7 +25,6 @@ class Mail extends MY_Controller
         }
         
         get_instance()->load->library('form_validation');
-        $this->load->model('Teams_model');
         
         $id = $this->ion_auth->user()->row()->id;
         
@@ -108,7 +107,6 @@ class Mail extends MY_Controller
         }
         
         get_instance()->load->library('form_validation');
-        $this->load->model('Teams_model');
 
         if (is_array($id))
         {
@@ -191,7 +189,6 @@ class Mail extends MY_Controller
         }
         
         get_instance()->load->library('form_validation');
-        $this->load->model('Teams_model');
 
         if (is_array($id))
         {
@@ -200,8 +197,7 @@ class Mail extends MY_Controller
         }
         
         $from = $this->ion_auth->user()->row()->id;
-        $team = $this->Teams_model->getById($id);
-
+        $to = $this->ion_auth->user($id)->row();
         
         $flashMsg = "";
         
@@ -215,7 +211,7 @@ class Mail extends MY_Controller
             $msg = $this->input->post('msg');
  
             $this->load->library('mahana_messaging');
-            $this->mahana_messaging->send_new_message($from, $team->userid, $subject, $msg);
+            $this->mahana_messaging->send_new_message($from, $id, $subject, $msg);
             redirect('mail/sent', 'refresh');
         }
         
@@ -223,6 +219,7 @@ class Mail extends MY_Controller
         $this->data['message'] = (validation_errors() ? validation_errors() : $flashMsg);
         $this->twiggy->set('fromajax', $fromajax);
         $this->twiggy->set('id', $id);
+        $this->twiggy->set('to_user', $to->username);
 
                
         $this->data['subject'] = array(
@@ -242,7 +239,6 @@ class Mail extends MY_Controller
  
 
         $this->twiggy->set('data', $this->data);
-        $this->twiggy->set('team', $team);
         $view = 'create';
         if ( ! $fromajax)
         {

@@ -13,9 +13,9 @@ class Tools extends MY_Controller
         
         $this->email->initialize($a);
         
-        $this->load->model('Teams_model');
         $this->load->model('Stats_model');
         $this->load->model('Seasons_model');
+        $this->load->model('Teams_model');
     }
     
     public function index()
@@ -31,7 +31,7 @@ class Tools extends MY_Controller
             print("Sending email to " . $to . " subj: " . $subject);
             return;
         }
-         */
+        */
          
         
         $this->email->clear();

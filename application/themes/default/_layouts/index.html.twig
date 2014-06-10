@@ -159,10 +159,11 @@
                           <ul class="dropdown-menu">
                             {% if user.isManager == TRUE %}
                             <li><a class="myNavLinks" style="padding-top:0px;" href="{{'auth/index'|site_url}}">Admin</a></li>
-                            {% else %}
-                            <li><a class="myNavLinks" style="padding-top:0px;" href="{{'team/edit'|site_url}}">Edit Team</a></li>
-                            <li><a href="{{'team/portal'|site_url}}">Team Portal</a></li>
                             {% endif %}
+                            {%if user.tname != '' %}
+                            <li><a href="{{'team/portal'|site_url}}">Team Portal</a></li>
+                            {%endif%}
+                            <li><a href="{{'user/portal'|site_url}}">User Portal</a></li>
                             <li><a href="{{'mail'|site_url}}">Messages</a></li>
                             <li><a class="myNavLinks" style="padding-top:0px;" href="{{'auth/logout'|site_url}}">Logout</a></li>
                           </ul>

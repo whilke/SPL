@@ -42,7 +42,6 @@ class Auth extends MY_Controller {
             //set the flash data error message if there is one
             $this->data['message'] = (validation_errors()) ? validation_errors() : $this->session->flashdata('message');
 
-            $this->load->model('Teams_model');
 
             //list the users
             $this->data['users'] = $this->ion_auth->users()->result();
@@ -429,7 +428,6 @@ class Auth extends MY_Controller {
             if ($id != FALSE)
             {         
                 $displayForm = false;
-                $this->load->model('Teams_model');
                 $this->Teams_model->addNewTeam($teamname, $id);
 
                 //check to see if we are creating the user

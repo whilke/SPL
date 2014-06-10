@@ -73,9 +73,15 @@ class MY_Controller extends MX_Controller {
             $count = 0;
             if ($msg['err'] == 0)
                 $count = $msg['retval'];
+
+            $team = $this->ion_auth->get_user_team();
+            $tname = '';
+            if ($team != null)
+                $tname = $team->name;
             
             $this->twiggy->set('user', array(
-                'uname' => $user->teamname, 
+                'uname' => $user->username, 
+                'tname' => $tname,
                 'isvalid' => true, 
                 'isAdmin' => $isAdmin, 
                 'isGlobalManager' => $isGlobalManager, 
@@ -87,6 +93,7 @@ class MY_Controller extends MX_Controller {
         {
             $this->twiggy->set('user', array(
                 'uname' => '', 
+                'tname' => '',
                 'isvalid' => false,
                 'isAdmin' => false, 
                 'isGlobalManager' => false, 
@@ -155,7 +162,7 @@ class Ajax_Controller extends MY_Controller {
             }
             
             $this->twiggy->set('user', array(
-                'uname' => $user->teamname, 
+                'uname' => $user->username, 
                 'isvalid' => 'true', 
                 'isAdmin' => $isAdmin, 
                 'isGlobalManager' => $isGlobalManager, 

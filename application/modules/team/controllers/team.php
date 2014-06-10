@@ -18,7 +18,6 @@ class Team extends MY_Controller
         $this->load->helper('language');
 
         
-        $this->load->model('Teams_model');
     }
     
     public function index()
@@ -38,7 +37,7 @@ class Team extends MY_Controller
             }
             
             $user = $this->ion_auth->user()->row();
-            $team = $this->Teams_model->get($user->teamname);
+            $team = $this->Teams_model->getById($user->team_id);
             $teamid = $team->id;
             $userTeamId = $team->id;
         }
@@ -53,8 +52,11 @@ class Team extends MY_Controller
             if ($this->ion_auth->logged_in() && !$this->ion_auth->is_manager())
             {
                 $user = $this->ion_auth->user()->row();
-                $uTeam = $this->Teams_model->get($user->teamname);
-                $userTeamId = $uTeam->id;
+                if ($user->team_id != 0)
+                {
+                    $uTeam = $this->Teams_model->getById($user->team_id);
+                    $userTeamId = $uTeam->id;                    
+                }
             }
         }
         
@@ -67,7 +69,7 @@ class Team extends MY_Controller
         $isTeamOwner = false;
         if (isset($user))
         {
-            $isTeamOwner = $this->ion_auth->in_group( array(5), $user->id);
+            $isTeamOwner = $this->ion_auth->is_team_owner();
             if ($isTeamOwner)
             {
                 if ($teamid != $userTeamId)
@@ -85,6 +87,8 @@ class Team extends MY_Controller
 
                 
         $this->twiggy->set('isTeamOwner', $isTeamOwner);
+        
+        $team->owner_id = $team->players[0]->id;
         $this->twiggy->set('team', $team);
         
         $seasons = $this->Seasons_model->GetAllSeasons();
@@ -105,194 +109,132 @@ class Team extends MY_Controller
         $this->twiggy->template('portal')->display();
 
     }
-       
-    public function edit($id=0)
+    
+    public function save()
     {
-        get_instance()->load->library('form_validation');
+        $id = $this->input->post('id');
+        $data = $this->input->post('data');
         
         if (!$this->ion_auth->logged_in())
         {
              redirect('/', 'refresh');
         }
         
-        if ($id == 0)
-        {
-            $id = $this->input->post('id');
-            if ($id == false)
-                $id = 0;
-        }
-        
-        $seasonData = $this->input->post('inSeasons');
-        $subSeason = false;
-        if (isset($seasonData) && !empty($seasonData)) 
-        {
-            $subSeason = true;
-        }
-
-        
-        //validate form input
-        $this->form_validation->set_rules('captain', 'Captain', 'required|xss_clean');
-        $this->form_validation->set_rules('contact', 'Contact', 'required|xss_clean');
-        $this->form_validation->set_rules('region', 'Region', 'required|xss_clean');
-        $this->form_validation->set_rules('bio', 'Bio', 'xss_clean');
-        $this->form_validation->set_rules('logo', 'Logo', 'xss_clean');
-        $this->form_validation->set_rules('slot5', 'Member', 'xss_clean');
-        $this->form_validation->set_rules('slot6', 'Member', 'xss_clean');
-        $this->form_validation->set_rules('inSeasons', 'Season', 'xss_clean');
-        if ($subSeason)
-        {
-            $this->form_validation->set_rules('slot1', 'Member', 'required|xss_clean');
-            $this->form_validation->set_rules('slot2', 'Member', 'required|xss_clean');
-            $this->form_validation->set_rules('slot3', 'Member', 'required|xss_clean');
-            $this->form_validation->set_rules('slot4', 'Member', 'required|xss_clean');            
-        }
-        else
-        {
-            $this->form_validation->set_rules('slot1', 'Member', 'xss_clean');
-            $this->form_validation->set_rules('slot2', 'Member', 'xss_clean');
-            $this->form_validation->set_rules('slot3', 'Member', 'xss_clean');
-            $this->form_validation->set_rules('slot4', 'Member', 'xss_clean');            
-        }
-
-        $isAdmin = $this->ion_auth->is_global_manager();
         $user = $this->ion_auth->user()->row();
-
-        $this->load->model('Seasons_model');
-
-        if ($this->form_validation->run() == true)
+        $isManager = $this->ion_auth->is_manager();
+        $isTeamOwner = false;
         {
-             $teamid = $this->input->post('id');
-             $captain = $this->input->post('captain');
-             $contact = $this->input->post('contact');
-             $region = $this->input->post('region');
-             $additional_data = array(
-                 'slot1' => $this->input->post('slot1'),
-                 'slot2' => $this->input->post('slot2'),
-                 'slot3' => $this->input->post('slot3'),
-                 'slot4' => $this->input->post('slot4'),
-                 'slot5' => $this->input->post('slot5'),
-                 'slot6' => $this->input->post('slot6'),
-                 'bio' => $this->input->post('bio'),
-                 'logo' => $this->input->post('logo'),
-                 );
-             
-            $seasonData = $this->input->post('inSeasons');
-             
-             if ($isAdmin || $this->Teams_model->get($user->teamname)->id == $teamid)
-             {
-                 $this->Seasons_model->updateTeamInSeasons($teamid, $seasonData);
-                 
-                 $this->Teams_model->edit($teamid, $captain, $contact, $region, $additional_data);
-             }
-             
-             redirect('/', 'refresh');
-        }
-        else
-        {
-            $this->data = array();
-            $this->data['message']= (validation_errors() ? validation_errors() : $this->session->flashdata('message') );
-            
-            $teamname = '';
-            $team = 0;
-            if ($isAdmin == FALSE && $id == 0)
+            $isTeamOwner = $this->ion_auth->is_team_owner();
+            if ($isTeamOwner)
             {
-                $teamname = $user->teamname;
-                $team = $this->Teams_model->get($teamname);
-                $id = $team->id;
-            }            
-
-            if ($user->teamname == $teamname || ($isAdmin && $id != 0) )
-            {
-                if (!$team)
-                {
-                    $team = $this->Teams_model->getById($id);
-                }
-                               
-                $seasons = $this->Seasons_model->GetActiveSeasons($id);
-                $this->data['seasons'] = $seasons;
-                                
-                $this->data['name'] = array(
-                'name'  => 'name',
-                'id'    => 'name',
-                'type'  => 'text',
-                'value' => $this->form_validation->set_value('name', $team->name),
-                );
-                $this->data['captain'] = array(
-                    'name'  => 'captain',
-                    'id'    => 'captain',
-                    'type'  => 'text',
-                    'value' => $this->form_validation->set_value('captain', $team->captain),
-                );
-                $this->data['contact'] = array(
-                    'name'  => 'contact',
-                    'id'    => 'contact',
-                    'type'  => 'text',
-                    'value' => $this->form_validation->set_value('contact', $team->contact),
-                );         
-                $this->data['region'] = $this->form_validation->set_value('region', $team->region);
-                $this->data['bio'] = array(
-                    'name'  => 'bio',
-                    'id'    => 'bio',
-                    'value' => $this->form_validation->set_value('bio', $team->bio),
-                );      
-                $this->data['logo'] = array(
-                    'name'  => 'logo',
-                    'id'    => 'logo',
-                    'type'  => 'hidden',
-                    'value' => $this->form_validation->set_value('logo', $team->logo),
-                );   
-                $this->data['slot1'] = array(
-                    'name'  => 'slot1',
-                    'id'    => 'slot1',
-                    'value' => $this->form_validation->set_value('slot1', $team->slot1),
-                );         
-                $this->data['slot2'] = array(
-                    'name'  => 'slot2',
-                    'id'    => 'slot2',
-                    'value' => $this->form_validation->set_value('slot2', $team->slot2),
-                );         
-                $this->data['slot3'] = array(
-                    'name'  => 'slot3',
-                    'id'    => 'slot3',
-                    'value' => $this->form_validation->set_value('slot3', $team->slot3),
-                );         
-                $this->data['slot4'] = array(
-                    'name'  => 'slot4',
-                    'id'    => 'slot4',
-                    'value' => $this->form_validation->set_value('slot4', $team->slot4),
-                );      
-                $this->data['slot5'] = array(
-                    'name'  => 'slot5',
-                    'id'    => 'slot5',
-                    'value' => $this->form_validation->set_value('slot5', $team->slot5),
-                );         
-                $this->data['slot6'] = array(
-                    'name'  => 'slot6',
-                    'id'    => 'slot6',
-                    'value' => $this->form_validation->set_value('slot6', $team->slot6),
-                );                      
-                $this->twiggy->set('team', $team);
-                $this->twiggy->set('data', $this->data);
-                $this->twiggy->template('edit')->display();
+                if ($id != $user->team_id)
+                    $isTeamOwner = false;
             }
-            else
-            {    
-                redirect('/', 'refresh');
-            }
-
         }
-                
+        if ($isManager) $isTeamOwner = true;
+        
+        if (!$isTeamOwner) return;
+        
+        $update = json_decode($data);
+        
+        $this->Teams_model->edit($id, $update);
+
     }
+
     
-    function upgrade($userName, $fromAjax=false)
+    function upgrade($userName, $strife_id=0, $fromAjax=false)
     {
         if (is_array($userName))
         {
-            $fromajax = $userName['fromajax'];
+            $fromAjax = $userName['fromajax'];
+            $strife_id = $userName['strife_id'];
             $userName = $userName['userName'];
         }        
         $userName = rawurldecode($userName);
+
+        if (!$this->ion_auth->logged_in())
+        {
+            redirect('auth', 'refresh');
+        }
         
+        $isManager = $this->ion_auth->is_manager();
+
+        //check if this user is the team owner.
+        $isTeamOwner = false;
+        $user = $this->ion_auth->user()->row();
+        if (isset($user))
+        {
+            $isTeamOwner = $this->ion_auth->is_team_owner();            
+        }
+        
+        if ($isManager)
+            $isTeamOwner = true;     
+        
+        if (!$isTeamOwner)
+        {
+             redirect('auth', 'refresh');           
+        }
+        
+        get_instance()->load->library('form_validation');
+
+                
+        $flashMsg = "";
+        
+        //validate form input
+        $this->form_validation->set_rules('email', 'Email', 'required|matches[email2]');
+        $this->form_validation->set_rules('email2', 'Verify Email', 'required');
+        
+        if ($this->form_validation->run() == true) 
+        {
+           $email = $this->input->post('email');
+             
+            $additional_data = array();
+            $id = $this->ion_auth->register($userName, 'Fx3qW0p', $email, $additional_data, $additional_data, true);
+            if ($id != FALSE)
+            {   
+                //clean up the new user now.
+                $additional_data['team_id'] = $user->team_id;
+                $additional_data['strife_id'] = $strife_id;
+                $this->ion_auth->update($id, $additional_data);
+                                
+                
+                redirect("team/portal/" . $user->team_id, 'refresh');
+            }
+        }
+        
+        $this->data = array();        
+        $this->data['message'] = (validation_errors() ? validation_errors() : ($this->ion_auth->errors() ? $this->ion_auth->errors() :$flashMsg));
+        $this->twiggy->set('fromajax', $fromAjax);
+        $this->twiggy->set('username', $userName);
+        $this->twiggy->set('strife_id',$strife_id);
+
+               
+        $this->data['email'] = array(
+                'name'  => 'email',
+                'id'    => 'email',
+                'type'  => 'text',
+                'value' => $this->form_validation->set_value('email'),
+            );        
+ 
+               
+        $this->data['email2'] = array(
+                'name'  => 'email2',
+                'id'    => 'email2',
+                'type'  => 'text',
+                'value' => $this->form_validation->set_value('email2'),
+            );        
+ 
+
+        $this->twiggy->set('data', $this->data);
+        $view = 'upgrade';
+        if ( ! $fromAjax)
+        {
+            $x = $this->twiggy->template($view)->display();
+        }
+        else
+        {
+            $this->twiggy->layout('dialog')->template($view)->display();
+        }        
         
     }
 }

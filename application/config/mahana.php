@@ -4,7 +4,7 @@
 
 define('USER_TABLE_TABLENAME', 'users u');
 define('USER_TABLE_ID', 'u.id');
-define('USER_TABLE_USERNAME', 'u.teamname as user_name');
+define('USER_TABLE_USERNAME', 'u.username as user_name');
 
 
 // message statuses

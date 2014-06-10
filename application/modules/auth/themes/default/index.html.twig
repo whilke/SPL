@@ -12,7 +12,6 @@
 <table class="table">
     <thead>
         <tr>
-            <th>{{'index_tname_th'|lang}}</th>
             <th>{{'index_email_th'|lang}}</th>
             <th>{{'index_status_th'|lang}}</th>
             <th>{{'index_action_th'|lang}}</th>
@@ -21,12 +20,6 @@
     <tbody>
     {% for user in data.users %}
         <tr>
-            <td>
-                {% if user.teamname != 'Admin' %}
-                    {% set s = 'team/edit/' ~ user.teamId    %}
-                    {{s|anchor(user.teamname)}}
-                {% endif %}
-            </td>
             <td>{{user.email}}</td>
             <td>
                 {% if user.active == TRUE %}

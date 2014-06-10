@@ -13,44 +13,9 @@
         </div>
     </div>
     <div class="row">
-        <div class=" col-lg-offset-3 col-lg-3">
-
 
         {{'team/edit'|form_open}}
-            <p>
-                Captain:
-                {{data.captain|bs_form_input()}}
-            </p>
-            <p>
-                Member:
-                {{data.slot1|bs_form_input()}}
-            </p>
-            <p>
-                Member:
-                {{data.slot2|bs_form_input()}}
-            </p> 
-            <p>
-                Member:
-                {{data.slot3|bs_form_input()}}
-            </p> 
-            <p>
-                Member:
-                {{data.slot4|bs_form_input()}}
-            </p> 
-            <p>
-                Sub:
-                {{data.slot5|bs_form_input()}}
-            </p> 
-            <p>
-                Sub:
-                {{data.slot6|bs_form_input()}}
-            </p>
-        </div>
-        <div class="col-lg-3">
-            <p>
-                Contact:
-                {{data.contact|bs_form_input()}}
-            </p>   
+        <div class='col-md-6 col-md-offset-3'>
             <p>
                 Region:
                 {% set regArr = {'USE':'USE', 'USW':'USW', 'EU':'EU', 'SEA':'SEA'} %}
@@ -59,7 +24,8 @@
              <p>
                 <div class="js-control" data-progress-holder=".progress" data-results-holder=".results">
                     <p>Logo <span style="font-size:10px;">(220x220)<span></p>
-                    <p><button id="delLogo" onClick="javascript://;">Delete</button><input id="file-upload" type="file" name="files[]" single></input>                        
+                    <p><button id="delLogo" onClick="javascript://;">Delete</button>
+                        <input id="file-upload" type="file" name="files[]" single></input>                        
                     </p>
                     <div class="progress">
                         <div class="progress-bar"></div>

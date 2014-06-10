@@ -68,6 +68,9 @@ class Teams_model extends CI_Model
             $realTeam->logo = $team->logo;
             $realTeam->contact = $team->contact;
             $realTeam->region = $team->region;
+            $realTeam->contact_twitter = $team->contact_twitter;
+            $realTeam->contact_facebook = $team->contact_facebook;
+            $realTeam->contact_twitch = $team->contact_twitch;
             $realTeam->players = array();
             
             //check each slot for a real account.
@@ -106,6 +109,9 @@ class Teams_model extends CI_Model
             $realTeam->logo = $team->logo;
             $realTeam->contact = $team->contact;
             $realTeam->region = $team->region;
+            $realTeam->contact_twitter = $team->contact_twitter;
+            $realTeam->contact_facebook = $team->contact_facebook;
+            $realTeam->contact_twitch = $team->contact_twitch;
             $realTeam->players = array();
             
             //check each slot for a real account.
@@ -133,6 +139,7 @@ class Teams_model extends CI_Model
         {
             $p = new stdClass();
             $p->name = $slotName;
+            $p->id = 0;
             $p->strife_id = $slotId;
             $p->converted = false;
             if ($isSub)
@@ -148,10 +155,14 @@ class Teams_model extends CI_Model
         {
             $p = new stdClass();
             $p->name = $plr->username;
+            $p->id = $plr->id;
             $p->strife_id = $plr->strife_id;
             $p->converted = true;
             $p->bestGroup = $plr->bestGroup;
         }
+        
+        if ($p->strife_id <= 0)
+            $p->strife_id = 0;
 
         $team->players[] = $p;
     }
@@ -240,14 +251,10 @@ class Teams_model extends CI_Model
         $this->db->insert('teams', $data);
     }
     
-    function edit($teamid, $captain, $contact, $region, $data = array())
+    function edit($teamid, $data = array())
     {
         $team = $this->getById($teamid);
-      
-        $data['captain'] = $captain;
-        $data['contact'] = $contact;
-        $data['region'] = $region;
-        
+             
         $this->db->trans_begin();
          
         $this->db->update('teams', $data, array('id' => $team->id));

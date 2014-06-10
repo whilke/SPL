@@ -45,13 +45,10 @@ class api extends REST_Controller
         $team->contact = $raw_team->contact;
         
         $team->players = array();        
-        $team->players[] = $this->Teams_model->getPlayer($raw_team->captain_strife_id);
-        $team->players[] = $this->Teams_model->getPlayer($raw_team->slot1_strife_id);
-        $team->players[] = $this->Teams_model->getPlayer($raw_team->slot2_strife_id);
-        $team->players[] = $this->Teams_model->getPlayer($raw_team->slot3_strife_id);
-        $team->players[] = $this->Teams_model->getPlayer($raw_team->slot4_strife_id);
-        $team->players[] = $this->Teams_model->getPlayer($raw_team->slot5_strife_id);
-        $team->players[] = $this->Teams_model->getPlayer($raw_team->slot6_strife_id);
+        foreach($raw_team->players AS $player)
+        {
+            $team->players[] = $this->Teams_model->getPlayer($player->strife_id);        
+        }
 
 
         $this->response($team, 200);                

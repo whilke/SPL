@@ -98,7 +98,6 @@ class Main extends MY_Controller
     function stats()
     {
         $this->load->model('Seasons_model');
-        $this->load->model('Teams_model');
         $this->load->model('Stats_model');
         $season = $this->Seasons_model->GetCurrentSeason();
         

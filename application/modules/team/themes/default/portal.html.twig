@@ -1,28 +1,38 @@
 {% extends _layout %}
 {% block content %}
-    {% set s = 'mail/create/' ~ team.id   %}
-    {% set s2 = 'mail/mail_ajax/ion_mail_dialog/create/' ~ team.id %}
     <h2 style='text-align:center;'>{{team.name}} ( {{team.region}} ) 
-        <a href="{{s|site_url}}" rel="async" ajaxify="{{s2|site_url}}">
-            <img width="50px" height="50px" src="{{'images/mail.png'|assets_url()}}" />
-        </a>
     </h2> 
     <br/>
     <div class="col-md-12">        
         <div class="col-md-4">
+            <!--logo block-->            
+            <div class="js-control" data-progress-holder=".progress" data-results-holder=".results">            
             <div class="panel panel-info">
                 <div class="panel-heading">
-                    <h3 class="panel-title">Logo</h3>
+                    <h3 class="panel-title">
+                        {%if isTeamOwner %}
+                        Logo <span style="font-size:10px;">(220x220)<span>
+                        <input id="file-upload" type="file" name="files[]" single></input>
+                        <button id="delLogo" onClick="javascript://;">Delete</button>
+                        <div class="progress" style="margin-bottom: 0px;">
+                            <div class="progress-bar"></div>
+                        </div>                       
+                        {%else%}
+                        Logo
+                        {%endif%}
+                    </h3>
                 </div>
                 {% if team.logo != ""%}
-                    <div class="panel-body">
+                    <div id="logo_results" class="panel-body">
                         <img class="img-responsive center-block" style="margin-top:-10px;margin-bottom:-10px" src="{{team.logo}}"/>
                     </div>
                 {% else %}
-                    <div class="panel-body" style="height:220px;">
+                    <div id="logo_results" class="panel-body" style="height:220px;">
                     </div>
                 {% endif %}
-            </div> 
+            </div>
+            </div>
+            <!--points block-->
             <div class="panel panel-info">
                 <div class="panel-heading">
                     <h3 class="panel-title">Strife Series Points</h3>
@@ -33,14 +43,57 @@
             </div> 
         </div>
         <div class="col-md-4">
+            <!--contact block-->
             <div class="panel panel-info">
                 <div class="panel-heading">
-                    <h3 class="panel-title">How to contact</h3>
+                    <div class="panel-title">
+                        Contact
+                        {%if isTeamOwner%}
+                        <div class="dropdown pull-right">
+                            <a style="margin-top: -5px;"
+                                class="pull-right btn-warn btn dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown">
+                                Modify
+                                <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="dropdownMenu1">
+                                <li role="presentation"><a id="contact_twitter" role="menuitem" tabindex="-1" href="javascript://;">Twitter</a></li>
+                                <li role="presentation"><a id="contact_facebook" role="menuitem" tabindex="-1" href="javascript://;">Facebook</a></li>
+                                <li role="presentation"><a id="contact_twitch" role="menuitem" tabindex="-1" href="javascript://;">Twitch</a></li>
+                            </ul>     
+                        </div>
+                        {%endif%}
+                    </div>
                 </div>
                 <div class="panel-body">
-                    {{team.contact}}
+                    {% set s = 'mail/create/' ~ team.owner_id   %}
+                    {% set s2 = 'mail/mail_ajax/ion_mail_dialog/create/' ~ team.owner_id %}
+                    <a href="{{s|site_url}}" rel="async" ajaxify="{{s2|site_url}}">
+                    <img width="40px" height="40px" src="{{'images/glyphicons_122_message_in.png'|assets_url()}}" />
+                    </a>
+                    {%if team.contact_twitter != ''%}
+                    <a href="http://www.twitter.com/{{team.contact_twitter}}" target='_blank'>
+                    <img width="40px" height="40px" src="{{'images/glyphicons_social_31_twitter.png'|assets_url()}}" />
+                    </a>                        
+                    {%endif%}
+                    {%if team.contact_facebook != ''%}
+                    <a href="http://www.facebook.com/{{team.contact_facebook}}" target='_blank'>
+                    <img width="40px" height="40px" src="{{'images/glyphicons_social_30_facebook.png'|assets_url()}}" />
+                    </a>                        
+                    {%endif%}
+                    {%if team.contact_twitch != ''%}
+                    <a href="http://www.twitch.tv/{{team.contact_twitch}}" target='_blank'>
+                    <img width="40px" height="40px" src="{{'images/twitch_glyph.jpg'|assets_url()}}" />
+                    </a>                        
+                    {%endif%}
                 </div>
+                <div class="panel-body collapse" id="contact_edit">
+                    <span id="contact_type"></span>
+                    <input type="text" id="contact_text" style="width:200px;" />
+                    <a id='contact_save' href="javascript://;" class="btn btn-info" style="padding:0px;">save</a>
+                    <a id='contact_delete' href="javascript://;" class="btn btn-warning" style="padding:0px;">delete</a>
+                </div>                    
             </div>
+            <!--record block-->
             <div class="panel panel-info">
                 <div class="panel-heading">
                     <h3 class="panel-title">Record History</h3>
@@ -70,13 +123,20 @@
             </div>
         </div>
             <div class="col-md-4">
+                <!--roster block-->
              <div class="panel panel-info">
                 <div class="panel-heading">
                     <h3 class="panel-title">Captain</h3>
                 </div>
                 <div class="panel-body">
                     {% for player in team.players if player.bestGroup.isOwner %}
-                        <a href="#">{{player.name}}</a>
+                        {% if player.converted == false %}
+                            {{player.name}}
+                        {%else%}
+                            {% set s = 'user/portal/' ~ player.id   %}
+                            <a href="{{s|site_url}}">{{player.name}}</a>
+                        {%endif%}
+
                     {% endfor %}
                 </div>
             </div>
@@ -87,13 +147,16 @@
                 <div class="panel-body">
                     {% for player in team.players if player.bestGroup.isMember %}
                         {% if player.converted == false and isTeamOwner == true %}
-                            {% set s = 'team/upgrade/' ~ player.name   %}
-                            {% set s2 = 'team/team_ajax/ion_team_dialog/upgrade/' ~ player.name %}
+                            {% set s = 'team/upgrade/' ~ player.name ~ '/' ~ player.strife_id   %}
+                            {% set s2 = 'team/team_ajax/ion_team_dialog/upgrade/' ~ player.name ~ '/' ~ player.strife_id %}
                             <a class="btn btn-warning center-block" href="{{s|site_url}}" rel="async" ajaxify="{{s2|site_url}}">
                                 Upgrade {{player.name}} 
                             </a>
+                        {% elseif player.converted %}
+                            {% set s = 'user/portal/' ~ player.id   %}
+                            <a href="{{s|site_url}}">{{player.name}}</a>
                         {% else %}
-                            <a href="#">{{player.name}}</a>
+                            {{player.name}}
                         {% endif %}
                         <br/>
                     {% endfor %}
@@ -104,11 +167,19 @@
                 <div class="panel-body">
                     {% for player in team.players if player.bestGroup.isSub %}
                         {% if player.converted == false and isTeamOwner == true %}
-                            <a class="btn btn-warning center-block" href="#">Upgrade {{player.name}} </a>
+                            {% set s = 'team/upgrade/' ~ player.name ~ '/' ~ player.strife_id   %}
+                            {% set s2 = 'team/team_ajax/ion_team_dialog/upgrade/' ~ player.name ~ '/' ~ player.strife_id %}
+                            <a class="btn btn-warning center-block" href="{{s|site_url}}" rel="async" ajaxify="{{s2|site_url}}">
+                                Upgrade {{player.name}} 
+                            </a>
+                                
+                        {% elseif player.converted %}
+                           {% set s = 'user/portal/' ~ player.id   %}
+                            <a href="{{s|site_url}}">{{player.name}}</a>
                         {% else %}
-                            <a href="#">{{player.name}}</a>
+                            {{player.name}}
                         {% endif %}
-                        <br/>
+                       <br/>
                     {% endfor %}
                 </div>
             </div>
@@ -187,4 +258,183 @@
         });
     }); 
 </script>
+
+{%if isTeamOwner%}
+<script src="{{'js/fileupload.js'|assets_url()}}"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+    {% set l = 'upload/upload_ajax/uploadimage/' ~ team.id %}
+    uploadURL = '{{l|site_url}}';
+        $("#delLogo").click(function () {
+            $("#logo").val("");
+             $results = $("#logo_results");
+             $results.html("");    
+             return false;
+        });
+        
+        $('#file-upload').fileupload({
+            url: uploadURL,
+            dataType: 'json',
+            submit: function(e, data) {
+            },
+            progressall: function(e, data) {
+                var progress = parseInt(data.loaded / data.total * 100, 10),
+                    $control = $(this).closest('.js-control'),
+                    $progress = $control.find($control.data('progress-holder'));
+                $progress.find('.progress-bar').css({ width: progress + '%' });
+            },
+            done: function(e, data) {
+                var $control = $(this).closest('.js-control');
+                $results = $("#logo_results");
+                $.each(data.result.files, function (index, file) {
+                    if (file.url) {
+                        $("#logo").val(file.logoUrl);
+                        $results.html([
+                            '<img class="img-responsive center-block"',
+                            'style="margin-top:-10px;margin-bottom:-10px"',
+                            'src="', file.logoUrl , '"/>'
+                        ].join(''));
+        
+                        //post this update to the team record.
+                        var postData = {
+                            logo: file.logoUrl
+                        };
+                        
+                        postData = JSON.stringify(postData);
+                        postData = {
+                            id: {{team.id}},
+                            data: postData
+                        };
+                        
+                        $.ajax({
+                            type: "POST",
+                            url: "{{'team/save'|site_url()}}",
+                            data: postData,
+                            dataType:'json',
+                            success: function(){
+                            }
+                        });
+
+                    } else if (file.error) {
+                        $results.html([
+                            '<div class="alert alert-danger">',
+                                file.name, ': ', file.error,
+                            '</div>'
+                        ].join(''));
+                    }
+                });
+            },
+            fail: function(e, data) {
+                var $control = $(this).closest('.js-control');
+                $results = $("#logo_results");
+                $.each(data.files, function (index, file) {
+                    $results.html('<div class="alert alert-danger">File upload failed.</div>');
+                });
+            }
+        }).prop('disabled', !$.support.fileInput);
+    
+    $("#contact_save").click(function(){contact_save();});
+    $("#contact_delete").click(function(){contact_delete();});
+    $("#contact_twitter").click(function(){
+        modify_contact('twitter');
+    });
+    $("#contact_facebook").click(function(){
+        modify_contact('facebook');
+    });
+    $("#contact_twitch").click(function(){
+        modify_contact('twitch');
+    });
+
+});
+
+var contact_type;
+function contact_save()
+{
+    
+    var rawdata = $("#contact_text").val();
+    rawdata = rawdata.replace(/(@|#|\/|http:|www.)/g,'');
+    if (contact_type=='contact_twitter')
+    {
+        rawdata = rawdata.replace('twitter.com','');
+    }
+    if (contact_type=='contact_twitch')
+    {
+        rawdata = rawdata.replace('twitch.tv','');
+    }
+    if (contact_type=='contact_facebook')
+    {
+        rawdata = rawdata.replace('facebook.com','');
+    }
+    
+    var postData = {};
+    postData[contact_type] = rawdata;
+
+    postData = JSON.stringify(postData);
+    postData = {
+        id: {{team.id}},
+        data: postData
+    };
+
+    $.ajax({
+        type: "POST",
+        url: "{{'team/save'|site_url()}}",
+        data: postData,
+        dataType:'json',
+        success: function(){
+        }
+    });
+    
+    $("#contact_edit").hide();
+    location.reload();
+}
+
+function contact_delete()
+{
+    var postData = {};
+    postData[contact_type] = "";
+
+    postData = JSON.stringify(postData);
+    postData = {
+        id: {{team.id}},
+        data: postData
+    };
+
+    $.ajax({
+        type: "POST",
+        url: "{{'team/save'|site_url()}}",
+        data: postData,
+        dataType:'json',
+        success: function(){
+        }
+    });
+    
+    $("#contact_edit").hide();
+    location.reload();
+}
+
+function modify_contact(contactType)
+{
+    $("#contact_edit").show();
+    if (contactType == 'twitter')
+    {
+        contact_type = 'contact_twitter';
+        $("#contact_type").html("<img width=15 height=15 src='{{'images/glyphicons_social_31_twitter.png'|assets_url()}}'/>");
+        $("#contact_text").val('{{team.contact_twitter}}')
+    }
+    if (contactType == 'facebook')
+    {
+        contact_type = 'contact_facebook';
+        $("#contact_type").html("<img width=15 height=15 src='{{'images/glyphicons_social_30_facebook.png'|assets_url()}}'/>");
+        $("#contact_text").val('{{team.contact_facebook}}')
+    }
+    if (contactType == 'twitch')
+    {
+        contact_type = 'contact_twitch';
+        $("#contact_type").html("<img width=15 height=15 src='{{'images/twitch_glyph.jpg'|assets_url()}}'/>");
+        $("#contact_text").val('{{team.contact_twitch}}')
+    }
+}
+
+</script>    
+{%endif%}
 {% endblock %}

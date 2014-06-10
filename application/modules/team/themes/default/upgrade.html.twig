@@ -1,0 +1,30 @@
+{% extends _layout %}
+
+{% block content %}
+<div class="row">
+<div class="col-lg-offset-2 col-lg-8">
+<h3>Upgrade {{username}}</h3> 
+
+{% if data.message != "" %}
+<div class="alert alert-info" id="infoMessage">{{ data.message}}</div>
+{% endif%}
+
+{% set l = 'team/upgrade/' ~ username ~ '/' ~ strife_id %}       
+{{l|form_open()}}
+
+<p>
+    Email (new account email will be sent to activate)  
+    {{data.email|bs_form_input()}}
+</p>
+<p>
+    Verify Email  
+    {{data.email2|bs_form_input()}}
+</p>
+
+<div class="pull-right">{{'submit'|bs_form_submit('Upgrade')}}</div>
+{{form_close()}}
+
+
+</div>
+</div>
+{% endblock %}

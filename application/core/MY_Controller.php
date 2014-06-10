@@ -73,17 +73,9 @@ class MY_Controller extends MX_Controller {
             $count = 0;
             if ($msg['err'] == 0)
                 $count = $msg['retval'];
-
-            $this->load->model('Teams_model');
-            $teamid = $this->ion_auth->get_user_team();
-            $team = $this->Teams_model->getById($teamid);        
-            $tname = '';
-            if ($team != null)  
-                $tname = $team->name;
             
             $this->twiggy->set('user', array(
                 'uname' => $user->username, 
-                'tname' => $tname,
                 'isvalid' => true, 
                 'isAdmin' => $isAdmin, 
                 'isGlobalManager' => $isGlobalManager, 
@@ -95,7 +87,6 @@ class MY_Controller extends MX_Controller {
         {
             $this->twiggy->set('user', array(
                 'uname' => '', 
-                'tname' => '',
                 'isvalid' => false,
                 'isAdmin' => false, 
                 'isGlobalManager' => false, 
@@ -147,23 +138,7 @@ JS;
 
 class Ajax_Controller extends MY_Controller {
 
-
-    /**
-     * Model Loader
-     *
-     * Overwrites the default behaviour
-     *
-     * @param   string  the name of the class
-     * @param   string  name for the model
-     * @param   bool    database connection
-     * @return  void
-     */
-    function model ($model, $name = '', $db_conn = FALSE) {
-        if (is_array($model) || !class_exists($model)) {
-            parent::model($model, $name, $db_conn);
-        }
-    }    
-    
+ 
     public function __construct()
     {
         parent::__construct();

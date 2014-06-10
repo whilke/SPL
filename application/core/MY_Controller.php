@@ -145,6 +145,23 @@ JS;
 
 class Ajax_Controller extends MY_Controller {
 
+
+    /**
+     * Model Loader
+     *
+     * Overwrites the default behaviour
+     *
+     * @param   string  the name of the class
+     * @param   string  name for the model
+     * @param   bool    database connection
+     * @return  void
+     */
+    function model ($model, $name = '', $db_conn = FALSE) {
+        if (is_array($model) || !class_exists($model)) {
+            parent::model($model, $name, $db_conn);
+        }
+    }    
+    
     public function __construct()
     {
         parent::__construct();

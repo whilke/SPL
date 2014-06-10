@@ -260,9 +260,10 @@ class Mail extends MY_Controller
 
              $json = json_encode($d);
 
-                $this->output
+                  $this->output
                 ->set_content_type('application/json')
-                ->set_output($json);                        
+                ->set_output($json);
+                return;
         }
                
         $userId = $this->ion_auth->user()->row()->id;

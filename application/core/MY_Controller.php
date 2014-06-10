@@ -74,9 +74,11 @@ class MY_Controller extends MX_Controller {
             if ($msg['err'] == 0)
                 $count = $msg['retval'];
 
-            $team = $this->ion_auth->get_user_team();
+            $this->load->model('Teams_model');
+            $teamid = $this->ion_auth->get_user_team();
+            $team = $this->Teams_model->getById($teamid);        
             $tname = '';
-            if ($team != null)
+            if ($team != null)  
                 $tname = $team->name;
             
             $this->twiggy->set('user', array(

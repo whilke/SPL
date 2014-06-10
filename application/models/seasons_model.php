@@ -292,7 +292,6 @@ class Seasons_model extends CI_Model
                join('teams', 'teams.id = seasons_teams.team_id', 'right outer')->
                join('users', 'users.id = teams.userid')->
                where('seasons_teams.season_id is null', null)->
-               where('users.active', true)->
                where('users.teamname !=', 'Admin')->
                get();
         

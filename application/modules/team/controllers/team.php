@@ -195,6 +195,7 @@ class Team extends MY_Controller
                 //clean up the new user now.
                 $additional_data['team_id'] = $user->team_id;
                 $additional_data['strife_id'] = $strife_id;
+                $additional_data['teamname'] = $user->teamname;
                 $this->ion_auth->update($id, $additional_data);
                                 
                 

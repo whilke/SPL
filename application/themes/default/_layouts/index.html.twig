@@ -144,7 +144,7 @@
                       <li><a href="/" id="viewerCount" class="hidden-sm" style="color:red; padding-top:0px;height:20px;" ></a></li>
                     {% if user.isvalid != "true" %}
                         <li><a class="myNavLinks" style="padding-top:0px;" href="{{'auth/login'|site_url}}" rel="async" ajaxify="{{'auth/auth_ajax/ion_auth_dialog/login'|site_url}}">Login</a></li>
-                        <li><a class="myNavLinks" style="padding-top:0px;" href="{{'auth/create_user'|site_url}}" rel="async" ajaxify="{{'auth/auth_ajax/ion_auth_dialog/create_user'|site_url}}">Signup</a></li>
+                        {%if false%}<li><a class="myNavLinks" style="padding-top:0px;" href="{{'auth/create_user'|site_url}}" rel="async" ajaxify="{{'auth/auth_ajax/ion_auth_dialog/create_user'|site_url}}">Signup</a></li>{%endif%}
                     {% else %}
                     
                     <li id="mailCount"{% if user.mailCount == 0%}style="display: none"{%endif%} >

@@ -61,10 +61,11 @@ class Tools extends MY_Controller
         $teams = array();
         foreach($rawteams AS $team)
         {
-            if ($team->points > 150)
+            if ($team->points >140)
                 $teams[] = $team;
+            
         }
-        
+                
         //now go through this list of teams and upgrade the captain to the owner.
         foreach($teams AS $team)
         {
@@ -78,6 +79,14 @@ class Tools extends MY_Controller
             $this->Ion_auth_model->add_to_group(5, $oUser->id);
         }
         
+        //delete teams/users not in this season now.
+        $teams = $this->Seasons_model->getTeamsNotInSeason(0);
+        foreach($teams AS $team)
+        {
+            $this->Teams_model->delete($team->id);
+            $this->Ion_auth_model->delete_user($team->userid);
+        }
+
     }
     
     public function createTimeBuckets()
@@ -264,33 +273,26 @@ class Tools extends MY_Controller
     
     public function syncPlayers()
     {
+        $this->load->model('Ion_auth_model');
+        
         //get all teams.
         $teams = $this->Teams_model->get_list();
         
         foreach($teams AS $team)
         {
             $team = $this->Teams_model->getById($team['id']);
-            $p = $this->Teams_model->getPlayerByName($team->captain);
-            if ($p != null)
-                $team->captain_strife_id = $p->strife_id;
-            $p = $this->Teams_model->getPlayerByName($team->slot1);
-            if ($p!= null)
-                $team->slot1_strife_id = $p->strife_id;
-            $p = $this->Teams_model->getPlayerByName($team->slot2);
-            if ($p!= null)
-                $team->slot2_strife_id = $p->strife_id;
-            $p = $this->Teams_model->getPlayerByName($team->slot3);
-            if ($p!= null)
-                $team->slot3_strife_id = $p->strife_id;
-            $p = $this->Teams_model->getPlayerByName($team->slot4);
-            if ($p!= null)
-                $team->slot4_strife_id = $p->strife_id;
-            $p = $this->Teams_model->getPlayerByName($team->slot5);
-            if ($p!= null)
-                $team->slot5_strife_id = $p->strife_id;
-            $p = $this->Teams_model->getPlayerByName($team->slot6);
-            if ($p!= null)
-                $team->slot6_strife_id = $p->strife_id;
+            foreach($team->players AS $player)
+            {
+                if (!$player->converted) continue;
+                
+                $p = $this->Teams_model->getPlayerByName($player->name);
+                if ($p!= null)
+                {
+                    $data = array();
+                    $data['strife_id'] = $p->strife_id;
+                    $oUser = $this->Ion_auth_model->update($player->id, $data);               
+                }                
+            }
 
             $this->Teams_model->editPlayerLinks($team);
         }
@@ -371,6 +373,8 @@ class Tools extends MY_Controller
             return;
         }        
 
+        $this->syncPlayers();
+        
         $time = date("Y-m-d H:i:s");
         $now = new DateTime($time);
         $time = gmdate("Y-m-d H:i:s");

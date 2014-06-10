@@ -31,23 +31,7 @@
             </tbody>
         </table>
             
-        <h2>Teams not in this Strife Series</h2>
-
-        <table id="notTeams" class="table table-bordered table-hover" style="border: 0px;">
-            <thead>
-                <tr>
-                    <th class="text-center" style='width:800px;'>Team</th>
-                </tr>
-            </thead>
-            <tbody>
-            {% for team in notTeams %}
-                <tr>
-                    {% set s = 'team/portal/' ~ team.id    %}
-                    <td><a href="{{s|site_url}}">{{team.name}}</a></td>
-               </tr>
-            {% endfor %}
-            </tbody>
-        </table>            
+                   
         
     </div>
 </div>

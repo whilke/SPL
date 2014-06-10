@@ -251,6 +251,11 @@ class Teams_model extends CI_Model
         $this->db->insert('teams', $data);
     }
     
+    function delete($teamid)
+    {
+        $this->db->delete('teams', array('id'=>$teamid));
+    }
+    
     function edit($teamid, $data = array())
     {
         $team = $this->getById($teamid);

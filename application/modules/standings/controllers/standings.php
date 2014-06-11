@@ -278,8 +278,8 @@ class Standings extends MY_Controller
                     else
                         $email = $this->Teams_model->getEmail($match->home_team_id);
 
-                    $this->sendEmail('game@strifeproleague.com', $email, 
-                            'Match Status: Reported', $msg);
+                    //$this->sendEmail('game@strifeproleague.com', $email, 
+                    //        'Match Status: Reported', $msg);
                     
                     
                     

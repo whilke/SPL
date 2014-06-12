@@ -44,6 +44,10 @@ class MY_Controller extends MX_Controller {
         $this->load->library('session');
         $this->load->library('authentication', NULL, 'ion_auth');
         $this->load->library('mahana_messaging');
+        $this->load->model('Seasons_model');
+        
+        $seasons = $this->Seasons_model->GetNonCurrentSeasons();
+        $this->twiggy->set('otherSeasons', $seasons, TRUE);
         
         if ($this->ion_auth->logged_in())
         {

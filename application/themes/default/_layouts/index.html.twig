@@ -40,6 +40,55 @@
                  min-height:25px; height:25px;padding-top:0px;
             }
             
+
+.dropdown-submenu {
+    position: relative;
+}
+
+.dropdown-submenu>.dropdown-menu {
+    top: 0;
+    left: 100%;
+    margin-top: -6px;
+    margin-left: -1px;
+    -webkit-border-radius: 0 6px 6px 6px;
+    -moz-border-radius: 0 6px 6px;
+    border-radius: 0 6px 6px 6px;
+}
+
+.dropdown-submenu:hover>.dropdown-menu {
+    display: block;
+}
+
+.dropdown-submenu>a:after {
+    display: block;
+    content: " ";
+    float: right;
+    width: 0;
+    height: 0;
+    border-color: transparent;
+    border-style: solid;
+    border-width: 5px 0 5px 5px;
+    border-left-color: #ccc;
+    margin-top: 5px;
+    margin-right: -10px;
+}
+
+.dropdown-submenu:hover>a:after {
+    border-left-color: #fff;
+}
+
+.dropdown-submenu.pull-left {
+    float: none;
+}
+
+.dropdown-submenu.pull-left>.dropdown-menu {
+    left: -100%;
+    margin-left: 10px;
+    -webkit-border-radius: 6px 0 6px 6px;
+    -moz-border-radius: 6px 0 6px 6px;
+    border-radius: 6px 0 6px 6px;
+}            
+            
             @media screen and (max-width:1000px){
                 .mySideBar {display: none;}
             }
@@ -133,18 +182,46 @@
                 </div>
                 <div class="navbar-collapse collapse" style="min-height:25px; height:25px;background-color:#f8f8f8">
                     <ul class="nav navbar-nav">
-                        <li><a href="{{'standings/index'|site_url}}" class="myNavLinks" style="padding-top:0px;">Standings</a></li>
-                        <li><a href="{{'standings/schedule'|site_url}}" class="myNavLinks" style="padding-top:0px;">Schedule</a></li>
+                        <li class="dropdown">
+                          <a class="myNavLinks" style="padding-top:0px;" href="#" class="dropdown-toggle" data-toggle="dropdown">SPL Series <b class="caret"></b></a>
+                          <ul class="dropdown-menu" role="menu">
+                            <li class="dropdown-submenu">
+                                <a tabindex="-1" href="#" class="dropdown-submenu">Current Series</a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="{{'standings/index/0' |site_url}}" class="myNavLinks" style="padding-top:0px;">Standings</a></li>
+                                    <li><a href="{{'standings/schedule/0'|site_url}}" class="myNavLinks" style="padding-top:0px;">Schedule</a></li>                                
+                                    <li><a href="{{'main/stats/0'|site_url}}" class="myNavLinks" style="padding-top:0px;">Stats</a></li>
+                                    <li><a href="{{'main/prizepool/0'|site_url}}" class="myNavLinks" style="padding-top:0px;">Prize Pool</a></li>
+                                </ul>
+                            </li>
+                            <li class="divider"></li>
+                            {%for season in otherSeasons%}
+                            <li class="dropdown-submenu">
+                                <a tabindex="-1" href="#" class="dropdown-submenu">{{season.name}}</a>
+                                <ul class="dropdown-menu">
+                                    {% set l = 'standings/index/' ~ season.id %}
+                                    <li><a href="{{l|site_url}}" class="myNavLinks" style="padding-top:0px;">Standings</a></li>
+                                    {% set l = 'standings/schedule/' ~ season.id %}
+                                    <li><a href="{{l|site_url}}" class="myNavLinks" style="padding-top:0px;">Schedule</a></li>                                
+                                    {% set l = 'main/stats/' ~ season.id %}
+                                    <li><a href="{{l|site_url}}" class="myNavLinks" style="padding-top:0px;">Stats</a></li>
+                                    {% set l = 'main/prizepool/' ~ season.id %}
+                                    <li><a href="{{l|site_url}}" class="myNavLinks" style="padding-top:0px;">Prize Pool</a></li>
+                                </ul>
+                            </li>
+                            {%endfor%}
+                          </ul>
+                        </li>
                         <li><a href="{{'main/contact'|site_url}}" class="myNavLinks" style="padding-top:0px;">Contact</a></li>
                         <li><a href="{{'main/rules'|site_url}}" class="myNavLinks" style="padding-top:0px;">Rules</a></li>
-                        <li><a href="{{'main/prizepool'|site_url}}" class="myNavLinks" style="padding-top:0px;">Prize Pool</a></li>
-                        <li><a href="{{'main/stats'|site_url}}" class="myNavLinks" style="padding-top:0px;">Stats</a></li>
-                  </ul>
+                    </ul>
                   <ul class="nav navbar-nav navbar-right">
                       <li><a href="/" id="viewerCount" class="hidden-sm" style="color:red; padding-top:0px;height:20px;" ></a></li>
                     {% if user.isvalid != "true" %}
-                        <li><a class="myNavLinks" style="padding-top:0px;" href="{{'auth/login'|site_url}}" rel="async" ajaxify="{{'auth/auth_ajax/ion_auth_dialog/login'|site_url}}">Login</a></li>
-                        {%if false%}<li><a class="myNavLinks" style="padding-top:0px;" href="{{'auth/create_user'|site_url}}" rel="async" ajaxify="{{'auth/auth_ajax/ion_auth_dialog/create_user'|site_url}}">Signup</a></li>{%endif%}
+                      <li><a class="myNavLinks" style="padding-top:0px;" href="{{'auth/login'|site_url}}" rel="async" ajaxify="{{'auth/auth_ajax/ion_auth_dialog/login'|site_url}}">Login</a></li>
+                    {%if false%}
+                      <li><a class="myNavLinks" style="padding-top:0px;" href="{{'auth/create_user'|site_url}}" rel="async" ajaxify="{{'auth/auth_ajax/ion_auth_dialog/create_user'|site_url}}">Signup</a></li>
+                    {%endif%}
                     {% else %}
                     
                     <li id="mailCount"{% if user.mailCount == 0%}style="display: none"{%endif%} >
@@ -154,20 +231,20 @@
                         </a>
                     </li>
                     
-                        <li class="dropdown">
-                          <a class="myNavLinks" style="padding-top:0px;" href="#" class="dropdown-toggle" data-toggle="dropdown">{{user.uname}} <b class="caret"></b></a>
-                          <ul class="dropdown-menu">
-                            {% if user.isManager == TRUE %}
-                            <li><a class="myNavLinks" style="padding-top:0px;" href="{{'auth/index'|site_url}}">Admin</a></li>
-                            {% endif %}
-                            {%if user.tname != '' %}
-                            <li><a href="{{'team/portal'|site_url}}">Team Portal</a></li>
-                            {%endif%}
-                            <li><a href="{{'user/portal'|site_url}}">User Portal</a></li>
-                            <li><a href="{{'mail'|site_url}}">Messages</a></li>
-                            <li><a class="myNavLinks" style="padding-top:0px;" href="{{'auth/logout'|site_url}}">Logout</a></li>
-                          </ul>
-                        </li>
+                    <li class="dropdown">
+                      <a class="myNavLinks" style="padding-top:0px;" href="#" class="dropdown-toggle" data-toggle="dropdown">{{user.uname}} <b class="caret"></b></a>
+                      <ul class="dropdown-menu">
+                        {% if user.isManager == TRUE %}
+                        <li><a class="myNavLinks" style="padding-top:0px;" href="{{'auth/index'|site_url}}">Admin</a></li>
+                        {% endif %}
+                        {%if user.tname != '' %}
+                        <li><a href="{{'team/portal'|site_url}}">Team Portal</a></li>
+                        {%endif%}
+                        <li><a href="{{'user/portal'|site_url}}">User Portal</a></li>
+                        <li><a href="{{'mail'|site_url}}">Messages</a></li>
+                        <li><a class="myNavLinks" style="padding-top:0px;" href="{{'auth/logout'|site_url}}">Logout</a></li>
+                      </ul>
+                    </li>
                      {% endif %}
                   </ul>
                 </div>

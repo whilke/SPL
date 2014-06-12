@@ -20,9 +20,27 @@ class Main extends MY_Controller
         $this->twiggy->template('rules')->display();
     }
     
-    function prizepool()
+    function prizepool($id)
     {
-        $this->twiggy->template('prizepool')->display();        
+        $this->load->model('Seasons_model');
+        if ($id == 0)
+        {
+            $season = $this->Seasons_model->GetCurrentSeason();
+        }
+        else
+        {
+            $season = $this->Seasons_model->get($id);            
+        }
+        
+        if ($season == null)
+        {
+            $this->twiggy->template('prizepool')->display();                    
+            
+        }
+        else
+        {
+            $this->twiggy->template('prizepool' . $season->id)->display();                    
+        }
     }
     
     function bfbtournament()
@@ -96,11 +114,27 @@ class Main extends MY_Controller
         $statBlock->stats->creeps = $avgCreeps;
         $statBlock->stats->neuatrals = $avgNeut;
     }
-    function stats()
+    function stats($id)
     {
         $this->load->model('Seasons_model');
         $this->load->model('Stats_model');
-        $season = $this->Seasons_model->GetCurrentSeason();
+
+        if ($id == 0)
+        {
+            $season = $this->Seasons_model->GetCurrentSeason();
+        }
+        else
+        {
+            $season = $this->Seasons_model->get($id);            
+        }
+
+        $this->twiggy->set('season', $season);
+        
+        if ($season == null) 
+        {
+            $this->twiggy->template('stats')->display();     
+            return;
+        }
         
         //grab all players with reported matches in this season.
         $players = $this->Teams_model->getActivePlayersInSeason($season->id);

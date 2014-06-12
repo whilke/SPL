@@ -149,6 +149,29 @@ class Seasons_model extends CI_Model
         return NULL;   
     }
     
+    function GetNonCurrentSeasons()
+    {
+        $query = $this->db->
+               select('seasons.*')->
+               from('seasons')->
+               where('current', false)->
+               get();
+        
+        $arr = Array();
+        foreach($query->result() as $row)
+        {
+            $season = $row;
+
+            $oDate = new DateTime($season->start);
+            $season->start = $oDate->format('m/d/Y');
+            $oDate = new DateTime($season->end);
+            $season->end = $oDate->format('m/d/Y');            
+            
+            $arr[] = $season;
+        }
+        return $arr;
+    }
+    
     function GetAllSeasons()
     {
         $query = $this->db->

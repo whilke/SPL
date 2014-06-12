@@ -21,36 +21,51 @@ class Standings extends MY_Controller
 
     }
     
-    public function index()
+    public function index($id)
     {
         $this->load->model('Seasons_model');
         
         $isManager = $this->ion_auth->is_manager();
         
-        $season = $this->Seasons_model->GetCurrentSeason();
+        if ($id == 0)
+        {
+            $season = $this->Seasons_model->GetCurrentSeason();
+        }
+        else
+        {
+            $season = $this->Seasons_model->get($id);            
+        }
         if ($season != null)
         {
             $stats = $this->Seasons_model->getTeamsByPoints($season->id, !$isManager);
             $this->twiggy->set('stats', $stats);
+            $this->twiggy->set('season', $season);
         }
         
-        $teams = $this->Seasons_model->getTeamsNotInSeason(0);
-        $this->twiggy->set('notTeams', $teams);
-                
+                       
         $this->twiggy->template('index')->display();
         
         
     }
-    public function schedule()
+    public function schedule($id)
     {
         $this->load->model('Seasons_model');
         $isManger = $this->ion_auth->is_manager();
         
-        $season = $this->Seasons_model->GetCurrentSeason();
+        if ($id == 0)
+        {
+            $season = $this->Seasons_model->GetCurrentSeason();
+        }
+        else
+        {
+            $season = $this->Seasons_model->get($id);            
+        }
+
         if ($season != null)
         {
             $matches = $this->Seasons_model->getMatchesForSeason($season->id, !$isManger);
             $this->twiggy->set('matches', $matches);            
+            $this->twiggy->set('season', $season);
         }
                 
         $this->twiggy->template('schedule')->display();

@@ -44,10 +44,15 @@
             }
             
             .mySideBar {}
-            body {padding-top: 70px;}
+            body {padding-top: 27px;}
 
             .myNavLinks{
                  min-height:25px; height:25px;padding-top:0px;
+            }
+            
+            .myNavBar
+            {
+                margin-top: -35px;
             }
             
 
@@ -103,11 +108,9 @@
                 .mySideBar {display: none;}
             }
             @media screen and (max-width:768px){
-                body {padding-top: 70px;}
                 .mySideBar {display: none;}
             }
             @media screen and (max-width:368px){
-                body {padding-top: 120px;}
             }
             
         </style>
@@ -179,18 +182,17 @@
     </head>
     <body>
         <!--Navbar-->
-        <div class="navbar navbar-default navbar-fixed-top" role="navigation" style="min-height:26px; height:26px;">
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation" style="margin-bottom:0px; min-height:26px; height:26px;">
             <div class="container" style="min-height:25px; height:25px;">
                 <div class="navbar-header" >
-                    <button style="padding-top:0px; margin-top:3px;" type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <button style="margin-top:-4px; padding-bottom:6px;padding-top:6px; margin-bottom: 0px;" type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
                         <span class="sr-only" >Toggle nav</span>
-                        <span class="icon-bar" style="padding-top:0px; margin-top:3px;"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
                 </div>
-                <div class="navbar-brand" style="padding-bottom:0px;height:25px;">
-                </div>
-                <div class="navbar-collapse collapse" style="min-height:25px; height:25px;background-color:#f8f8f8">
+                <div class="navbar-collapse collapse myNavBar" style="min-height:25px; height:25px;background-color:#f8f8f8">
                     <ul class="nav navbar-nav">
                         <li class="dropdown">
                           <a class="myNavLinks" style="padding-top:0px;" href="#" class="dropdown-toggle" data-toggle="dropdown">SPL Series <b class="caret"></b></a>
@@ -261,26 +263,37 @@
             </div>
         </div>
         
-        <div class="col-md-12" style="margin-top:-44px;">
-            <div class="container">
-                <div class="col-sm-12" style="background: #3990f2;">
-                    <div class="col-sm-2">
-                        <a href="{{'main/index'|site_url}}"><img src="{{'images/spl_logo.png'|assets_url()}}"/></a>                        
+        <div class="container" style="">
+            <div class="row" style="background: #3990f2;">
+                <div class="col-sm-2 hidden-xs">
+                    <a href="{{'main/index'|site_url}}">
+                        <img class="img-responsive" src="{{'images/spl_logo.png'|assets_url()}}"/></a>                        
+                </div>
+                <div class="col-xs-2 hidden-sm hidden-md hidden-lg">
+                    <a href="{{'main/index'|site_url}}">
+                        <img src="{{'images/spl_logo.png'|assets_url()}}"/></a>                        
+                </div>
+                <div class="col-sm-2 hidden-xs" style="margin-top:30px;margin-left:-25px;margin-right:25px;">
+                    <a href="{{'main/index'|site_url}}"><img class="img-responsive" src="{{'images/srs.png'|assets_url()}}"/></a>                        
+                </div>
+                <div class="col-sm-4 hidden-xs" style="margin-top:20px;font-family: 'Oswald', sans-serif; font-weight: 700;">
+                    <div class="text-center">
+                    Beta Series 1 Tournament: July 12 & 13 <br/>
+                    Start Time: 10am PST / 1pm EST<br/>
+                    <a class="alt-hover" href="http://www.twitch.tv/strifeproleague" target="_blank">twitch.tv/strifeproleague</a>
                     </div>
-                    <div class="col-sm-5 col-sm-push-1" style="font-family: 'Oswald', sans-serif; font-weight: 700;">
-                        <div class="text-center">
-                        <br/>
-                        <br/>
+                </div>
+                <div class="col-xs-6 col-xs-offset-4 hidden-sm hidden-md hidden-lg" style="margin-top:40px;font-size: 10px; font-family: 'Oswald', sans-serif; font-weight: 700;">
+                    <div class="text-center">
                         Beta Series 1 Tournament: July 12 & 13 <br/>
-                        Start Time: 10am PST / 1pm EST<br/>
-                        <a class="alt-hover" href="http://www.twitch.tv/strifeproleague" target="_blank">twitch.tv/strifeproleague</a>
-                        </div>
+                    Time: 10am PST<br/>
+                    <a class="alt-hover" href="http://www.twitch.tv/strifeproleague" target="_blank">twitch.tv/strifeproleague</a>
                     </div>
-                    <div class="col-sm-4 col-sm-push-1">
-                    <a href="http://www.gamevox.com" target="_blank">
-                        <img class="hidden-xs hidden-sm pull-right" src="{{'images/sponsors.png'|assets_url()}}" />
-                    </a>                    
-                    </div>
+                </div>
+                <div class="col-xs-4 hidden-xs hidden-sm">
+                <a href="http://www.gamevox.com" target="_blank">
+                    <img class="pull-right img-responsive" src="{{'images/sponsors.png'|assets_url()}}" />
+                </a>                    
                 </div>
             </div>
         </div>

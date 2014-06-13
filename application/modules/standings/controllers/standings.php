@@ -17,13 +17,13 @@ class Standings extends MY_Controller
         );
         
         $this->email->initialize($a);
-        $this->load->model('Teams_model');
+        $this->model('Teams_model');
 
     }
     
-    public function index($id)
+    public function index($id=0)
     {
-        $this->load->model('Seasons_model');
+        $this->model('Seasons_model');
         
         $isManager = $this->ion_auth->is_manager();
         
@@ -47,9 +47,9 @@ class Standings extends MY_Controller
         
         
     }
-    public function schedule($id)
+    public function schedule($id=0)
     {
-        $this->load->model('Seasons_model');
+        $this->model('Seasons_model');
         $isManger = $this->ion_auth->is_manager();
         
         if ($id == 0)
@@ -73,8 +73,8 @@ class Standings extends MY_Controller
     
     public function match($id)
     {
-        $this->load->model('Seasons_model');
-        $this->load->model('Stats_model');
+        $this->model('Seasons_model');
+        $this->model('Stats_model');
         
         $isManager = $this->ion_auth->is_manager();       
         $user = $this->ion_auth->user()->row();
@@ -183,8 +183,8 @@ class Standings extends MY_Controller
         $this->form_validation->set_rules('glory_ban', 'Glory Ban', 'xss_clean');
         $this->form_validation->set_rules('valor_ban', 'Valor Ban', 'xss_clean');
 
-        $this->load->model('Seasons_model');          
-        $this->load->model('Stats_model');
+        $this->model('Seasons_model');          
+        $this->model('Stats_model');
         $match = $this->Seasons_model->getMatch($id);
         
         $isOwner = false;
@@ -386,7 +386,7 @@ class Standings extends MY_Controller
         $this->form_validation->set_rules('check', 'Invalid Data', 'required|xss_clean');
 
         
-        $this->load->model('Seasons_model');          
+        $this->model('Seasons_model');          
         $match = $this->Seasons_model->getMatch($id);
         
         if ($match->who_proposed_team_id != '')

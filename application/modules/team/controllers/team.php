@@ -17,7 +17,7 @@ class Team extends MY_Controller
         $this->lang->load('auth');
         $this->load->helper('language');
 
-        $this->load->model('Teams_model');
+        $this->model('Teams_model');
 
     }
     
@@ -81,7 +81,7 @@ class Team extends MY_Controller
         if ($isManager)
             $isTeamOwner = true;
         
-        $this->load->model('Seasons_model');
+        $this->model('Seasons_model');
         
         $matches = $this->Seasons_model->getMatchesForPortal($teamid, !$isManager);
         $this->twiggy->set('matches', $matches);
@@ -93,7 +93,7 @@ class Team extends MY_Controller
         $this->twiggy->set('team', $team);
         
         $seasons = $this->Seasons_model->GetAllSeasons();
-        $activeSeason = $this->Seasons_model->GetRunningSeason($teamid);
+        $activeSeason = $this->Seasons_model->GetCurrentSeason();
         
         $total_points = 0;
         $arr = Array();
@@ -102,7 +102,7 @@ class Team extends MY_Controller
             $stats = $this->Seasons_model->getSeasonStats($teamid, $season->id, $hideStats);
             $arr[] = $stats;
             
-            if ($season->id == $activeSeason[0]['id'])
+            if ($season->id == $activeSeason->id)
                 $total_points = $stats->points;
         }
         $this->twiggy->set('season_stats', $arr);

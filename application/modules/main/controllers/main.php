@@ -7,7 +7,7 @@ class Main extends MY_Controller
         parent::__construct();
         
         $this->load->library('session');
-        $this->load->model('Teams_model');
+        $this->model('Teams_model');
     }
     
     function index()
@@ -20,9 +20,9 @@ class Main extends MY_Controller
         $this->twiggy->template('rules')->display();
     }
     
-    function prizepool($id)
+    function prizepool($id=0)
     {
-        $this->load->model('Seasons_model');
+        $this->model('Seasons_model');
         if ($id == 0)
         {
             $season = $this->Seasons_model->GetCurrentSeason();
@@ -114,10 +114,10 @@ class Main extends MY_Controller
         $statBlock->stats->creeps = $avgCreeps;
         $statBlock->stats->neuatrals = $avgNeut;
     }
-    function stats($id)
+    function stats($id=0)
     {
-        $this->load->model('Seasons_model');
-        $this->load->model('Stats_model');
+        $this->model('Seasons_model');
+        $this->model('Stats_model');
 
         if ($id == 0)
         {

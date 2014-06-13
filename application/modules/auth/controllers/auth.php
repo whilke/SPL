@@ -27,7 +27,7 @@ class Auth extends MY_Controller {
     //redirect if needed, otherwise display the user list
     function index($fromajax=false)
     {        
-        $this->load->model('Teams_model');
+        $this->model('Teams_model');
         if (!$this->ion_auth->logged_in())
         {
             //redirect them to the login page
@@ -57,7 +57,7 @@ class Auth extends MY_Controller {
             }
             
             //grab seasons
-            $this->load->model('Seasons_model');
+            $this->model('Seasons_model');
             $seasons = $this->Seasons_model->get_listAsArray(false);
             $this->data['seasons'] = $seasons;            
 
@@ -599,7 +599,7 @@ class Auth extends MY_Controller {
             redirect('auth', 'refresh');
         }
         
-        $this->load->model('Seasons_model');
+        $this->model('Seasons_model');
         $seasons = $this->Seasons_model->get_listAsArray(false);
         
         $this->data = array();
@@ -615,7 +615,7 @@ class Auth extends MY_Controller {
             redirect('auth', 'refresh');
         }
 
-        $this->load->model('Seasons_model');
+        $this->model('Seasons_model');
         $this->Seasons_model->changeActiveFlag($id, true);
         redirect('auth', 'refresh');
     }
@@ -626,7 +626,7 @@ class Auth extends MY_Controller {
             redirect('auth', 'refresh');
         }
 
-        $this->load->model('Seasons_model');
+        $this->model('Seasons_model');
         $this->Seasons_model->changeActiveFlag($id, false);
         redirect('auth', 'refresh');
     }
@@ -639,7 +639,7 @@ class Auth extends MY_Controller {
         }
         
         get_instance()->load->library('form_validation');
-        $this->load->model('Seasons_model');
+        $this->model('Seasons_model');
 
         $this->data['title'] = "Create Season";
 
@@ -748,7 +748,7 @@ class Auth extends MY_Controller {
             redirect('auth', 'refresh');
         }
 
-        $this->load->model('Seasons_model');
+        $this->model('Seasons_model');
 
         $season = $this->Seasons_model->get($seasonId);
         $weeks = $this->Seasons_model->getWeeksForSeason($seasonId);
@@ -922,7 +922,7 @@ class Auth extends MY_Controller {
         }
         
         get_instance()->load->library('form_validation');
-        $this->load->model('Seasons_model');
+        $this->model('Seasons_model');
 
         $this->data['title'] = "Create Weekly Bracket";
         $this->data['seasonId'] = $seasonId;
@@ -984,7 +984,7 @@ class Auth extends MY_Controller {
         }
         
         get_instance()->load->library('form_validation');
-        $this->load->model('Seasons_model');
+        $this->model('Seasons_model');
 
         $this->data['title'] = "Create Season";
         

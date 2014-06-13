@@ -44,7 +44,7 @@ class MY_Controller extends MX_Controller {
         $this->load->library('session');
         $this->load->library('authentication', NULL, 'ion_auth');
         $this->load->library('mahana_messaging');
-        $this->load->model('Seasons_model');
+        $this->model('Seasons_model');
         
         $seasons = $this->Seasons_model->GetNonCurrentSeasons();
         $this->twiggy->set('otherSeasons', $seasons, TRUE);
@@ -112,7 +112,7 @@ class MY_Controller extends MX_Controller {
      */
     function model ($model, $name = '', $db_conn = FALSE) {
         if (is_array($model) || !class_exists($model)) {
-            parent::model($model, $name, $db_conn);
+            $this->load->model($model, $name, $db_conn);
         }
     }    
 
@@ -150,7 +150,7 @@ class Ajax_Controller extends MY_Controller {
         $this->load->library('session');
         $this->load->library('response');
         $this->load->library('authentication', NULL, 'ion_auth');
-        
+
        if ($this->ion_auth->logged_in())
         {
             $user = $this->ion_auth->user()->row();

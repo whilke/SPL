@@ -33,6 +33,15 @@
         <script src="//cdn.datatables.net/1.10.0/js/jquery.dataTables.js"></script>
 
         <style type="text/css">
+            a.alt-hover
+            {
+                color: brown;
+            }
+            a.alt-hover:hover
+            {
+                color: brown;
+            }
+            
             .mySideBar {}
             body {padding-top: 70px;}
 
@@ -188,10 +197,10 @@
                             <li class="dropdown-submenu">
                                 <a tabindex="-1" href="#" class="dropdown-submenu">Current Series</a>
                                 <ul class="dropdown-menu">
-                                    <li><a href="{{'standings/index/0' |site_url}}" class="myNavLinks" style="padding-top:0px;">Standings</a></li>
-                                    <li><a href="{{'standings/schedule/0'|site_url}}" class="myNavLinks" style="padding-top:0px;">Schedule</a></li>                                
-                                    <li><a href="{{'main/stats/0'|site_url}}" class="myNavLinks" style="padding-top:0px;">Stats</a></li>
-                                    <li><a href="{{'main/prizepool/0'|site_url}}" class="myNavLinks" style="padding-top:0px;">Prize Pool</a></li>
+                                    <li><a href="{{'standings/index' |site_url}}" class="myNavLinks" style="padding-top:0px;">Standings</a></li>
+                                    <li><a href="{{'standings/schedule'|site_url}}" class="myNavLinks" style="padding-top:0px;">Schedule</a></li>                                
+                                    <li><a href="{{'main/stats'|site_url}}" class="myNavLinks" style="padding-top:0px;">Stats</a></li>
+                                    <li><a href="{{'main/prizepool'|site_url}}" class="myNavLinks" style="padding-top:0px;">Prize Pool</a></li>
                                 </ul>
                             </li>
                             <li class="divider"></li>
@@ -253,13 +262,23 @@
         
         <div class="col-md-12" style="margin-top:-44px;">
             <div class="container">
-                <div class="col-md-12" style="background-image:url('{{'images/banner_bkg.png'|assets_url()}}');no-repeat center center fixed;
-      webkit-background-size: cover;
-      moz-background-size: cover;
-      o-background-size: cover;
-      background-size: cover;">
-                    <a href="{{'main/index'|site_url}}"><img src="{{'images/spl_logo.png'|assets_url()}}"/></a>
-                    <a href="http://www.gamevox.com" target="_blank"><img class="hidden-xs hidden-sm" src="{{'images/sponsors.png'|assets_url()}}" style="text-align:right; float:right;"/></a>                                            
+                <div class="col-sm-12" style="background: #3990f2;">
+                    <div class="col-sm-2">
+                        <a href="{{'main/index'|site_url}}"><img src="{{'images/spl_logo.png'|assets_url()}}"/></a>                        
+                    </div>
+                    <div class="col-sm-5 col-sm-push-1">
+                        <div class="text-center">
+                        <br/>
+                        <br/>
+                        Beta Series 1 Tournament: July 11 & 12 <br/>
+                        <a class="alt-hover" href="http://www.twitch.tv/strifeproleague" target="_blank">twitch.tv/strifeproleague</a>
+                        </div>
+                    </div>
+                    <div class="col-sm-4 col-sm-push-1">
+                    <a href="http://www.gamevox.com" target="_blank">
+                        <img class="hidden-xs hidden-sm pull-right" src="{{'images/sponsors.png'|assets_url()}}" />
+                    </a>                    
+                    </div>
                 </div>
             </div>
         </div>

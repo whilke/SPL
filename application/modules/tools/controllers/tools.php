@@ -13,9 +13,9 @@ class Tools extends MY_Controller
         
         $this->email->initialize($a);
         
-        $this->load->model('Stats_model');
-        $this->load->model('Seasons_model');
-        $this->load->model('Teams_model');
+        $this->model('Stats_model');
+        $this->model('Seasons_model');
+        $this->model('Teams_model');
     }
     
     public function index()
@@ -53,7 +53,7 @@ class Tools extends MY_Controller
     
     public function migrateOwners()
     {
-        $this->load->model('Ion_auth_model');
+        $this->model('Ion_auth_model');
         
         $season = $this->Seasons_model->GetCurrentSeason();
         $rawteams = $this->Seasons_model->getTeamsByPoints($season->id, false);
@@ -273,7 +273,7 @@ class Tools extends MY_Controller
     
     public function syncPlayers()
     {
-        $this->load->model('Ion_auth_model');
+        $this->model('Ion_auth_model');
         
         //get all teams.
         $teams = $this->Teams_model->get_list();

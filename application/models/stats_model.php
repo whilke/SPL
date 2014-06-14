@@ -108,6 +108,8 @@ class Stats_model extends CI_Model
         {
             foreach($stats AS $stat)
             {
+                if ($stat->team == 0) continue; //skip specs;
+                // 
                 //first see if we need a new player record.
                 $this->updatePlayer($stat);
                 $hero_id = $this->getHeroId($stat->heroname);

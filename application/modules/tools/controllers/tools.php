@@ -544,6 +544,8 @@ class Tools extends MY_Controller
                         break;
                     }
                 }
+                if ($bplayer==0) continue; //skip specs
+                
                 $player['accountid'] = $bplayer['@attributes']['accountid'];
                 
                 $this->Stats_model->update_player_match_stats($match->id, $player['accountid'], $player);

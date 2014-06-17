@@ -1,0 +1,387 @@
+{% extends _layout %}
+{% block content %}
+    <!-- Header -->
+    <h2 style='text-align:center;'>
+        {{portalUser.username}} 
+        {%if isOwner %}
+        (<span id="regionContainer" class="">
+        <a href="javascript://;" id="region">{{portalUser.extra.region}}</a> 
+        </span>)
+        {%else%}
+        ({{portalUser.extra.region}}) 
+        {%endif%}
+    </h2> 
+    {% if portalUser.teamname %}
+    <h3 style='text-align:center;'>
+        {% set s = 'team/portal/' ~ portalUser.team_id   %}
+        <a href="{{s|site_url}}">{{portalUser.teamname}}</a>
+    </h3>
+    {%elseif isOwner%}
+    <h3 style='text-align:center;'>
+        {% set s = 'team/create/'   %}
+        {% set s2 = 'team/team_ajax/ion_team_dialog/create/' %}
+        <a href="{{s|site_url}}" rel="async" ajaxify="{{s2|site_url}}">
+          Create a Team</a>
+    </h3>
+    {%elseif canInviteMember or canInviteSub%}
+    <h4 style='text-align:center;'>
+        {% set s = 'team/invite/' ~ user.id   %}
+        {% set s2 = 'team/team_ajax/ion_team_dialog/invite/' ~ user.id %}
+        <a href="{{s|site_url}}" rel="async" ajaxify="{{s2|site_url}}">
+          Invite to your team</a>
+    </h4>
+    {%endif%}
+    <br/>
+    <div class="col-md-12">        
+        <div class="col-md-9">
+            <!--logo block-->            
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <h3 class="panel-title" id='bio_edit_area'>
+                        {%if isOwner %}
+                        <a href="javascript:void(0);" onclick='edit_bio();'>Edit Bio</a>
+                        {%else%}
+                        About
+                        {%endif%}
+                    </h3>
+                </div>
+                <div id="bioContainer" class="panel-body" style="height:373px;">{{portalUser.extra.bioHtml}}</div>
+                <div id="bioContainerMarkdown" class="panel-body hidden">{{portalUser.extra.bio}}</div>
+            </div>
+        </div>
+        <div class='col-md-3'>
+            <div class='panel panel-info'>
+                <div class='panel-heading'>
+                    <h3 class='panel-title'>Stat Card</h3>
+                </div>
+                <div class='panel-body'>
+                    <table >
+                        <thead>
+                            <tr>
+                                <td width='75%'></td>
+                                <td width='75px'></td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style='background-color: white;'>Matches:</td>
+                                <td style='background-color: white;'>{{portalUser.strifePlayer.matches|length}}</td>
+                            </tr>
+                            <tr>
+                                <td style='background-color: white;'>Match Length:</td>
+                                <td style='background-color: white;'>{{(portalUser.strifePlayer.AvgStats.matchlength / 60)|number_format(0) }} m</td>
+                            </tr>
+                            <tr>
+                                <td style='background-color: white;'>KDA:</td>
+                                <td style='background-color: white;'>{{portalUser.strifePlayer.AvgStats.kda}}</td>
+                            </tr>
+                            <tr>
+                                <td style='background-color: white;'>GPM:</td>
+                                <td style='background-color: white;'>{{portalUser.strifePlayer.AvgStats.gpm}}</td>
+                            </tr>
+                            <tr>
+                                <td style='background-color: white;'>Kills:</td>
+                                <td style='background-color: white;'>{{portalUser.strifePlayer.AvgStats.kills}}</td>
+                            </tr>
+                            <tr>
+                                <td style='background-color: white;'>Deaths:</td>
+                                <td style='background-color: white;'>{{portalUser.strifePlayer.AvgStats.deaths}}</td>
+                            </tr>
+                            <tr>
+                                <td style='background-color: white;'>Assists:</td>
+                                <td style='background-color: white;'>{{portalUser.strifePlayer.AvgStats.assists}}</td>
+                            </tr>
+                            <tr>
+                                <td style='background-color: white;'>Creeps:</td>
+                                <td style='background-color: white;'>{{portalUser.strifePlayer.AvgStats.creeps}}</td>
+                            </tr>
+                            <tr>
+                                <td style='background-color: white;'>Neutrals:</td>
+                                <td style='background-color: white;'>{{portalUser.strifePlayer.AvgStats.neuatrals}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class='panel-heading'>
+                    <h3 class='panel-title'>
+                        Contact
+                        {%if isOwner%}
+                        <div class="dropdown pull-right">
+                            <a style="margin-top: -5px;"
+                                class="pull-right btn-warn btn dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown">
+                                Modify
+                                <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-right" role="menu" aria-labelledby="dropdownMenu1">
+                                <li role="presentation"><a id="contact_twitter" role="menuitem" tabindex="-1" href="javascript://;">Twitter</a></li>
+                                <li role="presentation"><a id="contact_facebook" role="menuitem" tabindex="-1" href="javascript://;">Facebook</a></li>
+                                <li role="presentation"><a id="contact_twitch" role="menuitem" tabindex="-1" href="javascript://;">Twitch</a></li>
+                            </ul>     
+                        </div>
+                        {%endif%}
+                    </h3>
+                </div>
+                <div class='panel-body'>
+                    {% set s = 'mail/create/' ~ portalUser.id   %}
+                    {% set s2 = 'mail/mail_ajax/ion_mail_dialog/create/' ~ portalUser.id %}
+                    <a href="{{s|site_url}}" rel="async" ajaxify="{{s2|site_url}}">
+                    <img width="40px" height="40px" src="{{'images/glyphicons_122_message_in.png'|assets_url()}}" />
+                    </a>
+                    {%if portalUser.extra.contact_twitter != ''%}
+                    <a href="http://www.twitter.com/{{portalUser.extra.contact_twitter}}" target='_blank'>
+                    <img width="40px" height="40px" src="{{'images/glyphicons_social_31_twitter.png'|assets_url()}}" />
+                    </a>                        
+                    {%endif%}
+                    {%if portalUser.extra.contact_facebook != ''%}
+                    <a href="http://www.facebook.com/{{portalUser.extra.contact_facebook}}" target='_blank'>
+                    <img width="40px" height="40px" src="{{'images/glyphicons_social_30_facebook.png'|assets_url()}}" />
+                    </a>                        
+                    {%endif%}
+                    {%if portalUser.extra.contact_twitch != ''%}
+                    <a href="http://www.twitch.tv/{{portalUser.extra.contact_twitch}}" target='_blank'>
+                    <img width="40px" height="40px" src="{{'images/twitch_glyph.jpg'|assets_url()}}" />
+                    </a>                        
+                    {%endif%}                    
+                </div>
+                <div class="panel-body collapse" id="contact_edit">
+                    <span id="contact_type"></span>
+                    <input type="text" id="contact_text" style="width:200px;" />
+                    <a id='contact_save' href="javascript://;" class="btn btn-info" style="padding:0px;">save</a>
+                    <a id='contact_delete' href="javascript://;" class="btn btn-warning" style="padding:0px;">delete</a>
+                </div>                    
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block js %}
+<script type="text/javascript">     
+$( document ).ready( function() {
+    
+    setup_region_click();
+ 
+});    
+
+function setup_region_click()
+{
+   $('#region').click(function()
+    {
+        var container = $('#regionContainer');
+        
+        var edit_html = '<select style="width:200px;display:inline !important;" class="form-control" id="region_select">' +
+            '<option value="" disabled="disabled" selected="selected">Select a Region</option>' +
+            '<option value="USE">USE</option>' +
+            '<option value="USW">USW</option>' +
+            '<option value="SEA">SEA</option>' +
+            '<option value="EU">EU</option>' +
+        '</select>' +
+        '<a onclick="region_save();" class="btn btn-primary btn-xs" href="javascript://;"><span class="glyphicon glyphicon-ok"></span></a>' +
+        '<button onclick="region_cancel();" class="btn btn-primary btn-xs" href="javascript://;"><span class="glyphicon glyphicon-remove"></span></button>'
+
+        container.html(edit_html);
+        
+    });   
+}
+
+function region_cancel()
+{
+    var container = $('#regionContainer');
+    container.html(' <a href="javascript://;" id="region">{{portalUser.extra.region}}</a> ');
+    setup_region_click();
+}
+function region_save()
+{
+    var rawdata = $('#region_select').val();
+    if (rawdata == null || rawdata == '')
+    {
+        region_cancel();
+        return;
+        
+    }
+    var postData = {};
+    postData['region'] = rawdata;
+
+    postData = JSON.stringify(postData);
+    postData = {
+        id: {{portalUser.id}},
+        data: postData
+    };
+
+    $.ajax({
+        type: "POST",
+        url: "{{'user/save'|site_url()}}",
+        data: postData,
+        dataType:'json',
+        success: function(){
+        }
+    });    
+
+    var container = $('#regionContainer');
+    container.html(' <a href="javascript://;" id="region">'+rawdata+'</a> ');
+    setup_region_click();
+}
+
+var oldbio = $('#bioContainerMarkdown').html();
+var oldbioHtml = '';
+function edit_bio()
+{
+    var container = $('#bioContainer');
+    oldbioHtml = container.html();
+    var html = '<textarea rows="17" class="form-control" id="bio_cntr">'+oldbio+'</textarea>';
+    container.html(html);
+    
+    var editContainer = $('#bio_edit_area');
+    html = '<button onclick="bio_save();" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-ok"></span></button> ' +
+        '<button onclick="bio_cancel();" class="btn btn-primary btn-xs"><span class="glyphicon glyphicon-remove"></span></button>' +
+        ' (<a href="http://daringfireball.net/projects/markdown/basics" target="_blank">Markdown syntax</a>)';
+
+    editContainer.html(html);
+}
+
+function bio_cancel()
+{
+    var container = $('#bioContainer');
+    container.html(oldbioHtml);
+    var editContainer = $('#bio_edit_area');
+    editContainer.html('<a href="javascript:void(0);" onclick="edit_bio();">Edit Bio</a>');
+}
+
+function bio_save()
+{
+    var rawdata = $('#bio_cntr').val();
+    if (rawdata == null || rawdata == '')
+    {
+        region_cancel();
+        return;
+        
+    }
+    var postData = {};
+    postData['bio'] = rawdata;
+
+    postData = JSON.stringify(postData);
+    postData = {
+        id: {{portalUser.id}},
+        data: postData
+    };
+
+    $.ajax({
+        type: "POST",
+        url: "{{'user/save'|site_url()}}",
+        data: postData,
+        dataType:'json',
+        success: function(){
+        }
+    });    
+    
+    location.reload();
+}
+
+</script>
+
+{%if isOwner %}
+<script type="text/javascript">
+$(document).ready(function() {
+    $("#contact_save").click(function(){contact_save();});
+    $("#contact_delete").click(function(){contact_delete();});
+    $("#contact_twitter").click(function(){
+        modify_contact('twitter');
+    });
+    $("#contact_facebook").click(function(){
+        modify_contact('facebook');
+    });
+    $("#contact_twitch").click(function(){
+        modify_contact('twitch');
+    });
+});
+
+var contact_type;
+function contact_save()
+{
+    
+    var rawdata = $("#contact_text").val();
+    rawdata = rawdata.replace(/(@|#|\/|http:|www.)/g,'');
+    if (contact_type=='contact_twitter')
+    {
+        rawdata = rawdata.replace('twitter.com','');
+    }
+    if (contact_type=='contact_twitch')
+    {
+        rawdata = rawdata.replace('twitch.tv','');
+    }
+    if (contact_type=='contact_facebook')
+    {
+        rawdata = rawdata.replace('facebook.com','');
+    }
+    
+    var postData = {};
+    postData[contact_type] = rawdata;
+
+    postData = JSON.stringify(postData);
+    postData = {
+        id: {{portalUser.id}},
+        data: postData
+    };team
+
+    $.ajax({
+        type: "POST",
+        url: "{{'user/save'|site_url()}}",
+        data: postData,
+        dataType:'json',
+        success: function(){
+        }
+    });
+    
+    $("#contact_edit").hide();
+    location.reload();
+}
+
+function contact_delete()
+{
+    var postData = {};
+    postData[contact_type] = "";
+
+    postData = JSON.stringify(postData);
+    postData = {
+        id: {{portalUser.id}},
+        data: postData
+    };
+
+    $.ajax({
+        type: "POST",
+        url: "{{'user/save'|site_url()}}",
+        data: postData,
+        dataType:'json',
+        success: function(){
+        }
+    });
+    
+    $("#contact_edit").hide();
+    location.reload();
+}
+
+function modify_contact(contactType)
+{
+    $("#contact_edit").show();
+    if (contactType == 'twitter')
+    {
+        contact_type = 'contact_twitter';
+        $("#contact_type").html("<img width=15 height=15 src='{{'images/glyphicons_social_31_twitter.png'|assets_url()}}'/>");
+        $("#contact_text").val('{{portalUser.extra.contact_twitter}}')
+    }
+    if (contactType == 'facebook')
+    {
+        contact_type = 'contact_facebook';
+        $("#contact_type").html("<img width=15 height=15 src='{{'images/glyphicons_social_30_facebook.png'|assets_url()}}'/>");
+        $("#contact_text").val('{{portalUser.extra.contact_facebook}}')
+    }
+    if (contactType == 'twitch')
+    {
+        contact_type = 'contact_twitch';
+        $("#contact_type").html("<img width=15 height=15 src='{{'images/twitch_glyph.jpg'|assets_url()}}'/>");
+        $("#contact_text").val('{{portalUser.extra.contact_twitch}}')
+    }
+}
+
+</script>    
+{%endif%}       
+        
+{% endblock %}

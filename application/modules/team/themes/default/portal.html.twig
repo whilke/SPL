@@ -1,7 +1,21 @@
 {% extends _layout %}
 {% block content %}
-    <h2 style='text-align:center;'>{{team.name}} ( {{team.region}} ) 
+    <h2 style='text-align:center;'>{{team.name}} ( 
+        
+        {%if isTeamOwner and canEdit %}
+        <span id="regionContainer" class="">
+        <a href="javascript://;" id="region">{{team.region}}</a> 
+        </span>
+        {%else%}
+        {{team.region}}
+        {%endif%}                
+        ) 
     </h2> 
+    {% if isTeamMember %}
+    <h4 style='text-align:center;'>
+        <a href="{{'team/leave'|site_url()}}">Leave Team</a>
+    </h4>
+    {%endif%}
     <br/>
     <div class="col-md-12">        
         <div class="col-md-4">
@@ -211,7 +225,7 @@
                         <td class="text-center">{{match.awcode}}</td>
                         {% endif %}
                         
-                        {% if match.active == true %}
+                        {% if match.actteamive == true %}
                             <td></td>
                         {% else %}
                         {% if match.home_team_id == team.id %}
@@ -345,7 +359,68 @@ $(document).ready(function() {
         modify_contact('twitch');
     });
 
+    setup_region_click();
 });
+
+function setup_region_click()
+{
+   $('#region').click(function()
+    {
+        var container = $('#regionContainer');
+        
+        var edit_html = '<select style="width:200px;display:inline !important;" class="form-control" id="region_select">' +
+            '<option value="" disabled="disabled" selected="selected">Select a Region</option>' +
+            '<option value="USE">USE</option>' +
+            '<option value="USW">USW</option>' +
+            '<option value="SEA">SEA</option>' +
+            '<option value="EU">EU</option>' +
+        '</select>' +
+        '<a onclick="region_save();" class="btn btn-primary btn-xs" href="javascript://;"><span class="glyphicon glyphicon-ok"></span></a>' +
+        '<button onclick="region_cancel();" class="btn btn-primary btn-xs" href="javascript://;"><span class="glyphicon glyphicon-remove"></span></button>'
+
+        container.html(edit_html);
+        
+    });   
+}
+
+function region_cancel()
+{
+    var container = $('#regionContainer');
+    container.html(' <a href="javascript://;" id="region">{{portalUser.extra.region}}</a> ');
+    setup_region_click();
+}
+function region_save()
+{
+    var rawdata = $('#region_select').val();
+    if (rawdata == null || rawdata == '')
+    {
+        region_cancel();
+        return;
+        
+    }
+    var postData = {};
+    postData['region'] = rawdata;
+
+    postData = JSON.stringify(postData);
+    postData = {
+        id: {{team.id}},
+        data: postData
+    };
+
+    $.ajax({
+        type: "POST",
+        url: "{{'team/save'|site_url()}}",
+        data: postData,
+        dataType:'json',
+        success: function(){
+        }
+    });    
+
+    var container = $('#regionContainer');
+    container.html(' <a href="javascript://;" id="region">'+rawdata+'</a> ');
+    setup_region_click();
+}
+
 
 var contact_type;
 function contact_save()

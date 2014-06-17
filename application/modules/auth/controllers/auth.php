@@ -48,7 +48,7 @@ class Auth extends MY_Controller {
             $this->data['users'] = $this->ion_auth->users()->result();
             foreach ($this->data['users'] as $k => $user)
             {
-                $team = $this->Teams_model->get($user->teamname);
+                $team = $this->Teams_model->getById($user->team_id);
                 if ($team != null)
                 {
                     $this->data['users'][$k]->teamId = $team->id;
@@ -407,7 +407,7 @@ class Auth extends MY_Controller {
         }
 
         //validate form input
-        $this->form_validation->set_rules('teamname', $this->lang->line('create_user_validation_team_label'), 'required|xss_clean');
+        $this->form_validation->set_rules('username', $this->lang->line('create_user_validation_username_label'), 'required|xss_clean');
         $this->form_validation->set_rules('email', $this->lang->line('create_user_validation_email_label'), 'required|valid_email');
         $this->form_validation->set_rules('password', $this->lang->line('create_user_validation_password_label'), 'required|min_length[' . $this->config->item('min_password_length', 'ion_auth') . ']|max_length[' . $this->config->item('max_password_length', 'ion_auth') . ']|matches[password_confirm]');
         $this->form_validation->set_rules('password_confirm', $this->lang->line('create_user_validation_password_confirm_label'), 'required');
@@ -416,7 +416,7 @@ class Auth extends MY_Controller {
         
         if ($this->form_validation->run() == true)
         {
-            $teamname = $this->input->post('teamname');
+            $username = $this->input->post('username');
             $email    = $this->input->post('email');
             $password = $this->input->post('password');
 
@@ -425,11 +425,10 @@ class Auth extends MY_Controller {
         if ($this->form_validation->run() == true)
         {
             $displayForm = true;
-            $id = $this->ion_auth->register($teamname, $password, $email, $additional_data);
+            $id = $this->ion_auth->register($username, $password, $email, $additional_data);
             if ($id != FALSE)
             {         
                 $displayForm = false;
-                $this->Teams_model->addNewTeam($teamname, $id);
 
                 //check to see if we are creating the user
                 //redirect them back to the admin page
@@ -445,11 +444,11 @@ class Auth extends MY_Controller {
             $this->data['message'] = (validation_errors() ? validation_errors() : ($this->ion_auth->errors() ? $this->ion_auth->errors() : $this->session->flashdata('message')));
 
            
-            $this->data['teamname'] = array(
-                'name'  => 'teamname',
-                'id'    => 'teamname',
+            $this->data['username'] = array(
+                'name'  => 'username',
+                'id'    => 'username',
                 'type'  => 'text',
-                'value' => $this->form_validation->set_value('teamname'),
+                'value' => $this->form_validation->set_value('username'),
             );
             $this->data['email'] = array(
                 'name'  => 'email',

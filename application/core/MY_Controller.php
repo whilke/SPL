@@ -80,6 +80,7 @@ class MY_Controller extends MX_Controller {
             
             $this->twiggy->set('user', array(
                 'uname' => $user->username, 
+                'tname' => $user->teamname,
                 'isvalid' => true, 
                 'isAdmin' => $isAdmin, 
                 'isGlobalManager' => $isGlobalManager, 

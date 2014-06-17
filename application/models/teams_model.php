@@ -30,6 +30,15 @@ class Teams_model extends CI_Model
     {
          parent::__construct();
     }
+    
+    function add($name)
+    {
+        $chk = $this->get($name);
+        if ($chk != NULL) return false;
+        
+        return $this->addNewTeam($name);
+               
+    }
 
     function get_list()
     {
@@ -71,7 +80,10 @@ class Teams_model extends CI_Model
             $realTeam->contact_twitter = $team->contact_twitter;
             $realTeam->contact_facebook = $team->contact_facebook;
             $realTeam->contact_twitch = $team->contact_twitch;
-            $realTeam->players = array();
+            $realTeam->players = $this->getPlayersForTeam($team->id);
+            
+            //first grab the upgraded player list.
+            
             
             //check each slot for a real account.
             $this->_mergePlayerToTeam($realTeam, $team->captain, $team->captain_strife_id);
@@ -81,6 +93,9 @@ class Teams_model extends CI_Model
             $this->_mergePlayerToTeam($realTeam, $team->slot4, $team->slot4_strife_id);
             $this->_mergePlayerToTeam($realTeam, $team->slot5, $team->slot5_strife_id, true);
             $this->_mergePlayerToTeam($realTeam, $team->slot6, $team->slot6_strife_id, true);
+
+            //see if there are any other registered players.
+            
             
             return $realTeam;
         }
@@ -112,7 +127,7 @@ class Teams_model extends CI_Model
             $realTeam->contact_twitter = $team->contact_twitter;
             $realTeam->contact_facebook = $team->contact_facebook;
             $realTeam->contact_twitch = $team->contact_twitch;
-            $realTeam->players = array();
+            $realTeam->players = $this->getPlayersForTeam($team->id);
             
             //check each slot for a real account.
             $this->_mergePlayerToTeam($realTeam, $team->captain, $team->captain_strife_id);
@@ -132,6 +147,14 @@ class Teams_model extends CI_Model
     private function _mergePlayerToTeam($team, $slotName, $slotId, $isSub=false)
     {
         if ($slotName == null) return;
+        
+        //check if this player is already loaded.
+        foreach($team->players AS $player)
+        {
+            if ($player->name == $slotName ||
+               ( $player->strife_id != null && $player->strife_id == $slotId))
+                return;
+        }
         
         $p = NULL;
         $plr = $this->_findPlayerForTeam($team->id, $slotName);
@@ -184,6 +207,32 @@ class Teams_model extends CI_Model
             return $player;
         }
         return NULL;
+    }
+    
+     private function getPlayersForTeam($teamid)
+    {
+        $query = $this->db->
+            from('users u')->
+            where('u.team_id', $teamid)->
+            get();
+        
+        $players = array();
+        foreach($query->result() as $row)
+        {
+            $plr = $row;
+            $plr->bestGroup = $this->_findBestGroupForPlayer($plr->id);
+            
+            $p = new stdClass();
+            $p->name = $plr->username;
+            $p->id = $plr->id;
+            $p->strife_id = $plr->strife_id;
+            $p->converted = true;
+            $p->bestGroup = $plr->bestGroup;
+            
+            $players[] = $p;
+        }
+        
+        return $players;
     }
     
     private function _findBestGroupForPlayer($playerId)
@@ -241,14 +290,75 @@ class Teams_model extends CI_Model
         }
     }
     
-    function addNewTeam($teamname, $userid)
+    public function addNewTeam($teamname)
     {
         $data = array(
             'name'=>$teamname,
-            'userid'=>$userid
+            'region'=>'USE',
+            'active'=>true,
         );
         
         $this->db->insert('teams', $data);
+        $id = $this->db->insert_id();
+        return $id;
+    }
+    
+    public function joinUser($teamId, $userId)
+    {
+        //first remove any owner/mod/sub groups from this user since it's a fresh join.
+        $CI =& get_instance();
+        $CI->ion_auth->remove_from_group(array(5,6,7), $userId);
+        
+        //join this user to the group as a sub
+        $CI->ion_auth->update($userId, array('team_id'=>$teamId) );
+        $this->promote($teamId, $userId, 3);
+    }
+    
+    public function removeUser($teamId, $userId)
+    {
+        //remove this user from any team groups.
+        $CI =& get_instance();
+        $CI->ion_auth->remove_from_group(array(5,6,7), $userId);
+        $CI->ion_auth->update($userId, array('team_id'=>0) );        
+    }
+    
+    public function promote($teamId, $userId, $level)
+    {
+        $groups = array();
+        $CI =& get_instance();
+        
+        if ($level == 0)
+        {
+            $groups = array(2,5);
+        }
+        else if ($level == 1)
+        {
+            $groups = array(2,6);
+        }
+        else if ($level == 2)
+        {
+            $groups = array(2);
+        }
+        else
+        {
+            $groups = array(2, 7);
+        }
+        
+        //clear groups
+        $CI->ion_auth->remove_from_group(array(5,6,7), $userId);
+        
+        //promote
+        foreach($groups AS $g)
+        {
+            $CI->ion_auth->add_to_group($g, $userId);            
+        }
+
+    }
+    
+    function deactivate($teamid)
+    {
+       $data = array('active'=>false);
+       $this->edit($teamid, $data);
     }
     
     function delete($teamid)

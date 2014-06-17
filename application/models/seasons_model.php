@@ -469,9 +469,10 @@ class Seasons_model extends CI_Model
         $arr->wins = 0;
         $arr->loss = 0;
         
+        $bFound = false;
         foreach($query->result() as $row)
         {
-           
+           $bFound = true;
            if ($row->home_team_id == $teamId)
            {
                $arr->points += $row->home_points;
@@ -489,6 +490,9 @@ class Seasons_model extends CI_Model
                    $arr->loss++;               
            }
         }
+        
+        if (!$bFound)
+            return NULL;
         
         $total = ($arr->wins + $arr->loss);
         if ($total == 0)
@@ -830,7 +834,7 @@ class Seasons_model extends CI_Model
                select('u.email')->
                from('season_group_teams sgt')->
                join('teams t', 't.id = sgt.team_id')->
-               join('users u', 'u.teamname = t.name')->
+               join('users u', 'u.team_id = t.id')->
                join('season_group sg', 'sg.id = sgt.season_group_id')->
                where('season_id', $seasonId)->
                get();        
@@ -924,7 +928,7 @@ class Seasons_model extends CI_Model
                select('DISTINCT(u.email) as email, t.name, t.id')->
                from('matches m')->
                join('teams t','t.id = m.home_team_id')->
-               join('users u','u.teamname = t.name')->
+               join('users u','u.team_id = t.id')->
                where('m.week_id',$weekId)->
                get();
         

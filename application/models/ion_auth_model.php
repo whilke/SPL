@@ -865,8 +865,9 @@ class Ion_auth_model extends CI_Model
 
         $this->trigger_events('extra_where');
 
-        $query = $this->db->select($this->identity_column . ', username, teamname, email, id, password, active, last_login')
+        $query = $this->db->select($this->identity_column . ', username, t.name as teamname, email, users.id, password, users.active, last_login')
                           ->where($this->identity_column, $this->db->escape_str($identity))
+                          ->join('teams t', 't.id = users.team_id', 'left outer')
                           ->limit(1)
                           ->get($this->tables['users']);
 
@@ -1171,7 +1172,8 @@ class Ion_auth_model extends CI_Model
             $this->db->select(array(
                 $this->tables['users'].'.*',
                 $this->tables['users'].'.id as id',
-                $this->tables['users'].'.id as user_id'
+                $this->tables['users'].'.id as user_id',
+                'teams.name as teamname'
             ));
         }
 
@@ -1244,6 +1246,7 @@ class Ion_auth_model extends CI_Model
             $this->_ion_order_by = NULL;
         }
 
+        $this->db->join('teams', 'teams.id = users.team_id', 'left outer');
         $this->response = $this->db->get($this->tables['users']);
 
         return $this;
@@ -1268,6 +1271,53 @@ class Ion_auth_model extends CI_Model
         $this->users();
 
         return $this;
+    }
+    
+    public function create_user_extra($id)
+    {
+        $this->trigger_events('create_user_extra');
+        $return = $this->db->insert('users_extra', array('id'=>$id));        
+    }
+    
+    public function update_user_extra($id = NULL, $data)
+    {
+        $this->trigger_events('user_extra');
+
+        //if no id was passed use the current users id
+        $id || $id = $this->session->userdata('user_id');
+
+        $this->db->trans_begin();
+         
+        $this->db->update('users_extra', $data, array('id' => $id));
+         
+        if ($this->db->trans_status() === FALSE)
+        {
+            $this->db->trans_rollback();
+            return FALSE;
+        }
+
+        $this->db->trans_commit();
+        return TRUE;        
+        
+        
+    }
+    
+    public function user_extra($id = NULL)
+    {
+        $this->trigger_events('user_extra');
+
+        //if no id was passed use the current users id
+        $id || $id = $this->session->userdata('user_id');
+
+        $query = $this->db->
+                select('users_extra.*')->
+                from('users_extra')->
+                where('users_extra.id', $id)->
+                limit(1)->
+                get();
+        
+        $this->response = $query;
+        return $this;        
     }
     
     public function get_user_team($id=FALSE)
@@ -1689,7 +1739,8 @@ class Ion_auth_model extends CI_Model
 
         //get the user
         $this->trigger_events('extra_where');
-        $query = $this->db->select($this->identity_column.', id, username, teamname, email, last_login')
+        $query = $this->db->select($this->identity_column.', users.id, username, t.name as teamname, email, last_login')
+                          ->join('teams t', 't.id = users.team_id', 'left outer')
                           ->where($this->identity_column, get_cookie('identity'))
                           ->where('remember_code', get_cookie('remember_code'))
                           ->limit(1)

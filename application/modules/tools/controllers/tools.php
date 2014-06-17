@@ -50,6 +50,23 @@ class Tools extends MY_Controller
         }        
     }
     
+    public function migratePlayers()
+    {
+        $this->model('Ion_auth_model');
+        $users = $this->Ion_auth_model->users();
+        foreach($users->result() AS $user)
+        {
+            if ($user->username != '')
+            {
+                //see if this user is upgraded.
+                $extra = $this->Ion_auth_model->user_extra($user->id)->row();
+                if ($extra == null)
+                {
+                    $this->Ion_auth_model->create_user_extra($user->id);
+                }
+            }
+        }
+    }
     
     public function migrateOwners()
     {

@@ -1,0 +1,24 @@
+{% extends _layout %}
+
+{% block content %}
+<div class="row">
+<div class="col-lg-offset-3 col-lg-6">
+<h1>New Team</h1>
+<p>{{'create_user_subheading'|lang()}}</p>
+
+{% if data.message != "" %}
+<div class="alert alert-info" id="infoMessage">{{ data.message}}</div>
+{% endif%}
+
+{{'team/create'|form_open()}}
+    <p>
+        Team Name:
+        {{data.teamname|bs_form_input()}}
+    </p>
+
+    {{'submit'|bs_form_submit('Create')}}
+
+{{form_close()}}
+
+       
+{% endblock %}

@@ -14,6 +14,7 @@ class Team_ajax extends Ajax_Controller {
     {
         if (in_array($page, array(
             'upgrade',
+            'create',
         )))
         {
             $this->response->dialog(array(

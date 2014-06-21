@@ -5,6 +5,61 @@
     
         <h2>{{season.name}} Standings <span style="font-size:10px;color:grey;">(*stats are delayed by one week)</span></h2>
 
+        {% if stats_tourny is defined %}
+        <table id="teams" class="table table-bordered table-hover" style="border: 0px;">
+            <thead>
+                <tr>
+                    <th class="text-center" style='width:100px;'>Group</th>
+                    <th class="text-center" style='width:800px;'>Team</th>
+                    <th class="text-center"  style='width:100px'>Wins</th>
+                    <th class="text-center"  style='width:100px'>Losses</th>
+                    <th class="text-center"  style='width:200px'>Win %</th>
+                    <th class="text-center"  style='width:300px'>Points</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for team in stats_tourny %}
+                <tr>
+                    {% set s = 'team/portal/' ~ team.teamId    %}
+                    <td>Finals</td>
+                    <td><a href="{{s|site_url}}">{{team.teamName}}</a></td>
+                    <td class="text-center">{{team.wins}}</td>
+                    <td class="text-center">{{team.loss}}</td>
+                    <td class="text-center">{{team.perc}}</td>
+                    <td class="text-center">{{team.points}}</td>
+               </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {%endif%}
+        {% if stats_playoffs is defined %}
+        <table id="teams" class="table table-bordered table-hover" style="border: 0px;">
+            <thead>
+                <tr>
+                    <th class="text-center" style='width:100px;'>Group</th>
+                    <th class="text-center" style='width:800px;'>Team</th>
+                    <th class="text-center"  style='width:100px'>Wins</th>
+                    <th class="text-center"  style='width:100px'>Losses</th>
+                    <th class="text-center"  style='width:200px'>Win %</th>
+                    <th class="text-center"  style='width:300px'>Points</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for team in stats_playoffs %}
+                <tr>
+                    {% set s = 'team/portal/' ~ team.teamId    %}
+                    <td>Playoffs</td>
+                    <td><a href="{{s|site_url}}">{{team.teamName}}</a></td>
+                    <td class="text-center">{{team.wins}}</td>
+                    <td class="text-center">{{team.loss}}</td>
+                    <td class="text-center">{{team.perc}}</td>
+                    <td class="text-center">{{team.points}}</td>
+               </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {%endif%}
+        
         <table id="teams" class="table table-bordered table-hover" style="border: 0px;">
             <thead>
                 <tr>

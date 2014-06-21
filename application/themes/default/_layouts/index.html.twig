@@ -224,6 +224,7 @@
                             {%endfor%}
                           </ul>
                         </li>
+                        <li><a href="{{'team/search'|site_url}}" class="myNavLinks" style="padding-top:0px;">Team Search</a></li>
                         <li><a href="{{'main/contact'|site_url}}" class="myNavLinks" style="padding-top:0px;">Contact</a></li>
                         <li><a href="{{'main/rules'|site_url}}" class="myNavLinks" style="padding-top:0px;">Rules</a></li>
                     </ul>
@@ -278,14 +279,14 @@
                     <div class="text-center">
                     Beta Series 1 Tournament: July 12 & 13 <br/>
                     Start Time: 10am PST / 1pm EST<br/>
-                    <a class="alt-hover" href="http://www.twitch.tv/strifeproleague" target="_blank">twitch.tv/strifeproleague</a>
+                    <a class="alt-hover" href="http://www.twitch.tv/SPLCast" target="_blank">twitch.tv/SPLCast</a>
                     </div>
                 </div>
                 <div class="col-xs-6 col-xs-offset-4 hidden-sm hidden-md hidden-lg" style="margin-top:40px;font-size: 10px; font-family: 'Oswald', sans-serif; font-weight: 700;">
                     <div class="text-center">
                         Beta Series 1 Tournament: July 12 & 13 <br/>
                     Time: 10am PST<br/>
-                    <a class="alt-hover" href="http://www.twitch.tv/strifeproleague" target="_blank">twitch.tv/strifeproleague</a>
+                    <a class="alt-hover" href="http://www.twitch.tv/SPLCast" target="_blank">twitch.tv/SPLCast</a>
                     </div>
                 </div>
                 <div class="col-xs-4 hidden-xs hidden-sm">
@@ -361,7 +362,7 @@ function query_twitch()
 {
     checkMsgCount();
     
-    $.getJSON( "http://api.justin.tv/api/stream/summary.json?channel=strifeproleague&jsonp=?", function( data ) {
+    $.getJSON( "http://api.justin.tv/api/stream/summary.json?channel=splcast&jsonp=?", function( data ) {
         if (data.streams_count > 0)
         {
             if (!player_loaded && !skipPlayerLoad)
@@ -374,7 +375,7 @@ function query_twitch()
         'height="550"', 
        ' width="930" ',
       '  id="live_embed_player_flash" ',
-      '  data="http://www.twitch.tv/widgets/live_embed_player.swf?channel=strifeproleague" ',
+      '  data="http://www.twitch.tv/widgets/live_embed_player.swf?channel=splcast" ',
       '  bgcolor="#FFFFFF">',
       '  <param  name="allowFullScreen" ',
       '          value="true" />',
@@ -385,14 +386,14 @@ function query_twitch()
        ' <param  name="movie" ',
        '         value="http://www.twitch.tv/widgets/live_embed_player.swf" />',
        ' <param  name="flashvars" ',
-       '         value="hostname=www.twitch.tv&channel=strifeproleague&auto_play=true&start_volume=70" />',
+       '         value="hostname=www.twitch.tv&channel=splcast&auto_play=true&start_volume=70" />',
       '</object>',
     '</div>',
     '<div class="col-md-8 col-md-offset-1">',
        ' <iframe frameborder="0" ',
              '   scrolling="no" ',
             '    id="chat_embed" ',
-             '   src="http://twitch.tv/chat/embed?channel=strifeproleague&amp;popout_chat=true" ',
+             '   src="http://twitch.tv/chat/embed?channel=splcast&amp;popout_chat=true" ',
              '   height="300" ',
               '  width="930">',
        ' </iframe>  ',                  

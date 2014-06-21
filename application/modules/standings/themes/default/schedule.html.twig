@@ -5,6 +5,85 @@
     
         <h2>{{season.name}} Schedule <span style="font-size:10px;color:grey;">(*stats are delayed by one week)</span></h2>
 
+        {%if matches_tourny is defined %}
+        <table id="matches" class="table table-bordered table-hover" style="border: 0px;">
+            <thead>
+                <tr>
+                    <th class="text-center"  style='width:100px'>Group</th>
+                    <th class="text-center" style='width:800px;'>( Home vs Away )</th>
+                    <th class="text-center"  style='width:350px'>Date</th>
+                    <th class="text-center"  style='width:100px'>Result</th>
+                    <th class="text-center"  style='width:100px'>Points</th>
+                    <th class="text-center"  style='width:200px'>Match ID</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for match in matches_tourny %}
+                    <tr>
+                        <td>Finals</td>
+                    {% set s = 'team/portal/' ~ match.home_team_id    %}
+                    {% set s2 = 'team/portal/' ~ match.away_team_id    %}
+                        
+                    <td><a style="color:red;" href="{{s|site_url}}">{{match.homeTeam}}</a> vs 
+                        <a style="color:green;" href="{{s2|site_url}}">{{match.awayTeam}}</a</td>
+                        <td class="text-center">{{match.gamedate}}</td>
+                        
+                        <td class="text-center"><span style="color:red;">{{match.hscode}}</span>
+                            <span style="color:green;">{{match.awcode}}</span></td>
+                        
+                        {% if match.active == true %}
+                            <td></td>
+                        {% else %}
+                            <td class="text-center"><span style="color:red;">{{match.home_team_points}}</span>
+                                <span style="color:green;">{{match.away_team_points}}</span></td>
+                        {% endif %}
+                        {% set l = 'standings/match/' ~ match.id %}                                                
+                        <td class="text-center"><a href="{{l|site_url}}">{{match.seasontag}}:{{match.weektag}}:{{match.name}}</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>            
+        {%endif%}
+        {%if matches_playoffs is defined %}
+        <table id="matches" class="table table-bordered table-hover" style="border: 0px;">
+            <thead>
+                <tr>
+                    <th class="text-center"  style='width:0%'>Group</th>
+                    <th class="text-center" style='width:800px;'>( Home vs Away )</th>
+                    <th class="text-center"  style='width:350px'>Date</th>
+                    <th class="text-center"  style='width:100px'>Result</th>
+                    <th class="text-center"  style='width:100px'>Points</th>
+                    <th class="text-center"  style='width:200px'>Match ID</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for match in matches_playoffs %}
+                    <tr>
+                        <td>Playoffs</td>
+                    {% set s = 'team/portal/' ~ match.home_team_id    %}
+                    {% set s2 = 'team/portal/' ~ match.away_team_id    %}
+                        
+                    <td><a style="color:red;" href="{{s|site_url}}">{{match.homeTeam}}</a> vs 
+                        <a style="color:green;" href="{{s2|site_url}}">{{match.awayTeam}}</a</td>
+                        <td class="text-center">{{match.gamedate}}</td>
+                        
+                        <td class="text-center"><span style="color:red;">{{match.hscode}}</span>
+                            <span style="color:green;">{{match.awcode}}</span></td>
+                        
+                        {% if match.active == true %}
+                            <td></td>
+                        {% else %}
+                            <td class="text-center"><span style="color:red;">{{match.home_team_points}}</span>
+                                <span style="color:green;">{{match.away_team_points}}</span></td>
+                        {% endif %}
+                        {% set l = 'standings/match/' ~ match.id %}                                                
+                        <td class="text-center"><a href="{{l|site_url}}">{{match.seasontag}}:{{match.weektag}}:{{match.name}}</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>            
+        {%endif%}
+        
         <table id="matches" class="table table-bordered table-hover" style="border: 0px;">
             <thead>
                 <tr>

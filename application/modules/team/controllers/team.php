@@ -26,6 +26,137 @@ class Team extends MY_Controller
         $this->twiggy->template('index')->display();
     }
     
+    public function invacct($id, $r)
+    {
+        if (!$this->ion_auth->logged_in())
+        {
+            redirect('auth', 'refresh');
+        }
+        
+        $user = $this->ion_auth->user()->row(); 
+           
+        $this->load->model('Teaminvites_model');
+        $invite = $this->Teaminvites_model->get($id);
+        if ($invite == null || $invite->team_id != $user->team_id)
+        {
+            redirect('main', 'refresh');            
+        }
+        
+        $isManager = $this->ion_auth->is_manager();
+
+        //check if this user is the team owner.
+        $isTeamOwner = false;
+        if (isset($user))
+        {
+            $isTeamOwner = $this->ion_auth->is_team_owner();
+        }
+        
+        if ($isManager)
+            $isTeamOwner = true;        
+    
+        $team = $this->Teams_model->getById($user->team_id);
+        
+        if ($r == 0)
+        {
+            //send out an invite message
+            $msg = $team->name . " has revoked your team invite";
+            $this->load->library('mahana_messaging');
+            $this->mahana_messaging->send_new_message($user->id, $invite->user_id, $msg, $msg);            
+        }
+        
+        //clear this invite now.
+        $this->Teaminvites_model->delete($id);
+            
+        redirect('team/portal', 'refresh');            
+    }
+    
+    public function search()
+    {
+        $this->load->model('Lfp_model');
+        if ($this->ion_auth->logged_in())
+        {
+            $user = $this->ion_auth->user()->row(); 
+            $isTeamOwner = $this->ion_auth->is_team_owner();            
+            $this->twiggy->set('isTeamOwner', $isTeamOwner);
+            $ad = $this->Lfp_model->getByTeam($user->team_id);
+            if ($ad != null)
+                $this->twiggy->set('lfp_ad', $ad);                 
+        }
+        
+        $ads = $this->Lfp_model->getAll();
+        foreach($ads AS $ad)
+        {
+            $team = $this->Teams_model->getById($ad->team_id);
+            $ad->teamname = $team->name;
+            $capId = 0;
+            foreach($team->players as $player)
+            {
+                if (array_key_exists( 'isOwner', $player->bestGroup ) )  
+                {
+                    $capId = $player->id;
+                    break;
+                }
+                
+            }
+            
+            $ad->emailId =$capId;
+        }
+        $this->twiggy->set('ads', $ads);
+        
+        $this->twiggy->template('search')->display();
+    }
+    
+    public function lfp($r = 0)
+    {
+        $this->load->model('Lfp_model');
+        $this->load->model('Teams_model');
+        $isTeamOwner = false;
+        $team = null;
+        if ($this->ion_auth->logged_in())
+        {
+            $user = $this->ion_auth->user()->row(); 
+            $isTeamOwner = $this->ion_auth->is_team_owner();  
+            $team = $this->Teams_model->getById($user->team_id);
+        }        
+        
+        if (!$isTeamOwner || $team == null)
+            return;
+      
+        
+        $ad = $this->Lfp_model->getByTeam($team->id);
+        if ($ad != null)
+        {
+            $this->Lfp_model->delete($ad->id);
+        }
+
+          
+        if ($r == 1)
+        {
+            //was a delete action, and it's now deleted.
+            redirect('team/search', 'refresh');    
+            return;
+        }
+        
+        //create a new ad.
+        $data = array();
+        $desc = $this->input->post('desc');
+        $data['bot'] = $this->input->post('bot');
+        $data['top'] = $this->input->post('top');
+        $data['mid'] = $this->input->post('mid');
+        $data['carry'] = $this->input->post('carry');
+        $data['init'] = $this->input->post('init');
+        $data['caster'] = $this->input->post('caster');
+        $data['tank'] = $this->input->post('tank');
+        $data['utility'] = $this->input->post('utility');
+
+        $this->load->model('Lfp_model');
+        
+        $ad = $this->Lfp_model->add($team->id, $desc, $data);
+        
+        redirect('team/search', 'refresh');       
+
+    }
+    
     public function portal($teamid=0)
     {
         $team = null;
@@ -84,6 +215,18 @@ class Team extends MY_Controller
         
         if ($isManager)
             $isTeamOwner = true;
+
+        if ($isTeamOwner)
+        {           
+            $this->load->model('Teaminvites_model');
+            $invites = $this->Teaminvites_model->getByTeam($team->id);
+            foreach($invites AS $invite)
+            {
+                $invite->user_name = $this->ion_auth->user($invite->user_id)->row()->username;
+            }
+            $this->twiggy->set('invites', $invites);
+        }
+
         
         $this->model('Seasons_model');
         
@@ -104,7 +247,7 @@ class Team extends MY_Controller
         $arr = Array();
         foreach($seasons AS $season)
         {
-            $stats = $this->Seasons_model->getSeasonStats($teamid, $season->id, $hideStats);
+            $stats = $this->Seasons_model->getSeasonStats($teamid, $season->id, -1, $hideStats);
             if ($stats == null) continue;
             $arr[] = $stats;
             
@@ -358,10 +501,12 @@ class Team extends MY_Controller
                 //okay if there is a new_cap we remove ourselves from the team and promote them.
                 $this->Teams_model->removeUser($team->id, $user->id);
                 $team = $this->Teams_model->getById($user->team_id);
-                 
+                
+                $bStillActive = false;
                 if ($new_cap != false)
                 {
                     $this->Teams_model->promote($team->id, $new_cap, 0);
+                    $bStillActive = true;
                 }
                 else
                 {
@@ -371,12 +516,49 @@ class Team extends MY_Controller
                         //promote the first user
                         $player = $team->players[0];
                         $this->Teams_model->promote($team->id, $player->id, 0);
+                        $bStillActive = true;
                     }
                     else
                     {
                         //disable this team.
                         $this->Teams_model->deactivate($team->id);
+                        
+                        //remove any pending team invites as well.
+                        $this->load->model('Teaminvites_model');
+                        $invites =$this->Teaminvites_model->getbyTeam($team->id);
+                        foreach($invites AS $invite)
+                            $this->Teaminvites_model->delete($invite->id);
+                        
+                        //remove any lfp ads
+                        $this->load->model('Lfp_model');
+                        $ad = $this->Lfp_model->getByTeam($team->id);
+                        if ($ad != null);
+                            $this->Lfp_model->delete($ad->id);
                     }
+                }
+              
+                if ($bStillActive)
+                {
+                    //let the new cap know about someone leaving.
+                    $capid = 0;
+                    $team = $this->Teams_model->getById($user->team_id);
+                    $players = $team->players;
+                    foreach($players AS $player)
+                    {
+                        if (array_key_exists( 'isOwner', $player->bestGroup ) )  
+                        {
+                            $capid = $player->id;
+                            break;
+                        }
+                    }
+                    
+                    if ($capid > 0)
+                    {
+                        $msg = $user->username . " has left your team";
+                        $this->load->library('mahana_messaging');
+                        $this->mahana_messaging->send_new_message($user->id, $capid, $msg, $msg);                                    
+                    }
+                    
                 }
                 
                 redirect('user/portal', 'refresh');            
@@ -419,5 +601,101 @@ class Team extends MY_Controller
         $view = 'leave';
         $this->twiggy->template($view)->display();
         
+    }
+    
+    public function invite($id, $fromAjax=false)
+    {
+        if (is_array($id))
+        {
+            $fromAjax = $id['fromajax'];
+            $id = $id['userName'];
+        }
+
+        if (!$this->ion_auth->logged_in())
+        {
+            redirect('auth', 'refresh');
+        }
+        
+        $user = $this->ion_auth->user()->row(); 
+        
+        if ($user->team_id <= 0)
+        {
+            redirect('main', 'refresh');            
+        }
+        
+        get_instance()->load->library('form_validation');
+        
+        $isTeamOwner = false;
+        if (isset($user))
+        {
+            $isTeamOwner = $this->ion_auth->is_team_owner();            
+        }
+        if (!$isTeamOwner)
+        {
+            redirect('main', 'refresh');            
+            
+        }
+
+        //grab the team
+        $this->load->model('Teams_model');
+        $team = $this->Teams_model->getById($user->team_id);
+        $this->twiggy->set('team', $team);
+        $this->form_validation->set_rules('role', 'Member Type', 'required');
+        $errMsg = "";
+        if ($this->form_validation->run() == true) 
+        {
+            $errMsg = "Unknown Error";
+            $role = $this->input->post('role');
+                        
+            //create the invite record
+            $this->load->model("Teaminvites_model");
+            $newId = $this->Teaminvites_model->add($team->id, $user->id, $id, $role, 1);
+            if ($newId != false)
+            {
+                //send out an invite message
+                $msg = $team->name . " has invited you to their team as a " . $role . ".\r\nPlease check your User Portal to accept or decline.";
+                $this->load->library('mahana_messaging');
+                $this->mahana_messaging->send_new_message($user->id, $id, "You've been invited to join my team", $msg);
+                
+                redirect('team/portal', 'refresh');  
+                
+            }
+         }
+         
+        $this->twiggy->set('id', $id);
+
+        $this->data = array();        
+        $this->data['message'] = (validation_errors() ? validation_errors() : ($this->ion_auth->errors() ? $this->ion_auth->errors() :$errMsg));
+
+        $this->data['role'] = $this->form_validation->set_value('role');
+        $this->data['roles'] = array();
+        
+        $players= $team->players;
+        $tot_members = 0;
+        $tot_subs = 0;
+        foreach($players AS $player)
+        {
+            if (array_key_exists( 'isMember', $player->bestGroup ) )
+                $to_members++;
+            else if (array_key_exists( 'isSub', $player->bestGroup ))
+                $tot_subs++;
+        }
+
+        if ($tot_members < 4)
+            $this->data['roles']['Member'] = 'Member';
+        if ($tot_subs < 2)
+            $this->data['roles']['Sub'] = 'Sub';
+        
+        
+        $this->twiggy->set('data', $this->data);
+        $view = 'invite';
+        if ( ! $fromAjax)
+        {
+            $x = $this->twiggy->template($view)->display();
+        }
+        else
+        {
+            $this->twiggy->layout('dialog')->template($view)->display();
+        }      
     }
 }

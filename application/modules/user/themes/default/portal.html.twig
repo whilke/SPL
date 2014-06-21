@@ -1,6 +1,17 @@
 {% extends _layout %}
 {% block content %}
     <!-- Header -->
+    {% for invite in invites  %}
+    <div class="alert alert-success" id="infoMessage">
+        {% set s = 'user/invite/' ~ invite.id ~ '/1'    %}
+        {% set s2 = 'user/invite/' ~ invite.id ~ '/0'    %}
+        {{ invite.team_name }} as invited you to their team as a {{invite.role}} 
+        <span class='pull-right'>
+            <a href='{{s|site_url}}' style='margin-right:15px;'>Accept</a>
+            <a href='{{s2|site_url}}'>Decline</a>
+        </span>
+    </div>    
+    {%endfor%}
     <h2 style='text-align:center;'>
         {{portalUser.username}} 
         {%if isOwner %}
@@ -25,12 +36,14 @@
     </h3>
     {%elseif canInviteMember or canInviteSub%}
     <h4 style='text-align:center;'>
-        {% set s = 'team/invite/' ~ user.id   %}
-        {% set s2 = 'team/team_ajax/ion_team_dialog/invite/' ~ user.id %}
+        {% set s = 'team/invite/' ~ portalUser.id   %}
+        {% set s2 = 'team/team_ajax/ion_team_dialog/invite/' ~ portalUser.id %}
         <a href="{{s|site_url}}" rel="async" ajaxify="{{s2|site_url}}">
-          Invite to your team</a>
+          Invite to your team {%if inviteCount is defined %}({{inviteCount}} invites to use.){%endif%}</a>
     </h4>
     {%endif%}
+    
+
     <br/>
     <div class="col-md-12">        
         <div class="col-md-9">
@@ -319,7 +332,7 @@ function contact_save()
     postData = {
         id: {{portalUser.id}},
         data: postData
-    };team
+    };
 
     $.ajax({
         type: "POST",

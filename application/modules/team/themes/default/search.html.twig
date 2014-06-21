@@ -1,0 +1,138 @@
+{% extends _layout %}
+
+{% block content %}    
+
+{% if isTeamOwner  %}
+{{'team/lfp'|form_open()}}
+<fieldset>
+
+<!-- Form Name -->
+<legend>Create an Ad</legend>
+
+<!-- Multiple Checkboxes -->
+<div class="form-group">
+  <label class="col-md-2 control-label" for="checkboxes">Looking For</label>
+  <div class="col-md-2">
+  <div class="checkbox">
+    <label for="checkboxes-0">
+      <input type="checkbox" name="bot" id="bot" value="1" {%if lfp_ad.bot %}checked='1'{%endif%}>
+      Bot Laner
+    </label>
+	</div>
+  <div class="checkbox">
+    <label for="checkboxes-1">
+      <input type="checkbox" name="mid" id="mid" value="1" {%if lfp_ad.mid %}checked='1'{%endif%}>
+      Mid Laner
+    </label>
+	</div>
+  <div class="checkbox">
+    <label for="checkboxes-2">
+      <input type="checkbox" name="top" id="top" value="1" {%if lfp_ad.top %}checked='1'{%endif%}>
+      Top Laner
+    </label>
+	</div>
+  </div>
+  <div class="col-md-2">
+  <div class="checkbox">
+    <label for="checkboxes-0">
+      <input type="checkbox" name="carry" id="carry" value="1" {%if lfp_ad.carry %}checked='1'{%endif%}>
+      Carry
+    </label>
+  </div>
+  <div class="checkbox">
+    <label for="checkboxes-1">
+      <input type="checkbox" name="caster" id="caster" value="1" {%if lfp_ad.caster %}checked='1'{%endif%}>
+      Caster
+    </label>
+  </div>
+ <div class="checkbox">
+    <label for="checkboxes-2">
+      <input type="checkbox" name="utility" id="utility" value="1" {%if lfp_ad.utility %}checked='1'{%endif%}>
+      Utility
+    </label>
+ </div>
+</div>
+  <div class="col-md-2">
+  <div class="checkbox">
+    <label for="checkboxes-0">
+      <input type="checkbox" name="tank" id="tank" {%if lfp_ad.tank %}checked='1'{%endif%}>
+      Tank
+    </label>
+  </div>
+  <div class="checkbox">
+    <label for="checkboxes-1">
+      <input type="checkbox" name="init" id="init" {%if lfp_ad.init %}checked='1'{%endif%}>
+      Initiator
+    </label>
+  </div>
+</div>
+</div>
+<!-- Textarea -->
+<div class="form-group">
+  <label class="col-md-4 control-label" for="textarea">Descrption</label>
+  <div class="col-md-4">                     
+    <textarea rows=4 class="form-control" id="desc" maxlength=250 name="desc">{{lfp_ad.desc}}</textarea>
+  </div>
+</div>
+</fieldset>    
+<div>
+  {{'submit'|bs_form_submit('Create')}}
+  {% if lfp_ad is defined%}
+      <a href='{{'team/lfp/1'|site_url}}' class='btn btn-warning'>Delete</a>
+  {%endif%}
+</div>
+{{form_close()}}
+<hr/>
+{%endif%}
+
+Teams looking to fill the following roles
+<table id='lfg' class='table table-bordered table-condensed table-striped'>
+    <thead>
+        <tr>
+            <th width='200px' style="color: black;">Team</th>
+            <th width='100px' style="color: black;">Bot Laner</th>
+            <th width='100px' style="color: black;">Mid Laner</th>
+            <th width='100px' style="color: black;">Top Laner</th>
+            <th width='50px' style="color: black;">Carry</th>
+            <th width='50px' style="color: black;">Caster</th>
+            <th width='50px' style="color: black;">Utility</th>
+            <th width='50px' style="color: black;">Tank</th>
+            <th width='50px' style="color: black;">Initiator</th>
+            <th width='300px' style="color: black;">Descrption</th>
+        </tr>
+    </thead>
+    <tbody>
+        {%for ad in ads %}
+            <tr>
+                {% set s = 'mail/create/' ~ ad.emailId   %}
+                {% set s2 = 'mail/mail_ajax/ion_mail_dialog/create/' ~ ad.emailId %}
+                {% set s3 = 'team/portal/' ~    ad.team_id %}          
+                <td>
+                    <a href='{{s3|site_url}}' target='_blank'>{{ad.teamname}}</a>
+                    <a href="{{s|site_url}}" rel="async" ajaxify="{{s2|site_url}}">
+                    <img width="20px" height="20px" style='margin-left:8px;margin-top:-8px;' src="{{'images/glyphicons_122_message_in.png'|assets_url()}}" />
+                    </a>                  
+                </td>
+                <td>{{ad.bot|yesno}}</td>
+                <td>{{ad.mid|yesno}}</td>
+                <td>{{ad.top|yesno}}</td>
+                <td>{{ad.carry|yesno}}</td>
+                <td>{{ad.caster|yesno}}</td>
+                <td>{{ad.utility|yesno}}</td>
+                <td>{{ad.tank|yesno}}</td>
+                <td>{{ad.init|yesno}}</td>
+                <td>{{ad.desc}}</td>
+            </tr>
+        {%endfor%}
+    </tbody>
+</table>
+        
+<script type="text/javascript">
+$(document).ready(function(){
+    $('#lfg').dataTable( {
+  "lengthMenu": [ [25, 50, -1], [25, 50, "All"] ],
+  "order": [ 0, 'desc' ]
+    } );
+});
+</script>        
+{% endblock %}

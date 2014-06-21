@@ -1,0 +1,26 @@
+{% extends _layout %}
+
+{% block content %}
+<div class="row">
+<div class="col-lg-offset-3 col-lg-6">
+<h1>Send Invite</h1>
+<p>{{team.name}}</p>
+
+{% if data.message != "" %}
+<div class="alert alert-info" id="infoMessage">{{ data.message}}</div>
+{% endif%}
+
+{% set arr = 'team/invite/' ~ id %}
+
+{{arr|form_open}}
+    <p>
+        Team Role:
+        {{'role'|bs_form_dropdown(data.roles, data.role)}}
+    </p>
+
+    {{'submit'|bs_form_submit('Send')}}
+
+{{form_close()}}
+
+       
+{% endblock %}

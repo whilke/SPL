@@ -288,7 +288,7 @@ class Seasons_model extends CI_Model
     function GetTeamsInSeason($seasonId)
     {
         $query = $this->db->
-               select('teams.*, sg.name as group_name')->
+               select('teams.*, sg.name as group_name, sg.id as group_id')->
                from('seasons_teams')->
                join('teams', 'teams.id = seasons_teams.team_id')->
                join('users', 'users.id = teams.userid')->
@@ -439,7 +439,7 @@ class Seasons_model extends CI_Model
         $this->db->insert('matches', $data);
     }
     
-    function getSeasonStats($teamId, $seasonId, $hideStats=true)
+    function getSeasonStats($teamId, $seasonId, $matchType=-1, $hideStats=true)
     {
         $season = $this->get($seasonId);
 
@@ -448,7 +448,11 @@ class Seasons_model extends CI_Model
         if (!$hideStats)
             $date->add(new DateInterval('P1Y'));
             
-
+        $addedQuery = '';
+        if ($matchType > -1)
+        {
+            $addedQuery = " AND m.match_type = " . $matchType;
+        }
         
         $query = $this->db->
           select('m.id, m.home_team_id, m.away_team_id,'
@@ -458,7 +462,7 @@ class Seasons_model extends CI_Model
           join('states sth', 'sth.id = m.home_team_state_id', 'left outer')->
           join('states sta', 'sta.id = m.away_team_state_id', 'left outer')->
           join('weeks w', 'w.id = m.week_id', 'left outer')->
-          where('m.season_id = '. $seasonId ." AND (m.home_team_id=".$teamId . " OR m.away_team_id=".$teamId.") and m.active=0")->
+          where('m.season_id = '. $seasonId ." AND (m.home_team_id=".$teamId . " OR m.away_team_id=".$teamId.") and m.active=0" . $addedQuery)->
           where('w.end <', date_format($date, "Y-m-d H:i:s"))->
           get();        
         
@@ -571,7 +575,7 @@ class Seasons_model extends CI_Model
         return $arr;        
     }
     
-    function getMatchesForSeason($seasonId, $hideStats=true)
+    function getMatchesForSeason($seasonId, $matchType=-1, $hideStats=true)
     {
         $season = $this->get($seasonId);
         $seasonId = $season->id;
@@ -581,6 +585,16 @@ class Seasons_model extends CI_Model
         if (!$hideStats)
         {
             $date->add(new DateInterval('P1Y'));            
+        }
+        
+        $addedQuery = '';
+        if ($matchType > -1)
+        {
+            $addedQuery = "matches.match_type = " . $matchType;
+        }
+        else 
+        {
+            $addedQuery = "matches.match_type is not";
         }
 
         
@@ -598,6 +612,7 @@ class Seasons_model extends CI_Model
           join('season_group_teams sgt', 'sgt.team_id = matches.home_team_id', 'left outer')->
           join('season_group sg', 'sg.id = sgt.season_group_id', 'left outer')->
           where('matches.season_id', $seasonId)->
+          where($addedQuery)->
           where('sg.season_id', $seasonId)->
           where('matches.gamedate <=', date_format($date, "Y-m-d H:i:s"))->
           order_by('sg.id')->
@@ -634,13 +649,14 @@ class Seasons_model extends CI_Model
     }
     
       
-    function getTeamsByPoints($seasonId, $hideStats=true)
+    function getTeamsByPoints($seasonId, $matchType=-1, $hideStats=true)
     {
         $teams = $this->GetTeamsInSeason($seasonId);
         $stats = Array();
         foreach($teams AS $team)
         {
-            $stat = $this->getSeasonStats($team->id,$seasonId, $hideStats);
+            $stat = $this->getSeasonStats($team->id,$seasonId, $matchType, $hideStats);
+            if ($stat == null) continue;
             $stat->teamName = $team->name;
             $stat->teamId = $team->id;
             $stat->group_name = $team->group_name;

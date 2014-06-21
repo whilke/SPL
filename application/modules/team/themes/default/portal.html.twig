@@ -1,5 +1,14 @@
 {% extends _layout %}
 {% block content %}
+    {% for invite in invites  %}
+    <div class="alert alert-success" id="infoMessage">
+        {% set s = 'team/invacct/' ~ invite.id ~ '/0'    %}
+        {{ invite.user_name }} has a pending invite for a {{invite.role}} role.
+        <span class='pull-right'>
+            <a href='{{s|site_url}}' style='margin-right:15px;'>Revoke</a>
+        </span>
+    </div>    
+    {%endfor%}
     <h2 style='text-align:center;'>{{team.name}} ( 
         
         {%if isTeamOwner and canEdit %}

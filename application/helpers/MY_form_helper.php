@@ -1,5 +1,17 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
+
+if ( ! function_exists('yesno'))
+{
+    function yesno($data = '')
+    {
+        if ($data == 0)
+            return 'No';
+        else
+            return "Yes";
+    }
+}
+
 if ( ! function_exists('bs_form_input'))
 {
     function bs_form_input($data = '', $value = '', $extra = '')

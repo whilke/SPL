@@ -74,6 +74,7 @@ class Teams_model extends CI_Model
             $realTeam = new stdClass();
             $realTeam->id = $team->id;
             $realTeam->name = $team->name;
+            $realTeam->invites = $team->invites;
             $realTeam->logo = $team->logo;
             $realTeam->contact = $team->contact;
             $realTeam->region = $team->region;
@@ -122,6 +123,7 @@ class Teams_model extends CI_Model
             $realTeam->id = $team->id;
             $realTeam->name = $team->name;
             $realTeam->logo = $team->logo;
+            $realTeam->invites = $team->invites;
             $realTeam->contact = $team->contact;
             $realTeam->region = $team->region;
             $realTeam->contact_twitter = $team->contact_twitter;
@@ -276,13 +278,13 @@ class Teams_model extends CI_Model
         {
             return ['isManager'=> true];
         }
-        else if ($bIsMember)
-        {
-            return ['isMember'=> true];
-        }
         else if ($bIsSub)
         {
             return ['isSub'=> true];
+        }
+        else if ($bIsMember)
+        {
+            return ['isMember'=> true];
         }
         else
         {

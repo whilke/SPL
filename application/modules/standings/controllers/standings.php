@@ -37,9 +37,19 @@ class Standings extends MY_Controller
         }
         if ($season != null)
         {
-            $stats = $this->Seasons_model->getTeamsByPoints($season->id, !$isManager);
+            $stats = $this->Seasons_model->getTeamsByPoints($season->id, 0, !$isManager);
             $this->twiggy->set('stats', $stats);
             $this->twiggy->set('season', $season);
+            
+            //grab playoffs and tourny stats.
+            $Playoff_stats = $this->Seasons_model->getTeamsByPoints($season->id, 1, !$isManager);
+            if (sizeof($Playoff_stats) > 0)
+                $this->twiggy->set('stats_playoffs', $Playoff_stats);
+
+            $Tourny_stats = $this->Seasons_model->getTeamsByPoints($season->id, 2, !$isManager);
+            if (sizeof($Tourny_stats) > 0)
+                $this->twiggy->set('stats_tourny', $Tourny_stats);
+
         }
         
                        
@@ -63,9 +73,18 @@ class Standings extends MY_Controller
 
         if ($season != null)
         {
-            $matches = $this->Seasons_model->getMatchesForSeason($season->id, !$isManger);
+            $matches = $this->Seasons_model->getMatchesForSeason($season->id, 0, !$isManger);
             $this->twiggy->set('matches', $matches);            
             $this->twiggy->set('season', $season);
+            
+            $matches_playoffs = $this->Seasons_model->getMatchesForSeason($season->id, 1, !$isManger);
+            if (sizeof($matches_playoffs)>0)
+                $this->twiggy->set('matches_playoffs', $matches_playoffs);            
+
+            $matches_tourny = $this->Seasons_model->getMatchesForSeason($season->id, 2, !$isManger);
+            if (sizeof($matches_tourny)>0)
+            $this->twiggy->set('matches_tourny', $matches_tourny);            
+
         }
                 
         $this->twiggy->template('schedule')->display();

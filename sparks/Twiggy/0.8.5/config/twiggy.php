@@ -225,7 +225,8 @@ $config['twiggy']['register_filters'] = array
     'bs_form_submit',
     'site_url',
     'anchor',
-    'sprintf'
+    'sprintf',
+    'yesno'
 );
 
 /*

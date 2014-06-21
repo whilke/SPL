@@ -16,13 +16,89 @@ class User extends MY_Controller
         $this->load->helper('language');    
      
     }
-    
-   
+      
     
     function index()
     {
         $this->twiggy->template('index')->display();
     }
+    
+    function invite($id, $r)
+    {
+        if (!$this->ion_auth->logged_in())
+        {
+            redirect('auth', 'refresh');
+        }
+        
+        $user = $this->ion_auth->user()->row(); 
+        
+        $this->load->model('Teaminvites_model');
+        $invite = $this->Teaminvites_model->get($id);
+        if ($invite == null || $invite->user_id != $user->id)
+        {
+            redirect('main', 'refresh');            
+        }
+        
+        if ($r == 1)
+        {
+            $this->load->model('Teams_model');
+            
+            //lets get them on the team!
+            $this->Teams_model->joinUser($invite->team_id, $invite->user_id);
+            
+            //defaults to a sub.
+            //
+            //promote to the right level
+            if ($invite->role == 'Member')
+            {
+                $this->Teams_model->promote($invite->team_id, $invite->user_id, 2);
+            }            
+            
+            //remove all pending invites.
+            $this->load->model('Teaminvites_model');
+            $invites =$this->Teaminvites_model->getByUser($invite->user_id);
+            foreach($invites AS $invite)
+                $this->Teaminvites_model->delete($invite->id);
+
+            //remove an invite from the team count if they are in a season.
+            $this->load->model('Seasons_model');
+            $season = $this->Seasons_model->GetCurrentSeason();
+            $isInSeason = $this->Seasons_model->isTeamInSeason($user->team_id, $season->id);
+            $team = $this->Teams_model->getById($invite->team_id);
+            if ($isInSeason)
+            {
+                if ($team->invites == 1)
+                {
+                    //this is their last invite, so we also need to remove all pending invites to this team.
+                    $invites =$this->Teaminvites_model->getbyTeam($invite->team_id);
+                    foreach($invites AS $invite)
+                        $this->Teaminvites_model->delete($invite->id);                
+                }                
+                $data = array();
+                $data['invites'] = $team->invites-1;
+                $this->Teams_model->edit($team->id, $data);
+                
+            }
+            
+            
+            //send out an invite message
+            $msg = $user->username . " has accepted your team invite";
+            $this->load->library('mahana_messaging');
+            $this->mahana_messaging->send_new_message($invite->user_id, $invite->sender_id, "Team invite accepted", $msg);
+                        
+        }
+        else
+        {
+            //send out an invite message
+            $msg = $user->username . " has declined your team invite";
+            $this->load->library('mahana_messaging');
+            $this->mahana_messaging->send_new_message($invite->user_id, $invite->sender_id, "Team invite rejected", $msg);            
+        }
+
+        redirect('user/portal', 'refresh');            
+
+    }
+    
     function portal($id=0)
     {
         $user = null;
@@ -35,32 +111,8 @@ class User extends MY_Controller
         $this->twiggy->set('isTeamOwner', $isTeamOwner);
 
         $this->load->model('Teams_model');
+        $this->load->model('Teaminvites_model');
         
-        $canInviteMember = false;
-        $canInviteSub = false;
-        if ($isTeamOwner)
-        {
-            //does this owner have spots to invite someone with?
-            $team = $this->Teams_model->getById($user->team_id);
-            $players= $team->players;
-            $tot_members = 0;
-            $tot_subs = 0;
-            
-            foreach($players AS $player)
-            {
-                if (array_key_exists( 'isMember', $player->bestGroup ) )
-                    $to_members++;
-                else if (array_key_exists( 'isSub', $player->bestGroup ))
-                    $tot_subs++;
-            }
-            
-            if ($tot_members < 4)
-                $canInviteMember = true;
-            if ($tot_subs < 2)
-                $canInviteSub = true;                        
-        }
-        $this->twiggy->set('canInviteMember', $canInviteMember);
-        $this->twiggy->set('canInviteSub', $canInviteSub);
         
         if ($id == 0)
         {
@@ -98,7 +150,6 @@ class User extends MY_Controller
         $strifeId = $portalUser->strife_id;
         if ($strifeId > 0)
         {
-
             $player = $this->Teams_model->getPlayer($strifeId);
             if ($player != null)
             {
@@ -179,6 +230,66 @@ class User extends MY_Controller
         
         $this->twiggy->set('isOwner', $isOwner);        
         $this->twiggy->set('portalUser', $portalUser);
+        
+        
+        $invites = $this->Teaminvites_model->getByUser($portalUser->id);
+        foreach($invites AS $invite)
+        {
+            $invite->team_name = $this->Teams_model->getById($invite->team_id)->name;
+        }
+        $this->twiggy->set('invites', $invites);
+        
+        $canInviteMember = false;
+        $canInviteSub = false;
+        if ($isTeamOwner)
+        {
+            //does this player alreay have an outstanding invite from this team?
+            $bHasInvite=false;
+            foreach($invites AS $invite)
+            {
+                if ($invite->team_id == $user->team_id)
+                {
+                    $bHasInvite = true;
+                    break;
+                }
+            }
+            
+            //does this team even have an invite ticket and in an active season.
+            $this->load->model('Seasons_model');
+            $season = $this->Seasons_model->GetCurrentSeason();
+            $isInSeason = $this->Seasons_model->isTeamInSeason($user->team_id, $season->id);
+            $team = $this->Teams_model->getById($user->team_id);
+            if ($isInSeason && $team->invites == 0)
+                $bHasInvite = true;
+
+            
+            if (!$bHasInvite)
+            {
+                //does this owner have spots to invite someone with?
+                $players= $team->players;
+                $tot_members = 0;
+                $tot_subs = 0;
+
+                foreach($players AS $player)
+                {
+                    if (array_key_exists( 'isMember', $player->bestGroup ) )
+                        $to_members++;
+                    else if (array_key_exists( 'isSub', $player->bestGroup ))
+                        $tot_subs++;
+                }
+
+                if ($tot_members < 4)
+                    $canInviteMember = true;
+                if ($tot_subs < 2)
+                    $canInviteSub = true;   
+                
+                if ($isInSeason)
+                    $this->twiggy->set('inviteCount', $team->invites);
+            }
+        }
+        $this->twiggy->set('canInviteMember', $canInviteMember);
+        $this->twiggy->set('canInviteSub', $canInviteSub);
+                
         
         $this->twiggy->template('portal')->display();
     }

@@ -614,10 +614,23 @@ class Seasons_model extends CI_Model
           where('matches.season_id', $seasonId)->
           where($addedQuery)->
           where('sg.season_id', $seasonId)->
-          where('matches.gamedate <=', date_format($date, "Y-m-d H:i:s"))->
-          order_by('sg.id')->
-          order_by('gamedate')->
-          get();
+          where('matches.gamedate <=', date_format($date, "Y-m-d H:i:s"));
+        
+        if ($matchType == 0)
+        {
+            $query = $query->
+                order_by('sg.id')->
+                order_by('gamedate')->
+                get();
+        }
+        else
+        {
+           $query = $query->
+                order_by('gamedate')->
+                get();             
+        }
+                
+                
 
         $today = new DateTime();
         

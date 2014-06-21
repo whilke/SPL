@@ -64,6 +64,21 @@ class Tools extends MY_Controller
                 {
                     $this->Ion_auth_model->create_user_extra($user->id);
                 }
+                else
+                {
+                    if ($extra->region == null || $extra->region == '' || $extra->region == 'Unknown')
+                    {
+                      if ($user->team_id > 0)
+                      {
+                          $this->model('Teams_model');
+                          $team = $this->Teams_model->getById($user->team_id);
+                          
+                          $data = array();
+                          $data['region'] = $team->region;
+                          $this->Ion_auth_model->update_user_extra($user->id, $data);                          
+                      }
+                    }
+                }
             }
         }
     }

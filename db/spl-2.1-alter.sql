@@ -62,7 +62,6 @@ COLLATE = latin1_swedish_ci;
 
 DELIMITER $$
 
-USE `spl-prod`$$
 CREATE
 DEFINER=`root`@`localhost`
 TRIGGER `users_AINS`
@@ -77,6 +76,8 @@ DELIMITER ;
 
 INSERT INTO `heroes` (`name`) VALUES ('Hero_Trixie');
 INSERT INTO `heroes` (`name`) VALUES ('Hero_Blazer');
+
+UPDATE `matches` set `match_type` = 0;
 
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;

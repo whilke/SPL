@@ -96,6 +96,8 @@ class LadderApi extends MY_Controller
                 {
                     $slot = $player->role - 1;
                     $isTeam1 = ($slot >= 1 && $slot <= 5);
+                    $isTeam2 = ($slot >= 6 && $slot <= 10);
+                    if (!$isTeam1 && !$isTeam2) continue;
                     
                     $rating1 = $result1->getRating($player->sk);
                     $rating2 = $result2->getRating($player->sk);
@@ -164,13 +166,18 @@ class LadderApi extends MY_Controller
                 $votes = $lobby->votes;
                 $votes++;
                 $t1votes = $lobby->team1_votes;
+                $t2votes = $lobby->team2_votes;
                 if ($obj->side == 1)
                     $t1votes++;
+                else
+                    $t2votes++;
                 
-                if ($votes >= $lobby->votes_need)
+                if ($t1votes >= $lobby->votes_need || $t2votes >= $lobby->votes_need )
                 {
                     //close the match out too!
                     $p['votes'] = $votes;
+                    $p['team1_votes'] = $t1votes;
+                    $p['team2_votes'] = $t2votes;
                     $p['inprogress'] = false;
                     $p['complete'] = true;
                     
@@ -214,7 +221,7 @@ class LadderApi extends MY_Controller
                     try
                     {
                         $bT1Won = false;
-                        if ($t1votes >= $votes/2)
+                        if ($t1votes >= $t2votes)
                             $bT1Won = true;
                         $result = $this->trueskill->getNewRating($team1, $team2, $bT1Won);
 
@@ -222,6 +229,8 @@ class LadderApi extends MY_Controller
                         {
                             $slot = $player->role - 1;
                             $isTeam1 = ($slot >= 1 && $slot <= 5);
+                            $isTeam2 = ($slot >= 6 && $slot <= 10);
+                            if (!$isTeam1 && !$isTeam2) continue;
 
                             $rating = $result->getRating($player->sk);
                             $player->sk = null;
@@ -253,6 +262,7 @@ class LadderApi extends MY_Controller
                 
                 $p['votes'] = $votes;
                 $p['team1_votes'] = $t1votes;
+                $p['team2_votes'] = $t2votes;
                 $this->lobbys_model->update($id, $p);
                 
                 //mark this user as voting.

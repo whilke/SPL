@@ -325,7 +325,8 @@ function procGame(game)
     {
         var voted = thisGame.votes;
         var t1v = thisGame.team1_votes;
-        if (t1v >= voted/2)
+        var t2v = thisGame.team2_votes;
+        if (t1v >= t2v)
         {
             var btn = $("<button class='btn btn-info disabled'>Glory Won</button>");
             $("#team1Vote").html(btn);
@@ -350,22 +351,23 @@ function procGame(game)
         
         if (isPlayer)
         {
-            var needed = thisGame.votes_need - thisGame.votes;
+            var neededT1 = thisGame.votes_need - thisGame.team1_votes;
+            var neededT2 = thisGame.votes_need - thisGame.team2_votes;
             $("#matchStartDiv").hide();
             if (voted != 1)
             {
-                var btn = $("<button class='btn btn-info'>Glory Won [" + needed + " to go]</button>");
+                var btn = $("<button class='btn btn-info'>Glory Won [" + neededT1 + " to go]</button>");
                 btn.click(function(){handleVoteClick(1);});
                 $("#team1Vote").html(btn);
-                var btn = $("<button class='btn btn-info'>Valor Won [" + needed + " to go]</button>");
+                var btn = $("<button class='btn btn-info'>Valor Won [" + neededT2 + " to go]</button>");
                 btn.click(function(){handleVoteClick(2);});
                 $("#team2Vote").html(btn);                
             }
             else
             {
-                var btn = $("<button class='btn btn-info disabled'>Voted [" + needed + " to go]</button>");
+                var btn = $("<button class='btn btn-info disabled'>Voted [" + neededT1 + " to go]</button>");
                 $("#team1Vote").html(btn);
-                var btn = $("<button class='btn btn-info disabled'>Voted [" + needed + " to go]</button>");
+                var btn = $("<button class='btn btn-info disabled'>Voted [" + neededT2 + " to go]</button>");
                 $("#team2Vote").html(btn);                                
             }
             

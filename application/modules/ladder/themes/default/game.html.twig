@@ -413,7 +413,7 @@ function procGame(game)
             if (chk.length == 0 || fullRefresh)
             {
                 var div = $("<div id='cntrPlayer' class='btn btn-primary form-control onTop' data-idx='"+
-                        value.player_id+"'>"+value.username+"</div>");
+                        value.player_id+"'>"+value.username+"<span style='font-size:10px'> ("+Math.round(value.rating_mean,0)+")</span></div>");
                 if (uid == thisGame.host)
                     div.draggable({ helper: "clone" });
                 

@@ -19,6 +19,20 @@ class Ladder extends MY_Controller
         $this->twiggy->template('lobby')->display();
     }
     
+    function players()
+    {
+        $allUsers = $this->ion_auth->order_by('rating_mean')->users();
+        $users = array();
+        foreach($allUsers->result() AS $user)
+        {
+            if ($user->rating_mean != null)
+                $users[] = $user;
+        }
+        
+        $this->twiggy->set('users', $users);
+        $this->twiggy->template('players')->display();
+    }
+    
     function game($id)
     {
         if (!$this->ion_auth->logged_in())

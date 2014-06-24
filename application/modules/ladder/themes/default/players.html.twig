@@ -1,0 +1,33 @@
+{% extends _layout %}
+{% block content %}
+<div class="row">
+    <div class="col-lg-offset-3 col-lg-6">
+    
+        <h2>Ranked Player Ladder</h2>
+
+        <table id="players" class="table table-bordered table-hover" style="border: 0px;">
+            <thead>
+                <tr>
+                    <th class="text-center"  style='width:80px'>Rating</th>
+                    <th class="text-center" style='width:500px;'>Name</th>
+                    <th class="text-center"  style='width:80px'>Matches</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                    <tr>
+                    {% set s = 'user/portal/' ~ user.id    %}
+                        
+                    <td>{{user.rating_mean|number_format(0,'','','')}}</td>
+                    <td>{{user.username}}</td>
+                    <td>{{user.rating_games}}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>            
+</div>
+{% endblock %}
+    
+{% block js %}
+{% endblock %}
+    

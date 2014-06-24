@@ -18,8 +18,8 @@
         <link rel="stylesheet" href="{{'css/jplayer.blue.monday.css'|assets_url()}}">
         <link rel="stylesheet" href="{{'css/modules/skeleton.css'|assets_url()}}">
         <link rel="stylesheet" href="//cdn.datatables.net/1.10.0/css/jquery.dataTables.css">
-        {{ css }}
-
+        {% block css %}
+        {% endblock %}
         <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
         <!--[if lt IE 9]>
             <script src="{{'js/html5shiv.min.js'|assets_url()}}"></script>
@@ -224,6 +224,15 @@
                             {%endfor%}
                           </ul>
                         </li>
+
+                        <li class="dropdown">
+                          <a class="myNavLinks" style="padding-top:0px;" href="#" class="dropdown-toggle" data-toggle="dropdown">Ranked Ladder <b class="caret"></b></a>
+                          <ul class="dropdown-menu">
+                            <li><a href="{{'ladder/lobby'|site_url}}">Lobby</a></li>
+                            <li><a href="{{'ladder/players'|site_url}}">Players</a></li>
+                          </ul>
+                        </li>
+                        
                         <li><a href="{{'team/search'|site_url}}" class="myNavLinks" style="padding-top:0px;">Team Search</a></li>
                         <li><a href="{{'main/contact'|site_url}}" class="myNavLinks" style="padding-top:0px;">Contact</a></li>
                         <li><a href="{{'main/rules'|site_url}}" class="myNavLinks" style="padding-top:0px;">Rules</a></li>

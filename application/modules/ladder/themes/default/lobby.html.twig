@@ -1,0 +1,44 @@
+{% extends _layout %}
+
+{% block content %}
+<h3>Current Lobbys</h3>
+<div class="row">
+    <a id="btnNewLobby" class="btn btn-success pull-right"
+       href="{{'ladder/create/'|site_url}}" rel="async" ajaxify="{{'ladder/ladder_ajax/ion_ladder_dialog/create/'|site_url}}">
+        Create Lobby
+    </a>
+    <br/>    <br/>
+
+</div>
+<div class="row">
+    <div class="col-md-10 col-md-offset-1">
+        <ul id="cntLobby" class="list-group row">
+        </ul>
+    </div>
+</div>
+{% endblock %}
+
+{% block js%}
+<script type="text/javascript">
+$( document ).ready( function() {
+    
+    lobbyPoll();
+});
+
+function lobbyPoll()
+{
+    $.getJSON( "{{'ladder/LadderApi/getLobbys'|site_url}}", function( data ) {
+        //clear all lobbies and rebuild them.
+        $("#cntLobby").html("");
+        $.each(data, function( index, value ) {
+            $("#cntLobby").append("<li class='list-group-item col-xs-4' style='border: 0px;' data-idx='"+
+                    value.id+
+              "'><a href='{{'ladder/game'|site_url}}/"+value.id+"' class='btn btn-primary form-control'>"
+              +value.name+"</a></li>");
+        });
+    });
+    
+    setTimeout('lobbyPoll();', 10000);
+}
+</script>
+{% endblock %}

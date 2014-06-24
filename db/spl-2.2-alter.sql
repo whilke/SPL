@@ -1,0 +1,87 @@
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL';
+
+CREATE TABLE IF NOT EXISTS `game_info_global` (
+  `beta` DOUBLE NOT NULL,
+  `draw_prob` DOUBLE NOT NULL,
+  `dynamics_factor` DOUBLE NOT NULL,
+  `init_mean` DOUBLE NOT NULL,
+  `init_sd` DOUBLE NOT NULL)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = latin1
+COLLATE = latin1_swedish_ci;
+
+CREATE TABLE IF NOT EXISTS `lobby_chat` (
+  `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `lobby_id` INT(11) NOT NULL,
+  `player_id` INT(11) NOT NULL,
+  `msg` VARCHAR(150) NOT NULL,
+  `timestamp` DOUBLE NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_lobby_chat_1_idx` (`lobby_id` ASC),
+  CONSTRAINT `fk_lobby_chat_1`
+    FOREIGN KEY (`lobby_id`)
+    REFERENCES `lobbys` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+AUTO_INCREMENT = 24
+DEFAULT CHARACTER SET = latin1
+COLLATE = latin1_swedish_ci;
+
+CREATE TABLE IF NOT EXISTS `lobby_players` (
+  `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `lobby_id` INT(11) NOT NULL,
+  `player_id` INT(11) NOT NULL,
+  `role` INT(11) NOT NULL,
+  `timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `voted` SMALLINT(6) NOT NULL DEFAULT '0',
+  `starting_mean` DOUBLE NULL DEFAULT NULL,
+  `starting_sd` DOUBLE NULL DEFAULT NULL,
+  `new_mean` DOUBLE NULL DEFAULT NULL,
+  `new_sd` DOUBLE NULL DEFAULT NULL,
+  `change` DOUBLE NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_lobby_players_1_idx` (`lobby_id` ASC),
+  CONSTRAINT `fk_lobby_players_1`
+    FOREIGN KEY (`lobby_id`)
+    REFERENCES `lobbys` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+AUTO_INCREMENT = 498
+DEFAULT CHARACTER SET = latin1
+COLLATE = latin1_swedish_ci;
+
+CREATE TABLE IF NOT EXISTS `lobbys` (
+  `id` INT(11) NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(20) NOT NULL,
+  `host` INT(11) NOT NULL,
+  `timestamp` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `playerCount` INT(11) NULL DEFAULT NULL,
+  `slots_locked` INT(11) NOT NULL DEFAULT '0',
+  `gamemode` INT(11) NULL DEFAULT NULL,
+  `complete` SMALLINT(6) NOT NULL DEFAULT '0',
+  `votes` SMALLINT(6) NOT NULL DEFAULT '0',
+  `votes_need` SMALLINT(6) NOT NULL DEFAULT '0',
+  `team1_votes` SMALLINT(6) NOT NULL DEFAULT '0',
+  `inprogress` SMALLINT(6) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`))
+ENGINE = InnoDB
+AUTO_INCREMENT = 97
+DEFAULT CHARACTER SET = latin1
+COLLATE = latin1_swedish_ci;
+
+ALTER TABLE `looking_for_players` 
+CHANGE COLUMN `tank` `tank` INT(11) NULL DEFAULT NULL ;
+
+ALTER TABLE `users` 
+ADD COLUMN `rating_mean` DOUBLE NULL DEFAULT NULL AFTER `strife_id`,
+ADD COLUMN `rating_sd` DOUBLE NULL DEFAULT NULL AFTER `rating_mean`,
+ADD COLUMN `rating_games` INT(11) NULL DEFAULT NULL AFTER `rating_sd`;
+
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;

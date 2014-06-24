@@ -1,0 +1,697 @@
+{% extends _layout %}
+
+{% block css %}
+<link rel="stylesheet" href="{{'css/jquery.ui.chatbox.css'|assets_url()}}">
+<link rel="stylesheet" type="text/css" href="{{'css/jquery.countdown.css'|assets_url()}}"> 
+<style type="text/css">
+.drop-hover {
+  background-color: #aaa !important;
+}       
+.onTop{
+    z-index: 1000;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-sm-2">
+            <h3>{{lobby.name}} <span style="font-size:12px;">(hosted by <span id="txtHost"></span>)</span><h3>
+        </div>
+        <div class="col-sm-10" id="cntrHost">
+            <div class="row"><br/></div>
+            <div class="col-sm-2" style="margin-top:-20px;">
+                Drag here<div id="newHostCntr" style="background:#c0c0c0;width:50px;height:50px;position: relative;margin-left:10px;"></div> 
+                for new host                
+            </div>        
+            <div class="col-sm-2">
+                <button id ='btnLockSlots' class="btn btn-danger">Lock Slots</button>
+            </div>
+            <div class="col-sm-2">
+                Game Mode
+                <select id='gameMode'>
+                    <option value='0'>All Pick</option>
+                    <option value='1'>SPL Draft</option>
+                </select>
+            </div>
+            <div class="col-sm-4 col-sm-offset-2">
+                <div id='matchStartDiv'>
+                <button id ='btnStartMatch' class="btn btn-danger">Start Match</button>
+                 <span class='pull-right' id='matchCount'></span>
+                 </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <ul class="list-group row">
+            <li class="list-group-item" style='background-color: #c0c0c0;height:70px;'>
+                <div id='slot1' data-number=1 class="slotItem"></div>
+                <div id='rtSlot1' class="text-center"></div>
+            </li>
+            <li class="list-group-item" style='background-color: #c0c0c0;height:70px;'>
+                <div id='slot2' data-number=2 class="slotItem"></div>
+                <div id='rtSlot2' class="text-center"></div>
+            </li>
+            <li class="list-group-item" style='background-color: #c0c0c0;height:70px;'>
+                <div id='slot3' data-number=3 class="slotItem"></div>
+                <div id='rtSlot3' class="text-center"></div>
+            </li>
+            <li class="list-group-item" style='background-color: #c0c0c0;height:70px;'>
+                <div id='slot4' data-number=4 class="slotItem"></div>
+                <div id='rtSlot4' class="text-center"></div>
+            </li>
+            <li class="list-group-item" style='background-color: #c0c0c0;height:70px;'>
+                <div id='slot5' data-number=5 class="slotItem"></div>
+                <div id='rtSlot5' class="text-center"></div>
+            </li>
+        </ul>    
+        <div  id='team1Vote' class='text-center' style='font-size:12px;font-weight:bold;color:lightgray;'>Match Quality: <span id='mq1'></span></div>
+
+    </div>    
+    <div class="col-sm-8" id="cntUserList" style="min-height:200px;">
+        <ul id="cntUsers" class="list-group row">
+        </ul>  
+    </div>    
+    <div class="col-sm-2">  
+        <ul class="list-group row">
+            <li class="list-group-item" style='background-color: #c0c0c0;height:70px;'>
+                <div id='slot6' data-number=6 class="slotItem"></div>
+                <div id='rtSlot6' class="text-center"></div>
+            </li>
+            <li class="list-group-item" style='background-color: #c0c0c0;height:70px;'>
+                <div id='slot7' data-number=7 class="slotItem"></div>
+                <div id='rtSlot7' class="text-center"></div>
+            </li>
+            <li class="list-group-item" style='background-color: #c0c0c0;height:70px;'>
+                <div id='slot8' data-number=8 class="slotItem"></div>
+                <div id='rtSlot8' class="text-center"></div>
+            </li>
+            <li class="list-group-item" style='background-color: #c0c0c0;height:70px;'>
+                <div id='slot9' data-number=9 class="slotItem"></div>
+                <div id='rtSlot9' class="text-center"></div>
+            </li>
+            <li class="list-group-item" style='background-color: #c0c0c0;height:70px;'>
+                <div id='slot10' data-number=10 class="slotItem"></div>
+                <div id='rtSlot10' class="text-center"></div>
+            </li>
+        </ul>        
+        <div id='team2Vote' class='text-center' style='font-size:12px;font-weight:bold;color:lightgray;'>Match Quality: <span id='mq2'></span></div>
+    </div>    
+    
+    
+    <div id="chatBox"></div>
+{% endblock %}
+
+{% block js%}
+<script src="{{'js/jquery.ui.chatbox.js'|assets_url()}}"></script>
+<script type="text/javascript" src="{{'js/jquery.plugin.min.js'|assets_url()}}"></script> 
+<script type="text/javascript" src="{{'js/jquery.countdown.min.js'|assets_url()}}"></script>
+
+<script type="text/javascript">
+
+$.fn.positionOn = function(element, align) {
+  return this.each(function() {
+      console.log('pos');
+    var target   = $(this);
+    var position = element.offset();
+
+    var x      = position.left - $(window).scrollLeft(); 
+    var y      = position.top - $(window).scrollTop();
+    var w      = target.width();
+    var h      = target.height();
+    
+    console.log(element + " " + x +" " + y);
+
+    if(align == 'right') {
+      x -= (target.outerWidth() - element.outerWidth());
+    } else if(align == 'center') {
+      x -= target.outerWidth() / 2 - element.outerWidth() / 2;
+    } else if(align == 'fill') {
+        w = element.width();
+        h = element.height();
+    }
+
+    target.css({
+      position: 'fixed',
+      zIndex:   5000,
+      top:      y, 
+      left:     x,
+      width:    w,
+      height:   h
+    });
+  });
+};
+
+$( document ).ready( function() {
+    
+    gamePoll();
+    
+    $("#btnStartMatch").click(handleStartMatch);
+    
+    $(".slotItem").each( function (index, value){
+        $(value).droppable( {
+            drop: handleDropEvent,
+            hoverClass: 'drop-hover',
+        });
+    });
+    
+    
+    $("#newHostCntr").droppable( {
+        drop: handleDropNewHost,
+        hoverClass: 'drop-hover',
+    });
+    
+    $("#cntUserList").droppable( {
+        drop: handleDropEvent2,
+        hoverClass: 'drop-hover',
+    });
+        
+    $("#chatBox").chatbox({
+        id: "chatBox",
+        title:"Chat",
+        offset: 0,
+        width: 300,
+        messageSent: function(id, user, msg) {
+            handleChatEvent(msg);
+        },
+    });
+});
+
+function handleChatEvent(msg)
+{
+    var postData = {
+        msg: msg
+    };
+
+    postData = JSON.stringify(postData);
+    postData = {
+        id: {{lobby.id}},
+        data: postData
+    };
+
+    $.ajax({
+        type: "POST",
+        url: "{{'ladder/LadderApi/sendChat'|site_url()}}",
+        data: postData,
+        dataType:'json',
+        success: function(){
+        }
+    });                
+}
+
+window.onbeforeunload = function() { 
+    $.ajax({
+       url: "{{'ladder/LadderApi/leaveGame'|site_url}}" + "/" + {{lobby.id}},
+       async : false,
+    });
+};
+
+function handleStartMatch()
+{
+    var txt = $("#btnStartMatch").html();
+    if (txt == "Start Match")
+    {
+        var shortly = new Date(); 
+        shortly.setSeconds(shortly.getSeconds() + 10); 
+        $('#matchCount').countdown({until: shortly,  
+        onExpiry: startMatch, onTick: watchCountdown}); 
+        $("#btnStartMatch").html('Cancel Countdown');
+        
+        handleChatEvent('Match countdown has started...');
+    }
+    else
+    {
+        $("#btnStartMatch").html('Start Match');
+        $('#matchCount').countdown('destroy');
+        handleChatEvent('Match countdown has been canceled...');
+    }
+}
+
+function startMatch()
+{
+    var postData = {
+                p: 0,
+                r: 0,
+                cmd: 3
+            };
+                        
+    postData = JSON.stringify(postData);
+    postData = {
+        id: {{lobby.id}},
+        data: postData
+    };
+
+    $.ajax({
+        type: "POST",
+        url: "{{'ladder/LadderApi/changeGamePlayer'|site_url()}}",
+        data: postData,
+        dataType:'json',
+        async: false,
+        success: function(data, s, x){
+            procGame(data);
+        }
+    });           
+}
+
+function watchCountdown(periods) { 
+    $('#matchCount').text('Match starting in...' + 
+        periods[6]); 
+}
+
+var nextChatTime = 0;
+function gamePoll()
+{
+    $.getJSON( "{{'ladder/LadderApi/getGame'|site_url}}" + "/" + {{lobby.id}} + "/" + nextChatTime, function( data ) {
+        procGame(data);
+    });
+    
+    setTimeout('gamePoll();', 2000);
+}
+
+var thisGame = 0;
+var oldHost = 0;
+var oldLock = 0;
+var uid = {{userLadder.id}};
+var isHost = false;
+function procGame(game)
+{
+    thisGame = game;
+
+    if (thisGame.valid == false)
+    {
+        window.location.assign(thisGame.redirect);
+        return;
+    }
+    
+    if (thisGame.complete == 1)
+    {
+        thisGame.slots_locked = true;
+        thisGame.host = 0;
+        $("#chatBox").chatbox("option", "hidden", true);
+    }
+    
+    $("#txtHost").html(thisGame.host_name);
+    $("#mq1").html(thisGame.matchquality + "%");
+    $("#mq2").html(thisGame.matchquality + "%");
+        
+    var fullRefresh = false;
+    if (thisGame.host != oldHost)
+    {
+        if (uid == oldHost ) //refresh after we lose host.
+            fullRefresh = true;
+        oldHost = thisGame.host;
+        if (uid == thisGame.host)
+            fullRefresh = true;
+    }
+    
+    if (oldLock != thisGame.slots_locked)
+    {
+        oldLock = thisGame.slots_locked;
+        fullRefresh = true;
+    }
+    
+    if (uid == thisGame.host)
+    {
+        isHost= true;
+        $("#cntrHost").show();
+    }
+    else
+    {
+        isHost = false;
+        $("#cntrHost").hide();        
+    }
+    
+    if (thisGame.complete == 1)
+    {
+        var voted = thisGame.votes;
+        var t1v = thisGame.team1_votes;
+        if (t1v >= voted/2)
+        {
+            var btn = $("<button class='btn btn-info disabled'>Glory Won</button>");
+            $("#team1Vote").html(btn);
+            var btn = $("<button class='btn btn-info disabled'>Glory Won</button>");
+            $("#team2Vote").html(btn);                                            
+        }
+        else
+        {
+            var btn = $("<button class='btn btn-info disabled'>Valor Won</button>");
+            $("#team1Vote").html(btn);
+            var btn = $("<button class='btn btn-info disabled'>Valor Won</button>");
+            $("#team2Vote").html(btn);                                            
+            
+        }
+          
+    }else 
+    if (thisGame.inprogress == 1 )
+    {
+        var slot = thisGame.me.role - 1;
+        var isPlayer = (slot >= 1 && slot <= 10);
+        var voted = thisGame.me.voted;
+        
+        if (isPlayer)
+        {
+            var needed = thisGame.votes_need - thisGame.votes;
+            $("#matchStartDiv").hide();
+            if (voted != 1)
+            {
+                var btn = $("<button class='btn btn-info'>Glory Won [" + needed + " to go]</button>");
+                btn.click(function(){handleVoteClick(1);});
+                $("#team1Vote").html(btn);
+                var btn = $("<button class='btn btn-info'>Valor Won [" + needed + " to go]</button>");
+                btn.click(function(){handleVoteClick(2);});
+                $("#team2Vote").html(btn);                
+            }
+            else
+            {
+                var btn = $("<button class='btn btn-info disabled'>Voted [" + needed + " to go]</button>");
+                $("#team1Vote").html(btn);
+                var btn = $("<button class='btn btn-info disabled'>Voted [" + needed + " to go]</button>");
+                $("#team2Vote").html(btn);                                
+            }
+            
+        }
+    }
+    else
+    {
+        if (isHost)
+            $("#matchStartDiv").show();
+    }
+    
+    if (thisGame.slots_locked == 1)
+    {
+        $("#btnLockSlots").html("Unlock Slots");
+        $("#btnLockSlots").click(function(){
+            handleLockEvent(2);
+        });
+    }
+    else
+    {
+        $("#btnLockSlots").html("Lock Slots");
+        $("#btnLockSlots").click(function(){
+            handleLockEvent(1);
+        });        
+    }
+    
+    nextChatTime = game.nowChatTime;
+    $.each(game.chat, function (index, value) {
+         $("#chatBox").chatbox("option", "boxManager").addMsg(value.username, value.msg);
+    });
+    
+    if (fullRefresh)
+        $("#cntUsers").html('');
+    
+    var foundPlayers = [];
+    var slotsInUse = [];
+    $.each(game.players, function (index, value)
+    {
+        if (value.role == 0)
+        {
+            //see if ths player is already loaded
+            var chk = $('#cntrPlayer[data-idx="'+value.player_id+'"]');
+            if (chk.length == 0 || fullRefresh)
+            {
+                var div = $("<div id='cntrPlayer' class='btn btn-primary form-control onTop' data-idx='"+
+                        value.player_id+"'>"+value.username+"</div>");
+                if (uid == thisGame.host)
+                    div.draggable({ helper: "clone" });
+                
+                var li = $("<li class='list-group-item col-sm-4' style='border: 0px;'></li>");
+                li.html(div);
+                $("#cntUsers").append(li);     
+            }
+            foundPlayers.push(parseInt(value.player_id,10));
+        }
+        
+        var slot = value.role - 1;
+        if (value.role > 1)
+        {
+            slotsInUse.push(slot);
+            var e = $('#slot' + slot);
+            if (e.data('idx') != value.player_id || fullRefresh)
+            {
+                e.data('idx', value.player_id);
+                var div = 0;
+                var div2 = 0;
+                if (uid == value.player_id &&  (thisGame.slots_locked == 0 || isHost))
+                {
+                    div = $("<div id='cntrSlotPlayer' class='onTop btn btn-primary form-control' style='width:50%;' data-idx='"+
+                            value.player_id+"'>"+value.username+"</div>");
+
+                    div2 = $('<button class="btn btn-danger form-control" id="btnStand" style="width:50%;">Stand</button>');
+                    div2.click(handleStandEvent);                        
+
+                }
+                else
+                {
+                    div = $("<div id='cntrSlotPlayer' class='btn btn-primary form-control' data-idx='"+
+                            value.player_id+"'>"+value.username+"</div>");
+                }
+                
+                if (uid == thisGame.host)
+                    div.draggable({ helper: "clone" });
+                e.html(div);
+                if (div2 != 0)
+                    e.append(div2);
+            }
+            
+            //always reset the rating (incase they change somehow).
+            if (thisGame.complete == 1)
+            {
+                if (value.change >= 0)
+                {
+                    $("#rtSlot" + slot ).html("<span style='font-size:9px;font-weight:bold;'>Rating: " + Math.round(value.starting_mean,0) + "<span style='color:green;'> +" + Math.round(value.change,1) + "</span></span>");                               
+                    
+                }
+                else
+                {
+                    $("#rtSlot" + slot ).html("<span style='font-size:9px;font-weight:bold;'>Rating: " + Math.round(value.starting_mean,0) + "<span style='color:red;'> " + Math.round(value.change,1) + "</span></span>");                               
+                    
+                }
+            }
+            else
+            {
+                $("#rtSlot" + slot ).html("<span style='font-size:9px;font-weight:bold;'>Rating: " + value.rating_mean + " (<span style='color:green;'>" + value.r1 + "</span>/<span style='color:red;'>" + value.r2 + "</span>)</span>");               
+            }
+        }                 
+    });
+    
+    //now check if any players have left the pool
+    $('*[id*=cntrPlayer]').each( function(index, value)
+    {
+        //if not in the foundPlayers array they are gone.
+        var id = parseInt($.attr(value, 'data-idx'),10);
+        if (jQuery.inArray(id, foundPlayers) == -1)
+        {
+          var e = $(value);
+          var p = e.parent();
+          p.remove();          
+        }        
+    });
+    
+    //see if any players have left a slot
+    $(".slotItem").each( function(index, value)
+    {
+         var slot = parseInt($.attr(value, 'data-number'),10);
+         if (jQuery.inArray(slot, slotsInUse) == -1)
+         {
+             //okay, no player in this slot, make sure it has a sit button.
+             $(value).data('idx', 0);
+             var btn = "";
+             
+             if (thisGame.slots_locked == 0 || isHost)
+             {
+                var btn = $('<button class="btn btn-danger" style="width:100%;">Sit</button>');
+                btn.click( function(){handleSitEvent(slot);});                 
+             }
+             $(value).html(btn);
+             $("#rtSlot" + slot ).html("");
+
+         }
+    });
+}
+
+function handleLockEvent(cmd)
+{
+    var postData = {
+                p: 0,
+                r: 0,
+                cmd: cmd
+            };
+                        
+    postData = JSON.stringify(postData);
+    postData = {
+        id: {{lobby.id}},
+        data: postData
+    };
+
+    $.ajax({
+        type: "POST",
+        url: "{{'ladder/LadderApi/changeGamePlayer'|site_url()}}",
+        data: postData,
+        dataType:'json',
+        async: false,
+        success: function(data, s, x){
+            procGame(data);
+        }
+    });           
+}
+
+function handleSitEvent(slot)
+{
+    var postData = {
+                p: 0,
+                r: slot+1,                
+            };
+                        
+    postData = JSON.stringify(postData);
+    postData = {
+        id: {{lobby.id}},
+        data: postData
+    };
+
+    $.ajax({
+        type: "POST",
+        url: "{{'ladder/LadderApi/changeGamePlayer'|site_url()}}",
+        data: postData,
+        dataType:'json',
+        async: false,
+        success: function(data, s, x){
+            procGame(data);
+        }
+    });           
+}
+
+function handleStandEvent()
+{
+    var postData = {
+                p: 0,
+                r: 0,                
+            };
+                        
+    postData = JSON.stringify(postData);
+    postData = {
+        id: {{lobby.id}},
+        data: postData
+    };
+
+    $.ajax({
+        type: "POST",
+        url: "{{'ladder/LadderApi/changeGamePlayer'|site_url()}}",
+        data: postData,
+        dataType:'json',
+        async: false,
+        success: function(data, s, x){
+            procGame(data);
+        }
+    });           
+}
+
+function handleDropNewHost(event, ui) {
+    var draggable = ui.draggable;
+    var playerId = draggable.data('idx');
+
+    var postData = {
+                p: playerId,
+                r: 100,                
+            };
+                        
+    postData = JSON.stringify(postData);
+    postData = {
+        id: {{lobby.id}},
+        data: postData
+    };
+
+    $.ajax({
+        type: "POST",
+        url: "{{'ladder/LadderApi/changeGamePlayer'|site_url()}}",
+        data: postData,
+        dataType:'json',
+        async: false,
+        success: function(data, s, x){
+            procGame(data);
+        }
+    });                
+}
+
+function handleDropEvent(event, ui) {
+    var draggable = ui.draggable;
+    var playerId = draggable.data('idx');
+    var slotNumber = $(this).data( 'number' );
+
+    var postData = {
+                p: playerId,
+                r: slotNumber+1,                
+            };
+                        
+    postData = JSON.stringify(postData);
+    postData = {
+        id: {{lobby.id}},
+        data: postData
+    };
+
+    $.ajax({
+        type: "POST",
+        url: "{{'ladder/LadderApi/changeGamePlayer'|site_url()}}",
+        data: postData,
+        dataType:'json',
+        async: false,
+        success: function(data, s, x){
+            procGame(data);
+        }
+    });                
+}
+
+function handleDropEvent2(event, ui) {
+    var draggable = ui.draggable;
+    var playerId = draggable.data('idx');
+
+    var postData = {
+                p: playerId,
+                r: 0,                
+            };
+                        
+    postData = JSON.stringify(postData);
+    postData = {
+        id: {{lobby.id}},
+        data: postData
+    };
+
+    $.ajax({
+        type: "POST",
+        url: "{{'ladder/LadderApi/changeGamePlayer'|site_url()}}",
+        data: postData,
+        dataType:'json',
+        async: false,
+        success: function(data, s, x){
+            procGame(data);
+        }
+    });                
+}
+
+function handleVoteClick(side) {
+
+    var postData = {
+                cmd: 1,
+                side: side,
+            };
+                        
+    postData = JSON.stringify(postData);
+    postData = {
+        id: {{lobby.id}},
+        data: postData
+    };
+
+    $.ajax({
+        type: "POST",
+        url: "{{'ladder/LadderApi/updateMatch'|site_url()}}",
+        data: postData,
+        dataType:'json',
+        async: false,
+        success: function(data, s, x){
+            procGame(data);
+        }
+    });                
+}
+
+</script>
+{% endblock %}

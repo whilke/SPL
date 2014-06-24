@@ -45,7 +45,6 @@ class Teams_model extends CI_Model
         $query = $this->db->
                 select('teams.id, teams.name')->
                 from('teams')->
-                join('users', 'users.id = teams.userid')->
                 where('active', true)->
                 get();
         

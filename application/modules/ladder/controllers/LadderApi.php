@@ -250,7 +250,6 @@ class LadderApi extends MY_Controller
                             $rup = array();
                             $rup['rating_mean'] = $rating->getMean();
                             $rup['rating_sd'] = $rating->getStandardDeviation();
-                            if ($player->rating_games == null) $player->rating_games = 0;
                             $rup['rating_games'] = $player->rating_games+1;
                             $this->ion_auth->update($player->player_id, $rup);
                         }

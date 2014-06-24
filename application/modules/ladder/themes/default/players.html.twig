@@ -19,7 +19,7 @@
                     {% set s = 'user/portal/' ~ user.id    %}
                         
                     <td>{{user.rating_mean|number_format(0,'','','')}}</td>
-                    <td>{{user.username}}</td>
+                    <td><a href="{{s|site_url}}" target="_blank">{{user.username}}</a></td>
                     <td>{{user.rating_games}}</td>
                     </tr>
                 {% endfor %}

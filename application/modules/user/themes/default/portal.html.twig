@@ -13,12 +13,17 @@
     </div>    
     {%endfor%}
     <h2 style='text-align:center;'>
-        {{portalUser.username}} 
         {%if isOwner %}
+        <span id="nameContainer" class="">
+            <a href="javascript://;" id="username">
+                {{portalUser.username}} 
+            </a>
+        </span>
         (<span id="regionContainer" class="">
         <a href="javascript://;" id="region">{{portalUser.extra.region}}</a> 
         </span>)
         {%else%}
+        {{portalUser.username}} 
         ({{portalUser.extra.region}}) 
         {%endif%}
     </h2> 
@@ -58,7 +63,7 @@
                         {%endif%}
                     </h3>
                 </div>
-                <div id="bioContainer" class="panel-body" style="height:373px;">{{portalUser.extra.bioHtml}}</div>
+                <div id="bioContainer" class="panel-body" style="height:396px;">{{portalUser.extra.bioHtml}}</div>
                 <div id="bioContainerMarkdown" class="panel-body hidden">{{portalUser.extra.bio}}</div>
             </div>
         </div>
@@ -76,7 +81,11 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
+                             <tr>
+                                <td style='background-color: white;'>Ladder Rating:</td>
+                                <td style='background-color: white;'>{{portalUser.rating_mean|number_format(0,'','')}}</td>
+                            </tr>
+                           <tr>
                                 <td style='background-color: white;'>Matches:</td>
                                 <td style='background-color: white;'>{{portalUser.strifePlayer.matches|length}}</td>
                             </tr>
@@ -171,8 +180,63 @@
 $( document ).ready( function() {
     
     setup_region_click();
+    setup_username_click();
  
-});    
+});   
+
+function setup_username_click()
+{
+   $('#username').click(function()
+    {
+        var container = $('#nameContainer');
+        
+        var edit_html = '<input type="text" id="userEdit"></input>'+
+        '<a onclick="user_save();" class="btn btn-primary btn-xs" href="javascript://;"><span class="glyphicon glyphicon-ok"></span></a>' +
+        '<button onclick="user_cancel();" class="btn btn-primary btn-xs" href="javascript://;"><span class="glyphicon glyphicon-remove"></span></button>'
+
+        container.html(edit_html);
+        
+    });   
+}
+
+function user_cancel()
+{
+    var container = $('#nameContainer');
+    container.html(' <a href="javascript://;" id="username">{{portalUser.username}}</a> ');
+    setup_username_click();
+}
+function user_save()
+{
+    var rawdata = $('#userEdit').val();
+    if (rawdata == null || rawdata == '')
+    {
+        region_cancel();
+        return;
+        
+    }
+    var postData = {};
+    postData['username'] = rawdata;
+
+    postData = JSON.stringify(postData);
+    postData = {
+        id: {{portalUser.id}},
+        data: postData
+    };
+
+    $.ajax({
+        type: "POST",
+        url: "{{'user/save'|site_url()}}",
+        data: postData,
+        dataType:'json',
+        success: function(){
+        }
+    });    
+
+    var container = $('#nameContainer');
+    container.html(' <a href="javascript://;" id="username">'+rawdata+'</a> ');
+    setup_username_click();
+}
+
 
 function setup_region_click()
 {
@@ -239,7 +303,7 @@ function edit_bio()
 {
     var container = $('#bioContainer');
     oldbioHtml = container.html();
-    var html = '<textarea rows="17" class="form-control" id="bio_cntr">'+oldbio+'</textarea>';
+    var html = '<textarea rows="18" class="form-control" id="bio_cntr">'+oldbio+'</textarea>';
     container.html(html);
     
     var editContainer = $('#bio_edit_area');

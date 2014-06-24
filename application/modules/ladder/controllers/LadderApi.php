@@ -118,6 +118,29 @@ class LadderApi extends MY_Controller
             } catch (Exception $ex) {
                 $lobby->matchquality= 0;
             }
+            
+            if ($lobby->gamestart != null)
+            {               
+                $now = new DateTime();
+                $oDate = new DateTime($lobby->gamestart);
+                
+                if ($now > $oDate)
+                {
+                    $lobby->gamestart_m = 0;
+                    $lobby->gamestart_s = 0;                
+                }
+                else
+                {                    
+                    $diff = $now->diff($oDate);
+                    $lobby->gamestart_m = $diff->i;
+                    $lobby->gamestart_s = $diff->s;               
+                }
+            }
+            else
+            {
+                $lobby->gamestart_m = 0;
+                $lobby->gamestart_s = 0;                
+            }
         }
         
         $json = json_encode($lobby);
@@ -330,6 +353,9 @@ class LadderApi extends MY_Controller
                 $p['slots_locked'] = true;
                 $p['inprogress'] = true;
                 $p['votes_need'] = $votes_needed;
+                $dt = new DateTime();
+                $dt->add(new DateInterval("PT10M"));
+                $p['gamestart'] = date_format($dt, "Y-m-d H:i:s");
                 $this->lobbys_model->update($id, $p);
             }
             

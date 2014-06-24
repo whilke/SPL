@@ -77,7 +77,7 @@ class lobbys_model extends CI_Model
     public function getPlayers($id)
     {
         $query = $this->db
-         ->select('lobby_players.*, users.username, users.rating_mean, users.rating_sd')
+         ->select('lobby_players.*, users.username, users.rating_mean, users.rating_sd, users.rating_games')
          ->from('lobby_players')
          ->join('users', 'users.id = player_id')
          ->where('lobby_id', $id)

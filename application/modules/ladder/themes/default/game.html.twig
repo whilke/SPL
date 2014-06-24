@@ -145,9 +145,7 @@ $.fn.positionOn = function(element, align) {
 $( document ).ready( function() {
     
     gamePoll();
-    
-    $("#btnStartMatch").click(handleStartMatch);
-    
+        
     $(".slotItem").each( function (index, value){
         $(value).droppable( {
             drop: handleDropEvent,
@@ -254,8 +252,8 @@ function startMatch()
 }
 
 function watchCountdown(periods) { 
-    $('#matchCount').text('Match starting in...' + 
-        periods[6]); 
+    $('#matchCount').text('Match starting in...' + periods[6]); 
+    handleChatEvent('...' + periods[6]);
 }
 
 var nextChatTime = 0;
@@ -268,11 +266,57 @@ function gamePoll()
     setTimeout('gamePoll();', 2000);
 }
 
+function getSittingCount(game)
+{
+    var count = 0;
+    $.each(game.players, function (index, value)
+    {
+        var slot = value.role - 1;
+        if (slot >= 1 && slot <= 10)
+        {
+            count++;
+        }
+    });
+    
+    return count;
+}
+
+function getGloryCount(game)
+{
+    var count = 0;
+    $.each(game.players, function (index, value)
+    {
+        var slot = value.role - 1;
+        if (slot >= 1 && slot <= 5)
+        {
+            count++;
+        }
+    });
+    
+    return count;
+}
+
+function getValorCount(game)
+{
+    var count = 0;
+    $.each(game.players, function (index, value)
+    {
+        var slot = value.role - 1;
+        if (slot >= 6 && slot <= 10)
+        {
+            count++;
+        }
+    });
+    
+    return count;
+}
+
 var thisGame = 0;
 var oldHost = 0;
 var oldLock = 0;
 var uid = {{userLadder.id}};
 var isHost = false;
+var startClicked = false;
 function procGame(game)
 {
     thisGame = game;
@@ -340,8 +384,7 @@ function procGame(game)
             var btn = $("<button class='btn btn-info disabled'>Valor Won</button>");
             $("#team2Vote").html(btn);                                            
             
-        }
-          
+        }          
     }else 
     if (thisGame.inprogress == 1 )
     {
@@ -354,6 +397,13 @@ function procGame(game)
             var neededT1 = thisGame.votes_need - thisGame.team1_votes;
             var neededT2 = thisGame.votes_need - thisGame.team2_votes;
             $("#matchStartDiv").hide();
+            if (thisGame.gamestart_m > 0 || thisGame.gamestart_s > 0)
+            {
+                var btn = $("<button class='btn btn-info disabled'>Voting opens in " + thisGame.gamestart_m + "m " + thisGame.gamestart_s +"s </button>");
+                $("#team1Vote").html(btn);
+                var btn = $("<button class='btn btn-info disabled'>Voting opens in " + thisGame.gamestart_m + "m " + thisGame.gamestart_s +"s </button>");
+                $("#team2Vote").html(btn);                                
+            } else
             if (voted != 1)
             {
                 var btn = $("<button class='btn btn-info'>Glory Won [" + neededT1 + " to go]</button>");
@@ -377,11 +427,24 @@ function procGame(game)
     {
         if (isHost)
             $("#matchStartDiv").show();
+        
+        $("#btnStartMatch").unbind( "click" );
+        if ((getGloryCount(thisGame) >= 1 && getValorCount(thisGame) >= 1))
+        {
+            $("#btnStartMatch").attr("disabled", false);
+            $("#btnStartMatch").click(handleStartMatch);     
+        }
+        else
+        {
+            $("#btnStartMatch").attr("disabled", true);            
+        }
+        
     }
     
     if (thisGame.slots_locked == 1)
     {
         $("#btnLockSlots").html("Unlock Slots");
+        $("#btnLockSlots").unbind( "click" );
         $("#btnLockSlots").click(function(){
             handleLockEvent(2);
         });
@@ -389,6 +452,7 @@ function procGame(game)
     else
     {
         $("#btnLockSlots").html("Lock Slots");
+        $("#btnLockSlots").unbind( "click" );
         $("#btnLockSlots").click(function(){
             handleLockEvent(1);
         });        
@@ -470,10 +534,14 @@ function procGame(game)
                     
                 }
             }
-            else
+            else if (value.r1 != null && value.r2 != null)
             {
                 $("#rtSlot" + slot ).html("<span style='font-size:9px;font-weight:bold;'>Rating: " + value.rating_mean + " (<span style='color:green;'>" + value.r1 + "</span>/<span style='color:red;'>" + value.r2 + "</span>)</span>");               
             }
+            else
+            {
+                $("#rtSlot" + slot ).html("<span style='font-size:9px;font-weight:bold;'>Rating: " + value.rating_mean + "</span>");               
+            }            
         }                 
     });
     

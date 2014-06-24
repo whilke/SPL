@@ -28,7 +28,8 @@
                 <tbody>
                     {% for message in messages.inbox %}
                     <tr data-thread-id="{{message.thread_id}}"  {%if message.status == 0%} style=" font-weight: bold;" {%endif%}>
-                        <td style='width:15%'>{{message.user_name}}</td>
+                        {% set l = 'user/portal/' ~ message.sender_id %}
+                        <td style='width:15%'><a href="{{l|site_url}}" target="_blank">{{message.user_name}}</a></td>
                         <td style='width:40%'>{{message.subject}}</td>
                         <td id="timestamp" style='width:20%'>{{message.cdate}}</td>
                         <td class="text-center" style='width:5%'>

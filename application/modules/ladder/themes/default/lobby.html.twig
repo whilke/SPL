@@ -1,6 +1,21 @@
 {% extends _layout %}
 
 {% block content %}
+    <div class='row'>
+    <div id='noticeBlock'>
+    </div>
+    <div class='col-md-12' id='noticeBlockCreate' style='margin-top:5px;'>
+        <div class='col-md-3'>
+            Publish a ranked ladder notice:
+        </div>
+        <div class='col-md-4'>
+         <input type='text' id='notice_msg' maxlength='150' class='form-control'></input>            
+        </div>
+        <div class='col-md-4'>
+        <button class='btn btn-default' id='notice_btn'>Create</button>
+        </div>
+    </div>
+    </div>
 <h3>Current Lobbys</h3>
 <div class="row">
     <a id="btnNewLobby" class="btn btn-success pull-right"
@@ -21,21 +36,61 @@
 {% block js%}
 <script type="text/javascript">
 $( document ).ready( function() {
-    
+        
     lobbyPoll();
+    
+    $("#notice_btn").click(function(){
+       var val = $("#notice_msg").val();
+       if (val == "") return;
+       
+        var postData = {
+            msg:  val
+         };
+                        
+        postData = JSON.stringify(postData);
+        postData = {
+            data: postData
+        };
+
+        $.ajax({
+            type: "POST",
+            url: "{{'ladder/LadderApi/sendNotice'|site_url()}}",
+            data: postData,
+            dataType:'json',
+            async: false,
+            success: function(data, s, x){
+            }
+        });    
+
+        window.location.reload();
+
+        });
 });
 
 function lobbyPoll()
-{
+{   
     $.getJSON( "{{'ladder/LadderApi/getLobbys'|site_url}}", function( data ) {
         //clear all lobbies and rebuild them.
         $("#cntLobby").html("");
-        $.each(data, function( index, value ) {
+        $.each(data.lobbys, function( index, value ) {
             $("#cntLobby").append("<li class='list-group-item col-xs-4' style='border: 0px;' data-idx='"+
                     value.id+
               "'><a href='{{'ladder/game'|site_url}}/"+value.id+"' class='btn btn-primary form-control'>"
               +value.name+"</a></li>");
         });
+        
+        if (data.notice != null)
+        {
+            $("#noticeBlock").html("<div class='alert alert-info'>Active Ladder Notice by " + data.notice.username +": " + data.notice.msg +"</a>");
+            var blk = $("#noticeBlockCreate");
+            blk.hide();
+        }
+        else
+        {
+            $("#noticeBlock").html("");
+            var blk = $("#noticeBlockCreate");
+            blk.show();
+        }
     });
     
     setTimeout('lobbyPoll();', 10000);

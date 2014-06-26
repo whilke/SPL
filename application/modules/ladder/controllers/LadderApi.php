@@ -456,6 +456,7 @@ class LadderApi extends MY_Controller
         $this->load->model('lobbys_model');
         $lobbys = $this->lobbys_model->getAll();
         
+        $obj = new stdClass();
         $retLobbys = array();
         foreach($lobbys AS $lobby)
         {
@@ -484,15 +485,51 @@ class LadderApi extends MY_Controller
                 $stripLobby->name = $lobby->name;
                 $retLobbys[] = $stripLobby;
             }
-        }
+        }        
+        $obj->lobbys = $retLobbys;
         
-        $json = json_encode($retLobbys);
+        //check if there are any active ranked ladder noticies.
+        $notice = $this->lobbys_model->getLadderNotice();
+        $obj->notice = $notice;
+
+        $json = json_encode($obj);
             
         $this->output
         ->set_content_type('application/json')
         ->set_output($json);
         
     }
+    
+    function sendNotice()
+    {
+        $data = $this->input->post('data');
+        
+        if (!$this->ion_auth->logged_in())
+        {
+            return;
+        }
+        
+        $user = $this->ion_auth->user()->row();        
+        $update = json_decode($data);
+        $this->load->model('lobbys_model');
+        $this->lobbys_model->addNotice($user->id, $update->msg);        
+        
+        //send the email now.
+        $this->load->library('email');
+        $users = $this->lobbys_model->getUsersForNotice();
+        $content = "A ranked ladder notice has been created with the following message: " . $update->msg;
+        foreach($users as $user)
+        {
+            $this->email->clear();
+            $this->email->from('game@strifeproleague.org');
+            $this->email->to($user->email);
+            $this->email->subject('SPL Ranked Ladder Notice from: ' . $user->username);
+            $this->email->message($content);
+            $this->email->send();
+        }
+        
+    }
+        
     
 }
 

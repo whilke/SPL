@@ -1,6 +1,7 @@
 {% extends _layout %}
 {% block content %}
     <!-- Header -->
+    <div id="alertCnt">
     {% for invite in invites  %}
     <div class="alert alert-success" id="infoMessage">
         {% set s = 'user/invite/' ~ invite.id ~ '/1'    %}
@@ -12,6 +13,7 @@
         </span>
     </div>    
     {%endfor%}
+    </div>
     <h2 style='text-align:center;'>
         {%if isOwner %}
         <span id="nameContainer" class="">
@@ -21,7 +23,9 @@
         </span>
         (<span id="regionContainer" class="">
         <a href="javascript://;" id="region">{{portalUser.extra.region}}</a> 
-        </span>)
+        </span>
+        )
+        
         {%else%}
         {{portalUser.username}} 
         ({{portalUser.extra.region}}) 
@@ -68,6 +72,12 @@
             </div>
         </div>
         <div class='col-md-3'>
+            {%if isOwner%}
+            <div style="font-size:10px;margin-left:5px;margin-top:-20px;position: absolute">
+            <span>Opt-In for Ranked Ladder Notices </span>
+            <input id='rank_opt' type="checkbox" {%if portalUser.extra.rating_email%}checked{%endif%}></input>
+            </div>
+            {%endif%}
             <div class='panel panel-info'>
                 <div class='panel-heading'>
                     <h3 class='panel-title'>Stat Card</h3>
@@ -181,6 +191,12 @@ $( document ).ready( function() {
     
     setup_region_click();
     setup_username_click();
+    
+    $("#rank_opt").click( function()
+    {
+       var checked = this.checked;
+       update_opt_in(checked);
+    });
  
 });   
 
@@ -228,7 +244,16 @@ function user_save()
         url: "{{'user/save'|site_url()}}",
         data: postData,
         dataType:'json',
-        success: function(){
+        success: function(data, s, x){
+            if (data.code == 0)
+            {
+                //failed update, reset
+                $("#username").html("{{portalUser.username}}");
+                
+                var alt = $("<div class='alert alert-warning'><a href='#' class='close' data-dismiss='alert'>&times;</a>" +
+                        "That username is invalid and/or is in use.</div>");
+                $("#alertCnt").append(alt);
+            }
         }
     });    
 
@@ -237,6 +262,26 @@ function user_save()
     setup_username_click();
 }
 
+function update_opt_in(checked)
+{
+    var postData = {};
+    postData['rating_email'] = checked;
+
+    postData = JSON.stringify(postData);
+    postData = {
+        id: {{portalUser.id}},
+        data: postData
+    };
+
+    $.ajax({
+        type: "POST",
+        url: "{{'user/save'|site_url()}}",
+        data: postData,
+        dataType:'json',
+        success: function(){
+        }
+    });    
+}
 
 function setup_region_click()
 {
@@ -430,7 +475,6 @@ function contact_delete()
         success: function(){
         }
     });
-    
     $("#contact_edit").hide();
     location.reload();
 }

@@ -264,4 +264,59 @@ class lobbys_model extends CI_Model
         return $data;                
         
     }
+    
+    public function getLadderNotice()
+    {
+        $date = new DateTime();
+        $date->sub(new DateInterval('PT1H'));
+        
+        //first cleanup anything older then an hour
+        $query = $this->db
+                ->delete('lobby_notice',
+                  array('timestamp <'=>date_format($date, "Y-m-d H:i:s"))
+                        );
+        
+        //now grab the latest notice.
+        $query = $this->db
+                ->select('lobby_notice.*,users.username')
+                ->from('lobby_notice')
+                ->join('users', 'users.id=lobby_notice.player_id')
+                ->order_by('timestamp', 'desc')
+                ->limit(1)
+                ->get();
+        
+        if ($query->num_rows() == 1)
+        {
+            $r = $query->row();
+            return $r;
+        }
+        return null;                
+    }
+    
+    public function addNotice($id, $msg)
+    {        
+        $props['player_id'] = $id;
+        $props['msg'] = $msg;
+        
+        $this->db->insert('lobby_notice', $props);
+        $id = $this->db->insert_id();
+        return $id;                
+    }
+    
+    public function getUsersForNotice()
+    {
+        $query = $this->db
+            ->select('u.*')
+            ->from('users u')
+            ->join('users_extra ue', 'ue.id = u.id')
+            ->where('rating_email', true)
+            ->get(); 
+        
+        $data = array();
+        foreach($query->result() as $row)
+        {          
+           $data[] = $row;
+        }
+        return $data;  
+    }
 }

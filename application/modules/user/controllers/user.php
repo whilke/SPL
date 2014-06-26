@@ -324,22 +324,24 @@ class User extends MY_Controller
             $update2 = array();
             $update2['username'] = $update->username;
             
+            
+            $obj = new stdClass();
+            $obj->username = $update->username;
             //see if there is a user by this name already.
             if ( !$this->ion_auth->username_check($update->username))
             {
-                $this->ion_auth->update($id, $update2);            
+                $this->ion_auth->update($id, $update2);    
+                $obj->code = 1;
             }
             else
             {
-                $obj = new stdClass();
                 $obj->code = 0;
-                $obj->username = $update->username;
-                
-                $json = json_encode($obj);
-                $this->output
-                ->set_content_type('application/json')
-                ->set_output($json);                
-            }            
+            }
+            
+            $json = json_encode($obj);
+            $this->output
+            ->set_content_type('application/json')
+            ->set_output($json);                
         }
         else
         {

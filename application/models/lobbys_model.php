@@ -270,11 +270,21 @@ class lobbys_model extends CI_Model
         $date = new DateTime();
         $date->sub(new DateInterval('PT1H'));
         
-        //first cleanup anything older then an hour
         $query = $this->db
-                ->delete('lobby_notice',
-                  array('timestamp <'=>date_format($date, "Y-m-d H:i:s"))
-                        );
+                ->from('lobby_notice')
+                ->where('timestamp <', date_format($date, "Y-m-d H:i:s"))
+                ->limit(1)
+                ->get();
+        
+        if ($query->num_rows() == 1)
+        {
+            //first cleanup anything older then an hour
+            $query = $this->db
+                    ->delete('lobby_notice',
+                      array('timestamp <'=>date_format($date, "Y-m-d H:i:s"))
+                            );            
+        }
+        
         
         //now grab the latest notice.
         $query = $this->db

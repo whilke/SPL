@@ -237,7 +237,14 @@ class Team extends MY_Controller
         $this->twiggy->set('isTeamOwner', $isTeamOwner);
         $this->twiggy->set('canEdit', $isTeamOwner);
         
-        $team->owner_id = $team->players[0]->id;
+        foreach($team->players as $player)
+        {
+            if (array_key_exists( 'isOwner', $player->bestGroup ) )  
+            {
+                $team->owner_id = $team->players[0]->id;
+                break;
+            }                               
+        }
         $this->twiggy->set('team', $team);
         
         $seasons = $this->Seasons_model->GetAllSeasons();

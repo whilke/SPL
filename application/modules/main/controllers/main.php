@@ -156,7 +156,15 @@ class Main extends MY_Controller
         $this->twiggy->set('stats', $stats);
         
         $heroStats = $this->Stats_model->GetHeroPlayStats($season->id);
+        $heroBans = $this->Stats_model->GetHeroBanStats($season->id);
         $hstats = array();
+        $totalBans = 0;
+        foreach($heroBans as $ban)
+        {
+            $totalBans += $ban->count;
+        }
+        $totalBans /= 2;
+        
         foreach($heroStats AS $hs)
         {
             if (!array_key_exists($hs->name, $hstats ))
@@ -165,8 +173,17 @@ class Main extends MY_Controller
                $newstat->name = $hs->name;
                $newstat->count = 0;
                $newstat->win = 0;
+               $newstat->ban = 0;
+               $newstat->banperc = 0;
                $newstat->winperc = 0;
-               $hstats[$hs->name] = $newstat;
+                          
+                if (array_key_exists($hs->name, $heroBans ))
+                {
+                     $newstat->ban = $heroBans[$hs->name]->count;
+                }
+
+                $hstats[$hs->name] = $newstat;
+
             }
             
             $hstats[$hs->name]->count++;
@@ -178,7 +195,9 @@ class Main extends MY_Controller
                 $hstats[$hs->name]->win++;                 
             }
             
+            if ($totalBans == 0) $totalBans = 1;
             $hstats[$hs->name]->winper = round($hstats[$hs->name]->win / $hstats[$hs->name]->count * 100, 1);                
+            $hstats[$hs->name]->banperc = round($hstats[$hs->name]->ban / $totalBans * 100, 1);                
         }
         
         $this->twiggy->set('herostats', $hstats);

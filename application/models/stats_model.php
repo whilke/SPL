@@ -225,9 +225,11 @@ class Stats_model extends CI_Model
     {
         $sql="
             select TRIM( LEADING 'Hero_' FROM h.name) as name, 
-            s.team_id, m.home_team_id, m.away_team_id, m.home_team_state_id, m.away_team_state_id from stats s
+            s.team_id, m.home_team_id, m.away_team_id, m.home_team_state_id, m.away_team_state_id 
+            from stats s
             join heroes h on h.id = s.hero_id
             join matches m on m.id = s.match_id
+            where m.season_id = ?
             order by name
         ";
         
@@ -240,6 +242,60 @@ class Stats_model extends CI_Model
             $arr[] = $row;
         }
         return $arr;        
+    }
+    
+    function GetHeroBanStats($seasonId)
+    {
+        $stats = array();
+        $sql="
+            select TRIM( LEADING 'Hero_' FROM h.name) as name, count(h.id) as count 
+            from matches m
+            join heroes h on h.id = m.home_team_ban_hero_id
+            where m.season_id = ?
+            group by h.id
+            order by count(h.id) desc;
+        ";
+        
+        $query = $this->db->
+                query($sql, $seasonId);
+           
+        foreach($query->result() as $row)
+        {
+            if (!array_key_exists($row->name, $stats ))
+            {
+               $newstat = new stdClass(); 
+               $newstat->name = $row->name;
+               $newstat->count = 0;
+               $stats[$row->name] = $newstat;                
+            }
+            $stats[$row->name]->count += $row->count;            
+        }
+        
+        $sql="
+            select TRIM( LEADING 'Hero_' FROM h.name) as name, count(h.id) as count 
+            from matches m
+            join heroes h on h.id = m.away_team_ban_hero_id
+            where m.season_id = ?
+            group by h.id
+            order by count(h.id) desc;
+        ";
+        
+        $query = $this->db->
+                query($sql, $seasonId);
+           
+        foreach($query->result() as $row)
+        {
+            if (!array_key_exists($row->name, $stats ))
+            {
+               $newstat = new stdClass(); 
+               $newstat->name = $row->name;
+               $newstat->count = 0;
+               $stats[$row->name] = $newstat;                
+            }
+            $stats[$row->name]->count += $row->count;            
+        }
+        
+        return $stats;
     }
    
 }

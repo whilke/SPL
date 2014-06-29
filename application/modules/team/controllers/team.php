@@ -241,7 +241,7 @@ class Team extends MY_Controller
         {
             if (array_key_exists( 'isOwner', $player->bestGroup ) )  
             {
-                $team->owner_id = $team->players[0]->id;
+                $team->owner_id = $player->id;
                 break;
             }                               
         }

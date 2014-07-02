@@ -1604,8 +1604,11 @@ class Ion_auth_model extends CI_Model
         $this->load->helper('date');
 
         $this->trigger_events('extra_where');
+        
+        $ip_address = $this->_prepare_ip($this->input->ip_address());
 
-        $this->db->update($this->tables['users'], array('last_login' => time()), array('id' => $id));
+
+        $this->db->update($this->tables['users'], array('last_login' => time(), 'ip_address'=> $ip_address), array('id' => $id));
 
         return $this->db->affected_rows() == 1;
     }

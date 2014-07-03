@@ -43,6 +43,7 @@ class Auth extends MY_Controller {
             //set the flash data error message if there is one
             $this->data['message'] = (validation_errors()) ? validation_errors() : $this->session->flashdata('message');
 
+            $this->data['isGlobalAdmin'] = $this->ion_auth->is_global_manager();
 
             //list the users
             $this->data['users'] = $this->ion_auth->users()->result();

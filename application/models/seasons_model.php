@@ -1098,6 +1098,6 @@ function teamPointSort($a, $b)
     }
     else
     {
-        return ($a->group_name > $b->group_name) ? -1: 1;
+        return ($a->group_name < $b->group_name) ? -1: 1;
     }  
 }

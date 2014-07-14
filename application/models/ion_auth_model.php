@@ -2148,4 +2148,24 @@ class Ion_auth_model extends CI_Model
             return inet_pton($ip_address);
         }
     }
+    
+    function search($search)
+    {
+        $search = '%' . $search . '%';
+        $sql = "select u.id, u.username as name from users u
+              where u.username like ?";
+        
+        $query = $this->db->
+                query($sql, $search);
+
+           
+        $arr = Array();
+        foreach($query->result() as $row)
+        {
+            $arr[] = $row;
+        }
+        return $arr;
+        
+        return NULL;           
+    }    
 }

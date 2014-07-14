@@ -9,8 +9,6 @@ class Auth extends MY_Controller {
 
         parent::__construct();
         $this->load->library('authentication', NULL, 'ion_auth');
-        $this->load->library('form_validation');
-        $this->load->helper('url');
 
         // Load MongoDB library instead of native db driver if required
         $this->config->item('use_mongodb', 'ion_auth') ?
@@ -27,7 +25,7 @@ class Auth extends MY_Controller {
     //redirect if needed, otherwise display the user list
     function index($fromajax=false)
     {        
-        $this->model('Teams_model');
+        $this->model('Teams_model');        
         if (!$this->ion_auth->logged_in())
         {
             //redirect them to the login page
@@ -61,6 +59,11 @@ class Auth extends MY_Controller {
             $this->model('Seasons_model');
             $seasons = $this->Seasons_model->get_listAsArray(false);
             $this->data['seasons'] = $seasons;            
+            
+            //grab open issues
+            $this->load->model('Issues_model');
+            $issues = $this->Issues_model->getList();
+            $this->data['issues'] = $issues;
 
             $this->_render_page('index', $this->data, $fromajax);
         }
@@ -336,7 +339,7 @@ class Auth extends MY_Controller {
         {
             $activation = $this->ion_auth->activate($id, $code);
         }
-        else if ($this->ion_auth->is_global_manager())
+        else if ($this->ion_auth->is_manager())
         {
             $activation = $this->ion_auth->activate($id);
         }
@@ -377,14 +380,8 @@ class Auth extends MY_Controller {
             // do we really want to deactivate?
             if ($this->input->post('confirm') == 'yes')
             {
-                // do we have a valid request?
-                if ($this->_valid_csrf_nonce() === FALSE || $id != $this->input->post('id'))
-                {
-                    show_error($this->lang->line('error_csrf'));
-                }
-
                 // do we have the right userlevel?
-                if ($this->ion_auth->logged_in() && $this->ion_auth->is_global_manager())
+                if ($this->ion_auth->logged_in() && $this->ion_auth->is_manager())
                 {
                     $this->ion_auth->deactivate($id);
                 }
@@ -631,6 +628,101 @@ class Auth extends MY_Controller {
         redirect('auth', 'refresh');
     }
     
+    function create_issue()
+    {
+        if (!$this->ion_auth->logged_in() || !$this->ion_auth->is_manager())
+        {
+            redirect('auth', 'refresh');
+        }
+        $userId = $this->ion_auth->user()->row()->id;
+        
+        get_instance()->load->library('form_validation');
+        $this->model('Issues_model');
+        
+        $this->form_validation->set_rules('name', 'Title', 'required|xss_clean');
+        $this->form_validation->set_rules('desc', 'Description', 'required|xss_clean');
+        $flashmsg = '';
+        if ($this->form_validation->run() == true)
+        {
+            $name = $this->input->post('name');
+            $desc = $this->input->post('desc');
+            
+            $id = $this->Issues_model->add($name, $desc);
+            if ($id > 0)
+            {
+                redirect('auth', 'refresh');            
+            }
+            $flashmsg = 'Error creating new issue.';
+        }   
+        
+        $this->data = array();        
+        $this->data['message'] = (validation_errors() ? validation_errors() : $flashmsg);
+
+        $this->data['name'] = array(
+             'name'  => 'name',
+             'id'    => 'name',
+             'type'  => 'text',
+             'maxlength' => '100',
+             'value' => $this->form_validation->set_value('name' ),
+         );
+        $this->data['desc'] = array(
+             'name'  => 'desc',
+             'id'    => 'desc',
+             'type'  => 'text',
+             'value' => $this->form_validation->set_value('desc' ),
+         );
+
+        
+        $this->_render_page('create_issue', $this->data, false);        
+    }
+    
+    function issue($id)
+    {
+        if (!$this->ion_auth->logged_in() || !$this->ion_auth->is_manager())
+        {
+            redirect('auth', 'refresh');
+        }
+        $userId = $this->ion_auth->user()->row()->id;
+        
+        get_instance()->load->library('form_validation');
+        $this->model('Issues_model');
+            
+        $issue = $this->Issues_model->get($id, $userId);
+        $hasVoted = true;
+        if ($issue == null)
+        {
+            //user hasn't voted for this yet, get the general issue.
+            $hasVoted = false;
+            $issue = $this->Issues_model->get($id);
+            if ($issue == null)
+                redirect('auth', 'refresh');            
+        }
+        
+        $this->form_validation->set_rules('votecode', 'Vote', 'required|xss_clean');
+        if ($this->form_validation->run() == true)
+        {
+            $votecode = $this->input->post('votecode');
+            if ($votecode == 1)
+            {
+                $r = $this->Issues_model->addVote($id, $userId, $votecode-1);
+                if ($r == true)
+                {
+                    redirect('auth', 'refresh');   
+                }
+            }
+        }
+        
+        $this->data = array();
+        $this->data['issue'] = $issue;
+        $this->data['hasVoted'] = $hasVoted;
+        
+        $this->data['message'] = (validation_errors() ? validation_errors() : $this->session->flashdata('message'));
+
+        
+        $this->_render_page('issue', $this->data, false);
+
+    }
+    
     function season_edit($id)
     {
         if (!$this->ion_auth->logged_in() || !$this->ion_auth->is_global_manager())
@@ -638,6 +730,8 @@ class Auth extends MY_Controller {
             redirect('auth', 'refresh');
         }
         
+        $this->data['isGlobalAdmin'] = $this->ion_auth->is_global_manager();
+
         get_instance()->load->library('form_validation');
         $this->model('Seasons_model');
 
@@ -653,12 +747,7 @@ class Auth extends MY_Controller {
 
         if (isset($_POST) && !empty($_POST))
         {
-            // do we have a valid request?
-            if ($this->_valid_csrf_nonce() === FALSE || $id != $this->input->post('id'))
-            {
-                show_error($this->lang->line('error_csrf'));
-            }
-
+           
             if ($this->form_validation->run() == true)
             {
                 $name = $this->input->post('name');

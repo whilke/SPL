@@ -509,10 +509,10 @@ class LadderApi extends MY_Controller
             return;
         }
         
-        $user = $this->ion_auth->user()->row();        
+        $FromUser = $this->ion_auth->user()->row();        
         $update = json_decode($data);
         $this->load->model('lobbys_model');
-        $this->lobbys_model->addNotice($user->id, $update->msg);        
+        $this->lobbys_model->addNotice($FromUser->id, $update->msg);        
         
         //send the email now.
         $this->load->library('email');
@@ -523,7 +523,7 @@ class LadderApi extends MY_Controller
             $this->email->clear();
             $this->email->from('game@strifeproleague.org');
             $this->email->to($user->email);
-            $this->email->subject('SPL Ranked Ladder Notice from: ' . $user->username);
+            $this->email->subject('SPL Ranked Ladder Notice from: ' . $FromUser->username);
             $this->email->message($content);
             $this->email->send();
         }

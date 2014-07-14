@@ -291,12 +291,11 @@ class Seasons_model extends CI_Model
                select('teams.*, sg.name as group_name, sg.id as group_id')->
                from('seasons_teams')->
                join('teams', 'teams.id = seasons_teams.team_id')->
-               join('users', 'users.id = teams.userid')->
                join('season_group_teams sgt', 'sgt.team_id = teams.id', 'left outer')->
                join('season_group sg', 'sg.id = sgt.season_group_id', 'left outer')->
                where('seasons_teams.season_id', $seasonId)->
                where('sg.season_id', $seasonId)->
-               where('users.active', true)->
+               order_by('sg.id', 'ASC')->
                get();
         
         $arr = Array();
@@ -495,7 +494,7 @@ class Seasons_model extends CI_Model
            }
         }
         
-        if (!$bFound)
+        if (!$bFound && ($matchType > 0 || $matchType == -2))
             return NULL;
         
         $total = ($arr->wins + $arr->loss);
@@ -989,7 +988,7 @@ class Seasons_model extends CI_Model
         
     }
     
-function changeMatchTime($match)
+    function changeMatchTime($match)
     {        
         $this->db->trans_begin();
         
@@ -1007,7 +1006,85 @@ function changeMatchTime($match)
         $this->db->trans_commit();
         return TRUE;                
     }    
-}
+    
+    function GetTeamActiveGroup($sid, $tid)
+    {
+        $query = $this->db
+                ->select('*')
+                ->from('season_group_teams sgt')
+                ->join('season_group sg','sg.id = sgt.season_group_id')
+                ->join('seasons s', 's.id = sg.season_id')
+                ->where('s.id', $sid)
+                ->where('sgt.team_id', $tid)
+                ->limit(1)
+                ->get();
+        
+        if ($query->num_rows() === 1)
+        {
+           $data = $query->row();
+           return $data;
+        }
+        return null;
+    }
+    
+    function SignTeamIntoChallenger($sid, $tid)
+    {
+        $this->RegisterTeamToSeason($tid, $sid);
+        
+        $query = $this->db
+                ->select('*')
+                ->from('season_group sg')
+                ->where('season_id', $sid)
+                ->where('isopen', true)
+                ->limit(1)
+                ->get();
+        
+        if ($query->num_rows() === 1)
+        {
+            $row = $query->row();
+            $sg_id = $row->id;
+            
+            $data = array(
+                'team_id'=>$tid,
+                'season_group_id'=>$sg_id,
+                );
+        
+            $this->db->insert('season_group_teams', $data);                                
+            return true;
+        }
+        
+        return false;
+    }
+    
+    function SignTeamOutOfChallenger($sid, $tid)
+    {
+        $this->UnregisterTeamToSeason($tid, $sid);
+        
+        $query = $this->db
+                ->select('*')
+                ->from('season_group sg')
+                ->where('season_id', $sid)
+                ->where('isopen', true)
+                ->limit(1)
+                ->get();
+        
+        if ($query->num_rows() === 1)
+        {
+            $row = $query->row();
+            $sg_id = $row->id;
+            
+            $data = array(
+                'team_id'=>$tid,
+                'season_group_id'=>$sg_id,
+                );
+        
+            $this->db->delete('season_group_teams', $data);
+
+            return true;
+        }
+        
+        return false;
+    }}
 
 function teamPointSort($a, $b)
 {
@@ -1021,6 +1098,6 @@ function teamPointSort($a, $b)
     }
     else
     {
-        return ($a->group_name < $b->group_name) ? -1: 1;
+        return ($a->group_name > $b->group_name) ? -1: 1;
     }  
 }

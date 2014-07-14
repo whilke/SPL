@@ -1,0 +1,48 @@
+{% extends _layout %}
+
+{% block content %}
+<div class="row">
+<div class="col-lg-offset-3 col-lg-6">
+<h1>Vote on an Issue</h1>
+<h4>{{data.issue.name}}</h4>
+{% if data.message != "" %}
+<div class="alert alert-info" id="infoMessage">{{ data.message}}</div>
+{% endif%}
+
+{% set l = 'auth/issue/' ~ data.issue.id %}
+{{l|form_open()}}
+    <p>
+        {{data.issue.desc}}
+    </p>
+    {% if data.hasVoted == false%}
+    <strong>Vote: </strong>
+    <div class='btn-group' data-toggle='buttons'>
+        <label class='btn btn-default'>
+            <input type='radio' class='form-control' id='votecode' name='votecode' value='1'>
+            Yes
+        </label>
+        <label class='btn btn-default'>
+            <input type='radio' class='form-control' id='votecode' name='votecode' value='2'>
+            No
+        </label>
+        <label class='btn btn-default'>
+            <input type='radio' class='form-control' id='votecode' name='votecode' value='3'>
+            Abstain
+        </label>
+    </div>
+    <br/>
+    <br/>
+    <p>
+        {{'submit'|bs_form_submit('Submit')}}        
+    </p>
+    {% else %}
+        <br/>
+        <br/>
+        <a href='{{'auth'|site_url}}'>Go back</a>
+    {% endif %}
+
+{{form_close()}}
+
+
+{% endblock %}
+    

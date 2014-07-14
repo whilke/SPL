@@ -15,9 +15,33 @@ class Main extends MY_Controller
         $this->twiggy->template('index')->display();
     }
     
+    function about()
+    {
+        $this->twiggy->template('about')->display();
+    }
+    
+    function search()
+    {
+        $this->load->model('Teams_model');
+        $search = $this->input->post('search');
+        $teams = $this->Teams_model->search($search);
+        $users = $this->ion_auth->search($search);
+        
+        $this->twiggy->set('teams', $teams);
+        $this->twiggy->set('users', $users);
+        $this->twiggy->set('search', $search);
+        $this->twiggy->template('search')->display();
+        
+    }
+    
     function rules()
     {
+        $this->model('Issues_model');
+        $issues = $this->Issues_model->getList(false);
+        $this->twiggy->set('issues', $issues);
+        
         $this->twiggy->template('rules')->display();
+        
     }
     
     function prizepool($id=0)

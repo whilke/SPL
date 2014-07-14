@@ -1,0 +1,22 @@
+{% extends _layout %}
+{% block content %}
+    <h4>
+        Searching for "{{search}}"
+    </h4>
+    
+    <div class="col-md-4">
+    <strong>Teams</strong><br/>
+    {% for team in teams %}
+        {% set l = 'team/portal/' ~ team.id %}
+        <a href="{{l|site_url}}" target="_blank">{{team.name}}</a><br/>
+    {% endfor %}
+    </div>
+   <div class="col-md-4">
+    <strong>Users</strong><br/>
+    {% for user in users %}
+        {% set l = 'user/portal/' ~ user.id %}
+        <a href="{{l|site_url}}" target="_blank">{{user.name}}</a><br/>
+    {% endfor %}
+   </div>
+    
+{% endblock %}

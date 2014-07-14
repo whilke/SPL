@@ -1,0 +1,44 @@
+{% extends _layout %}
+{% block content %}
+    
+
+<div class="col-md-12">    
+    <div class='row'>
+        <h1 id="overview">Overview</h1>
+        Before teams play their first matches, all players should read and completely understand the rules.
+        We'll do our best to keep this section updated at all times, but in certain circumstances this may not be possible. 
+        In the case of a discrepancy, decisions made by SPL Admins will take precedence.
+        <br/><br/>
+        StrifeProLeague reserves the right to make changes to any/all rules as deemed appropriate at any time in an effort to 
+        maintain the spirit of fair play.
+        <br/>
+        <br/>
+        <p>Change Log:</p>
+        <p>
+        </p>
+        <br/>
+        <a href='{{'rules.pdf'|assets_url()}}'>Current Rule Set Download</a>
+    </div>   
+    <div class='row'>
+        <h3>Recent Issue Resolutions</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th width='100px'>Issue</th>
+                    <th width='150px'>Description</th>
+                    <th width='50ox'>Passed</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for issue in issues %}
+                <tr>
+                    <td>{{issue.name}}</td>
+                    <td>{{issue.desc}}</td>
+                    <td>{{issue.passed}}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

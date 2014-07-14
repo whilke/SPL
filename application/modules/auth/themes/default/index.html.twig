@@ -99,6 +99,34 @@
     {{'auth/create_season'|anchor(l1)}}
 {% endif %}
 </div>
+<div class='row'>
+<h1>Issues</h1>
+<p>Open issues that need resolution</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Date</th>
+            <th>Votes Needed</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for issue in data.issues %}
+        <tr>
+            <td>
+                {% set s = 'auth/issue/' ~ issue.id    %}                
+                {{s|anchor(issue.name)}}
+            </td>
+            <td>{{issue.timestamp}} PST</td>
+            <td>{{issue.votes_to_close}}</td>
+        </tr>        
+    {% endfor %}
+    </tbody>
+</table>
+{% set l1 = 'Create New Issue' %}
+{{'auth/create_issue'|anchor(l1)}}
+
+</div>
 </div>
 <script type="text/javascript">
 $(document).ready(function(){

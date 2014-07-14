@@ -387,6 +387,7 @@ function bio_save()
 
     $.ajax({
         type: "POST",
+        async: false,
         url: "{{'user/save'|site_url()}}",
         data: postData,
         dataType:'json',
@@ -445,6 +446,7 @@ function contact_save()
 
     $.ajax({
         type: "POST",
+        async: false,
         url: "{{'user/save'|site_url()}}",
         data: postData,
         dataType:'json',

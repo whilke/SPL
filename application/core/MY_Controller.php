@@ -45,6 +45,9 @@ class MY_Controller extends MX_Controller {
         $this->load->library('authentication', NULL, 'ion_auth');
         $this->load->library('mahana_messaging');
         $this->model('Seasons_model');
+        $this->load->helper('url');
+        $this->load->library('form_validation');
+
         
         $seasons = $this->Seasons_model->GetNonCurrentSeasons();
         $this->twiggy->set('otherSeasons', $seasons, TRUE);

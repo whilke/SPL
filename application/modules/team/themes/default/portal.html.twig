@@ -9,6 +9,18 @@
         </span>
     </div>    
     {%endfor%}
+    {% if canJoin and isTeamOwner%}
+    <div class="alert alert-success" id="infoMessage">
+        {% set s = 'team/join_season/' ~ team.id  %}
+        Sign your team into <a href='{{s|site_url}}'>{{season.name}}</a> and start playing next week!
+    </div>
+    {%endif%}
+    {% if canLeave and isTeamOwner%}
+    <div class="alert alert-warning" id="infoMessage">
+        {% set s = 'team/join_season/' ~ team.id  ~ '/1' %}
+        Sign your team out of <a href='{{s|site_url}}'>{{season.name}}</a> starting next week.
+    </div>
+    {%endif%}
     <h2 style='text-align:center;'>{{team.name}} ( 
         
         {%if isTeamOwner and canEdit %}
@@ -149,7 +161,10 @@
                 <!--roster block-->
              <div class="panel panel-info">
                 <div class="panel-heading">
-                    <h3 class="panel-title">Captain</h3>
+                    <h3 class="panel-title">
+                        Captain
+                         {% if team.manager is not null %} / Manager {% endif %}
+                    </h3>
                 </div>
                 <div class="panel-body">
                     {% for player in team.players if player.bestGroup.isOwner %}
@@ -159,7 +174,11 @@
                             {% set s = 'user/portal/' ~ player.id   %}
                             <a href="{{s|site_url}}">{{player.name}}</a>
                         {%endif%}
-
+                        
+                        {% if team.manager is not null %}
+                             {% set s = 'user/portal/' ~ team.manager.id   %}
+                            / <a href='{{s|site_url}}'>{{team.manager.username}}</a>
+                        {% endif%}
                     {% endfor %}
                 </div>
             </div>

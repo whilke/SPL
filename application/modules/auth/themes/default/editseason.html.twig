@@ -38,7 +38,9 @@
     {{data.csrf|form_hidden}}
 
     {% set lsubbtn = 'Submit' %}
+    {% if data.isGlobalAdmin %}
     {{'submit'|bs_form_submit(lsubbtn)}}
+    {% endif %}
 
 {{form_close()}}
 

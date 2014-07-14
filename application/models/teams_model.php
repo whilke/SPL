@@ -24,11 +24,16 @@
 *
 */
 
+require_once APPPATH . 'models/objects/Team.php';
+
+
 class Teams_model extends CI_Model
 {
     function __construct()
     {
          parent::__construct();
+         
+         $CI =& get_instance();
     }
     
     function add($name)
@@ -70,7 +75,7 @@ class Teams_model extends CI_Model
             $team = $query->row();
             
             //fixup a basic team to support player objects.
-            $realTeam = new stdClass();
+            $realTeam = new Objects\Team();
             $realTeam->id = $team->id;
             $realTeam->name = $team->name;
             $realTeam->invites = $team->invites;
@@ -118,7 +123,7 @@ class Teams_model extends CI_Model
             $team = $query->row();
             
             //fixup a basic team to support player objects.
-            $realTeam = new stdClass();
+            $realTeam = new Objects\Team();
             $realTeam->id = $team->id;
             $realTeam->name = $team->name;
             $realTeam->logo = $team->logo;
@@ -138,6 +143,22 @@ class Teams_model extends CI_Model
             $this->_mergePlayerToTeam($realTeam, $team->slot4, $team->slot4_strife_id);
             $this->_mergePlayerToTeam($realTeam, $team->slot5, $team->slot5_strife_id, true);
             $this->_mergePlayerToTeam($realTeam, $team->slot6, $team->slot6_strife_id, true);
+            
+            //check if the team has a manager.
+            if ($team->manager_id != null)
+            {
+                $query = $this->db->
+                    from('users u')->
+                    where('u.id', $team->manager_id)->
+                    limit(1)->
+                    get();
+                
+                if ($query->num_rows() === 1)
+                {
+                    $player = $query->row();
+                    $realTeam->setManager($player);                    
+                }                                
+            }
             
             return $realTeam;
         }
@@ -542,4 +563,26 @@ class Teams_model extends CI_Model
         
         return NULL;          
     }
+    
+    function search($search)
+    {
+        $search = '%' . $search . '%';
+        $sql = "select t.id, t.name from teams t
+              where t.name like ?";
+        
+        $query = $this->db->
+                query($sql, $search);
+
+           
+        $arr = Array();
+        foreach($query->result() as $row)
+        {
+            $arr[] = $row;
+        }
+        return $arr;
+        
+        return NULL;           
+    }
 }
+
+

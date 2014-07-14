@@ -72,7 +72,7 @@
                 </tr>
             </thead>
             <tbody>
-            {% for team in stats %}
+            {% for team in stats if team.group_name == 'Pro' %}
                 <tr>
                     {% set s = 'team/portal/' ~ team.teamId    %}
                     <td class="text-left">{{team.group_name}}</td>
@@ -85,7 +85,31 @@
             {% endfor %}
             </tbody>
         </table>
-            
+        <table id="teams" class="table table-bordered table-hover" style="border: 0px;">
+            <thead>
+                <tr>
+                    <th class="text-center" style='width:100px;'>Group</th>
+                    <th class="text-center" style='width:800px;'>Team</th>
+                    <th class="text-center"  style='width:100px'>Wins</th>
+                    <th class="text-center"  style='width:100px'>Losses</th>
+                    <th class="text-center"  style='width:200px'>Win %</th>
+                    <th class="text-center"  style='width:300px'>Points</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for team in stats if team.group_name == 'Challenger' %}
+                <tr>
+                    {% set s = 'team/portal/' ~ team.teamId    %}
+                    <td class="text-left">{{team.group_name}}</td>
+                    <td><a href="{{s|site_url}}">{{team.teamName}}</a></td>
+                    <td class="text-center">{{team.wins}}</td>
+                    <td class="text-center">{{team.loss}}</td>
+                    <td class="text-center">{{team.perc}}</td>
+                    <td class="text-center">{{team.points}}</td>
+               </tr>
+            {% endfor %}
+            </tbody>
+        </table>    
                    
         
     </div>

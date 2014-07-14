@@ -236,6 +236,13 @@
                         <li><a href="{{'team/search'|site_url}}" class="myNavLinks" style="padding-top:0px;">Team Search</a></li>
                         <li><a href="{{'main/contact'|site_url}}" class="myNavLinks" style="padding-top:0px;">Contact</a></li>
                         <li><a href="{{'main/rules'|site_url}}" class="myNavLinks" style="padding-top:0px;">Rules</a></li>
+                        <li><a href="{{'main/about'|site_url}}" class="myNavLinks" style="padding-top:0px;">About Us</a></li>
+                        <li class='hidden-sm hidden-xs hidden-md'>
+                            {{'main/search'|form_open()}}
+                            <input id='search' name='search' style='margin-left:30px; width:110px;'> <button class='btn btn-primary' style='height:20px;padding-top: 0px;'>
+                                Search</button>
+                            {{form_close()}}
+                        </li>
                     </ul>
                   <ul class="nav navbar-nav navbar-right">
                       <li><a href="/" id="viewerCount" class="hidden-sm" style="color:red; padding-top:0px;height:20px;" ></a></li>
@@ -282,13 +289,14 @@
                         <img src="{{'images/spl_logo.png'|assets_url()}}"/></a>                        
                 </div>
                 <div class="col-sm-2 hidden-xs" style="margin-top:30px;margin-left:-25px;margin-right:25px;">
-                    <a href="{{'main/index'|site_url}}"><img class="img-responsive" src="{{'images/srs.png'|assets_url()}}"/></a>                        
+                    <a href="http://strife.srsbsns.tv/" target='_blank'><img class="img-responsive" src="{{'images/srs.png'|assets_url()}}"/></a>                        
                 </div>
                 <div class="col-sm-4 hidden-xs" style="margin-top:20px;font-family: 'Oswald', sans-serif; font-weight: 700;">
                     <div class="text-center">
-                    Beta Series 1 Tournament: July 12 & 13 <br/>
-                    Start Time: 10am PST / 1pm EST<br/>
-                    <a class="alt-hover" href="http://www.twitch.tv/SPLCast" target="_blank">twitch.tv/SPLCast</a>
+                        Beta Series 1 Winners<br/>
+                        1st: <a style='color:#444444;' href='{{'team/portal/26'|site_url}}'>Reason Gaming</a><br/>
+                        2nd: <a style='color:#444444;' href='{{'team/portal/36'|site_url}}'>SenpaiPlsNoticeMe</a><br/>
+                        3rd: <a style='color:#444444;' href='{{'team/portal/4'|site_url}}'>Team Kaizen</a><br/>
                     </div>
                 </div>
                 <div class="col-xs-6 col-xs-offset-4 hidden-sm hidden-md hidden-lg" style="margin-top:40px;font-size: 10px; font-family: 'Oswald', sans-serif; font-weight: 700;">
@@ -299,9 +307,6 @@
                     </div>
                 </div>
                 <div class="col-xs-4 hidden-xs hidden-sm">
-                <a href="http://www.gamevox.com" target="_blank">
-                    <img class="pull-right img-responsive" src="{{'images/sponsors.png'|assets_url()}}" />
-                </a>                    
                 </div>
             </div>
         </div>

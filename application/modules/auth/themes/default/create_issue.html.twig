@@ -1,0 +1,40 @@
+{% extends _layout %}
+
+{% block content %}
+<div class="row">
+<div class="col-lg-offset-3 col-lg-6">
+<h1>New Issue</h1>
+
+{% if data.message != "" %}
+<div class="alert alert-info" id="infoMessage">{{ data.message}}</div>
+{% endif%}
+
+{% set s = 'auth/create_issue' %}
+{{s|form_open()}}
+    <p>
+        <strong>Title:</strong>
+        {{data.name|bs_form_input()}}
+    </p>
+
+    <p>   
+        <strong>Description:</strong>
+        {{data.desc|bs_form_textarea()}}
+    </p>
+   
+    {% set lsubbtn = 'Submit' %}
+    {{'submit'|bs_form_submit(lsubbtn)}}
+
+{{form_close()}}
+
+{% endblock %}
+    
+    
+{% block js %}
+<script type='text/javascript'>
+    $(document).ready(function(){
+        $( "#start" ).datepicker();
+    
+        $( "#end" ).datepicker();
+    });
+</script>    
+{% endblock %}

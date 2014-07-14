@@ -87,19 +87,8 @@ class Team extends MY_Controller
         foreach($ads AS $ad)
         {
             $team = $this->Teams_model->getById($ad->team_id);
-            $ad->teamname = $team->name;
-            $capId = 0;
-            foreach($team->players as $player)
-            {
-                if (array_key_exists( 'isOwner', $player->bestGroup ) )  
-                {
-                    $capId = $player->id;
-                    break;
-                }
-                
-            }
-            
-            $ad->emailId =$capId;
+            $ad->teamname = $team->name;            
+            $ad->emailId = $team->getContactPlayer()->id;
         }
         $this->twiggy->set('ads', $ads);
         
@@ -225,8 +214,24 @@ class Team extends MY_Controller
                 $invite->user_name = $this->ion_auth->user($invite->user_id)->row()->username;
             }
             $this->twiggy->set('invites', $invites);
+            
+            $curSeason = $this->Seasons_model->GetCurrentSeason();
+            
+            //see if this user is already in the current challenger series, or if they can join.
+            $challenger = $this->Seasons_model->GetTeamActiveGroup($curSeason->id, $teamid );
+            
+            $this->twiggy->set('season', $curSeason);
+            if ($challenger == null)
+            {
+                //team is not registered to group, so they can join the challenger.
+                $this->twiggy->set('canJoin', true);
+            }
+            else if ($challenger->isopen == true)
+            {
+                //they are in a challenger group so they can leave the series.
+                $this->twiggy->set('canLeave', true);
+            }
         }
-
         
         $this->model('Seasons_model');
         
@@ -237,14 +242,10 @@ class Team extends MY_Controller
         $this->twiggy->set('isTeamOwner', $isTeamOwner);
         $this->twiggy->set('canEdit', $isTeamOwner);
         
-        foreach($team->players as $player)
-        {
-            if (array_key_exists( 'isOwner', $player->bestGroup ) )  
-            {
-                $team->owner_id = $player->id;
-                break;
-            }                               
-        }
+        $contact = $team->getContactPlayer();
+        if ($contact != null)
+            $team->owner_id = $contact->id;
+        $team->manager = $team->getManager();
         $this->twiggy->set('team', $team);
         
         $seasons = $this->Seasons_model->GetAllSeasons();
@@ -254,7 +255,7 @@ class Team extends MY_Controller
         $arr = Array();
         foreach($seasons AS $season)
         {
-            $stats = $this->Seasons_model->getSeasonStats($teamid, $season->id, -1, $hideStats);
+            $stats = $this->Seasons_model->getSeasonStats($teamid, $season->id, -2, $hideStats); //-2 will skip teams with no record
             if ($stats == null) continue;
             $arr[] = $stats;
             
@@ -608,6 +609,59 @@ class Team extends MY_Controller
         $view = 'leave';
         $this->twiggy->template($view)->display();
         
+    }
+    
+    public function join_season($id, $bLeave=0)
+    {
+        if (!$this->ion_auth->logged_in())
+        {
+            redirect('auth', 'refresh');
+        }
+        
+        $user = $this->ion_auth->user()->row(); 
+        $isManager = $this->ion_auth->is_manager();
+
+        //check if this user is the team owner.
+        $isTeamOwner = false;
+        if (isset($user))
+        {
+            $isTeamOwner = $this->ion_auth->is_team_owner();
+            if ($isTeamOwner)
+            {
+                if ($id != $user->team_id)
+                    $isTeamOwner = false;
+            }
+        }
+        
+        if ($isManager)
+            $isTeamOwner = true;                
+        
+        if (!$isTeamOwner)
+        {
+            redirect('auth', 'refresh');            
+        }
+
+        $curSeason = $this->Seasons_model->GetCurrentSeason();
+        $challenger = $this->Seasons_model->GetTeamActiveGroup($curSeason->id, $id );
+        
+        if ($challenger == null)
+        {
+            if ($bLeave == 0)
+            {
+                //okay sign this team into the challenger bracket    
+                $this->Seasons_model->SignTeamIntoChallenger($curSeason->id, $id);                
+            }
+        }
+        else if ($challenger->isopen == true)
+        {
+            if ($bLeave == 1)
+            {
+                $this->Seasons_model->SignTeamOutOfChallenger($curSeason->id, $id);                
+                
+            }                   
+        }
+        redirect('team/portal/' . $id, 'refresh');          
+                
     }
     
     public function invite($id, $fromAjax=false)

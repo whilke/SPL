@@ -24,6 +24,22 @@ class Main extends MY_Controller
     {
         $this->load->model('Teams_model');
         $search = $this->input->post('search');
+        $search = trim($search);
+        if ($search == '' || $search == null || strlen($search) < 3)
+        {
+            if (!$this->ion_auth->logged_in() || !$this->ion_auth->is_manager())
+            {
+                $teams = null;
+                $users = null;
+                
+                $this->twiggy->set('teams', $teams);
+                $this->twiggy->set('users', $users);
+                $this->twiggy->set('search', '---Invalid Search Term---');
+                $this->twiggy->template('search')->display();  
+                return;
+            }
+        }
+        
         $teams = $this->Teams_model->search($search);
         $users = $this->ion_auth->search($search);
         

@@ -336,8 +336,11 @@ class Team extends MY_Controller
             
             if ($id != false)
             {
+                $this->load->model('Seasons_model');
+                $season = $this->Seasons_model->GetCurrentSeason();
+                
                 //now join this user to this team
-                $this->Teams_model->joinUser($id, $user->id);
+                $this->Teams_model->joinUser($id, $user->id, $season->id);
 
                 //promote this user to the captain
                 $this->Teams_model->promote($id, $user->id, 0);
@@ -507,7 +510,9 @@ class Team extends MY_Controller
                 $new_cap = $this->input->post('new_cap');
                 
                 //okay if there is a new_cap we remove ourselves from the team and promote them.
-                $this->Teams_model->removeUser($team->id, $user->id);
+                $this->load->model('Seasons_model');
+                $season = $this->Seasons_model->GetCurrentSeason();
+                $this->Teams_model->removeUser($team->id, $user->id, $season->id, true);
                 $team = $this->Teams_model->getById($user->team_id);
                 
                 $bStillActive = false;

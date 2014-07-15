@@ -325,23 +325,42 @@ class Teams_model extends CI_Model
         return $id;
     }
     
-    public function joinUser($teamId, $userId)
+    public function joinUser($teamId, $userId, $seasonId)
     {
         //first remove any owner/mod/sub groups from this user since it's a fresh join.
         $CI =& get_instance();
         $CI->ion_auth->remove_from_group(array(5,6,7), $userId);
         
         //join this user to the group as a sub
-        $CI->ion_auth->update($userId, array('team_id'=>$teamId) );
+        $CI->ion_auth->update($userId, array('team_id'=>$teamId, 'isregplayer'=>1) ); //now a registered player
         $this->promote($teamId, $userId, 3);
+        
+        //add a record for joining this team.
+        $data = array(
+            'user_id'=>$userId,
+            'new_team'=>$teamId,
+            'season_id'=>$seasonId,
+        );
+        
+        $this->db->insert('users_team_history', $data);
     }
     
-    public function removeUser($teamId, $userId)
+    public function removeUser($teamId, $userId, $seasonId, $bUserLeft=true)
     {
         //remove this user from any team groups.
         $CI =& get_instance();
         $CI->ion_auth->remove_from_group(array(5,6,7), $userId);
-        $CI->ion_auth->update($userId, array('team_id'=>0) );        
+        $CI->ion_auth->update($userId, array('team_id'=>0, 'isregplayer'=>1) ); //quiting a team makes you a registered player still        
+        
+        //add a record for leaving this team.
+        $data = array(
+            'user_id'=>$userId,
+            'old_team'=>$teamId,
+            'season_id'=>$seasonId,
+            'quit'=>$bUserLeft,
+        );
+        
+        $this->db->insert('users_team_history', $data);
     }
     
     public function promote($teamId, $userId, $level)

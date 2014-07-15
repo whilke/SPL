@@ -44,7 +44,13 @@ class User extends MY_Controller
             $this->load->model('Teams_model');
             
             //lets get them on the team!
-            $this->Teams_model->joinUser($invite->team_id, $invite->user_id);
+            $invitePlayer = $this->ion_auth->user($invite->user_id)->row();
+            $isRegPlayer = $invitePlayer->isregplayer;
+            
+            
+            $this->load->model('Seasons_model');
+            $season = $this->Seasons_model->GetCurrentSeason();
+            $this->Teams_model->joinUser($invite->team_id, $invite->user_id, $season->id);
             
             //defaults to a sub.
             //
@@ -60,12 +66,13 @@ class User extends MY_Controller
             foreach($invites AS $invite)
                 $this->Teaminvites_model->delete($invite->id);
 
-            //remove an invite from the team count if they are in a season.
+            //remove an invite from the team count if they are in a season, and this user was a registered player.
+            
             $this->load->model('Seasons_model');
             $season = $this->Seasons_model->GetCurrentSeason();
-            $isInSeason = $this->Seasons_model->isTeamInSeason($user->team_id, $season->id);
+            $isInSeason = $this->Seasons_model->isTeamInSeason($invite->team_id, $season->id);
             $team = $this->Teams_model->getById($invite->team_id);
-            if ($isInSeason)
+            if ($isInSeason && $isRegPlayer)
             {
                 if ($team->invites == 1)
                 {
@@ -259,7 +266,7 @@ class User extends MY_Controller
             $season = $this->Seasons_model->GetCurrentSeason();
             $isInSeason = $this->Seasons_model->isTeamInSeason($user->team_id, $season->id);
             $team = $this->Teams_model->getById($user->team_id);
-            if ($isInSeason && $team->invites == 0)
+            if ($isInSeason && ( $team->invites == 0 && $portalUser->isregplayer) )
                 $bHasInvite = true;
 
             
@@ -285,6 +292,11 @@ class User extends MY_Controller
                 
                 if ($isInSeason)
                     $this->twiggy->set('inviteCount', $team->invites);
+                
+                if ($portalUser->isregplayer)
+                    $this->twiggy->set('playerType', 'Registered Player');
+                else
+                    $this->twiggy->set('playerType', 'Free Agent');
             }
         }
         $this->twiggy->set('canInviteMember', $canInviteMember);

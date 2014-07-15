@@ -2153,7 +2153,7 @@ class Ion_auth_model extends CI_Model
     {
         $search = '%' . $search . '%';
         $sql = "select u.id, u.username as name from users u
-              where u.username like ?";
+              where u.active = true AND u.username like ?";
         
         $query = $this->db->
                 query($sql, $search);

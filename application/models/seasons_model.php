@@ -916,11 +916,9 @@ class Seasons_model extends CI_Model
                select('teams.*, sg.name as group_name')->
                from('seasons_teams')->
                join('teams', 'teams.id = seasons_teams.team_id')->
-               join('users', 'users.id = teams.userid')->
                join('season_group_teams sgt', 'sgt.team_id = teams.id', 'left outer')->
                join('season_group sg', 'sg.id = sgt.season_group_id', 'left outer')->
                where('sg.id', $groupId)->
-               where('users.active', true)->
                get();
 
         $arr = Array();

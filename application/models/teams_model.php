@@ -587,7 +587,7 @@ class Teams_model extends CI_Model
     {
         $search = '%' . $search . '%';
         $sql = "select t.id, t.name from teams t
-              where t.name like ?";
+              where t.active = true AND t.name like ?";
         
         $query = $this->db->
                 query($sql, $search);

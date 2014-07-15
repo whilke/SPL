@@ -266,9 +266,11 @@ class User extends MY_Controller
             $season = $this->Seasons_model->GetCurrentSeason();
             $isInSeason = $this->Seasons_model->isTeamInSeason($user->team_id, $season->id);
             $team = $this->Teams_model->getById($user->team_id);
-            if ($isInSeason && ( $team->invites == 0 && $portalUser->isregplayer) )
+            if ($isInSeason && ( $team != null && $team->invites == 0 && $portalUser->isregplayer) )
                 $bHasInvite = true;
 
+            if ($team == null)
+                $bHasInvite = false;
             
             if (!$bHasInvite)
             {

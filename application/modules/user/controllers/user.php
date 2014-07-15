@@ -274,18 +274,10 @@ class User extends MY_Controller
             {
                 //does this owner have spots to invite someone with?
                 $players= $team->players;
-                $tot_members = 0;
-                $tot_subs = 0;
-
-                foreach($players AS $player)
-                {
-                    if (array_key_exists( 'isMember', $player->bestGroup ) )
-                        $to_members++;
-                    else if (array_key_exists( 'isSub', $player->bestGroup ))
-                        $tot_subs++;
-                }
-
-                if ($tot_members < 4)
+                $tot_members = count($team->getStarters());
+                $tot_subs = count($team->getSubs());
+               
+                if ($tot_members < 5)
                     $canInviteMember = true;
                 if ($tot_subs < 2)
                     $canInviteSub = true;   

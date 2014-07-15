@@ -737,17 +737,10 @@ class Team extends MY_Controller
         $this->data['roles'] = array();
         
         $players= $team->players;
-        $tot_members = 0;
-        $tot_subs = 0;
-        foreach($players AS $player)
-        {
-            if (array_key_exists( 'isMember', $player->bestGroup ) )
-                $to_members++;
-            else if (array_key_exists( 'isSub', $player->bestGroup ))
-                $tot_subs++;
-        }
+        $tot_members = count($team->getStarters());
+        $tot_subs = count($team->getSubs());
 
-        if ($tot_members < 4)
+        if ($tot_members < 5)
             $this->data['roles']['Member'] = 'Member';
         if ($tot_subs < 2)
             $this->data['roles']['Sub'] = 'Sub';

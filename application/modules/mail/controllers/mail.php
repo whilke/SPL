@@ -39,7 +39,10 @@ class Mail extends MY_Controller
             {
                 if ($message['status'] > 1) continue;
                 $list = $this->mahana_messaging->get_participant_list($message['thread_id'], $id);
-                $message['list'] = $list['retval'];
+                if (array_key_exists('retval', $list))
+                {
+                    $message['list'] = $list['retval'];                
+                }
                 if ($message['sender_id'] != $id)
                     $inbox[] = $message;
                 else

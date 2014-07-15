@@ -266,7 +266,7 @@ class Main extends MY_Controller
 
             $this->email->clear();
             $this->email->from($from);
-            $this->email->to('support@strifeproleague.org');
+            $this->email->to('requests@strifeproleague.org');
             $this->email->subject('CONTACT FORM: ' . $subject);
             $this->email->message($content);
 

@@ -91,7 +91,7 @@ class User extends MY_Controller
             //send out an invite message
             $msg = $user->username . " has accepted your team invite";
             $this->load->library('mahana_messaging');
-            $this->mahana_messaging->send_new_message($invite->user_id, $invite->sender_id, "Team invite accepted", $msg);
+            $this->mahana_messaging->send_new_message($invite->user_id, $invite->sender_id, "Team invite accepted", $msg, true);
                         
         }
         else
@@ -99,7 +99,7 @@ class User extends MY_Controller
             //send out an invite message
             $msg = $user->username . " has declined your team invite";
             $this->load->library('mahana_messaging');
-            $this->mahana_messaging->send_new_message($invite->user_id, $invite->sender_id, "Team invite rejected", $msg);            
+            $this->mahana_messaging->send_new_message($invite->user_id, $invite->sender_id, "Team invite rejected", $msg, true);            
         }
 
         redirect('user/portal', 'refresh');            

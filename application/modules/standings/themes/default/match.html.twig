@@ -36,8 +36,12 @@
         </div>
         <div class="row">
         <div class="col-md-5 col-md-offset-0" style="text-align: center;">
+            {% if away_team %}
             {% set l = 'team/portal/' ~ away_team.id %}                        
             <p class="text-center"><a href="{{l|site_url}}">{{away_team.name}}</a></p>
+            {% else %}
+            <p class='text-center'>BYE WEEK</p>
+            {% endif %}
             <div class="row">
             <table style="display: inline-block;">
                 <tbody>

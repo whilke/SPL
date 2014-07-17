@@ -102,8 +102,14 @@
                     {% set s = 'team/portal/' ~ match.home_team_id    %}
                     {% set s2 = 'team/portal/' ~ match.away_team_id    %}
                         
-                    <td><a style="color:red;" href="{{s|site_url}}">{{match.homeTeam}}</a> vs 
-                        <a style="color:green;" href="{{s2|site_url}}">{{match.awayTeam}}</a</td>
+                    <td>
+                        {% if match.awayTeam %}
+                        <a style="color:red;" href="{{s|site_url}}">{{match.homeTeam}}</a> vs 
+                        <a style="color:green;" href="{{s2|site_url}}">{{match.awayTeam}}</a
+                        {% else %}
+                        <a style="color:red;" href="{{s|site_url}}">{{match.homeTeam}}</a> vs Bye
+                        {% endif %}
+                    </td>
                         <td class="text-center">{{match.gamedate}}</td>
                         
                         <td class="text-center"><span style="color:red;">{{match.hscode}}</span>

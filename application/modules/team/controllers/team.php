@@ -61,7 +61,7 @@ class Team extends MY_Controller
             //send out an invite message
             $msg = $team->name . " has revoked your team invite";
             $this->load->library('mahana_messaging');
-            $this->mahana_messaging->send_new_message($user->id, $invite->user_id, $msg, $msg);            
+            $this->mahana_messaging->send_new_message($user->id, $invite->user_id, $msg, $msg, true);            
         }
         
         //clear this invite now.
@@ -569,7 +569,7 @@ class Team extends MY_Controller
                     {
                         $msg = $user->username . " has left your team";
                         $this->load->library('mahana_messaging');
-                        $this->mahana_messaging->send_new_message($user->id, $capid, $msg, $msg);                                    
+                        $this->mahana_messaging->send_new_message($user->id, $capid, $msg, $msg, true);                                    
                     }
                     
                 }
@@ -721,7 +721,7 @@ class Team extends MY_Controller
                 //send out an invite message
                 $msg = $team->name . " has invited you to their team as a " . $role . ".\r\nPlease check your User Portal to accept or decline.";
                 $this->load->library('mahana_messaging');
-                $this->mahana_messaging->send_new_message($user->id, $id, "You've been invited to join my team", $msg);
+                $this->mahana_messaging->send_new_message($user->id, $id, "You've been invited to join my team", $msg, true);
                 
                 redirect('team/portal', 'refresh');  
                 

@@ -432,10 +432,13 @@ class Seasons_model extends CI_Model
             'away_team_id'=>$awayTeam,
             'gamedate' => $date,
             'active' => true,
-            'server_region' => $server
+            'server_region' => $server,
+            'match_type'=>0
         );
         
         $this->db->insert('matches', $data);
+        $id = $this->db->insert_id();
+        return $id;
     }
     
     function getSeasonStats($teamId, $seasonId, $matchType=-1, $hideStats=true)
@@ -948,20 +951,63 @@ class Seasons_model extends CI_Model
         return null;
     }
     
+    function getActiveChallengerTeams($seasonId)
+    {
+        $query = $this->db
+                ->select('sgt.team_id, sgt.seeding')
+                ->from('season_group sg')
+                ->join('season_group_teams sgt', 'sgt.season_group_id = sg.id')
+                ->where('sg.season_id', $seasonId)
+                ->where('sg.isopen', true)
+                ->get();
+                
+        $arr = Array();
+        
+        $ci = get_instance();
+        $ci->load->model('Teams_model');
+        foreach($query->result() as $row)
+        {
+            //okay, from this teamid, we want to go see if they have an active 5 man roster.
+            $team = $ci->Teams_model->getById($row->team_id);
+            if ($team != null)
+            {
+                $starters = $team->getStarters();
+                if (sizeof($starters) >= 5)
+                {
+                    //valid team! we now need the points.
+                    $team->seeding = $row->seeding;
+                    
+                    $stats = $this->getSeasonStats($team->id, $seasonId, -2, false);
+                    if ($stats != null)
+                        $team->points = $stats->points;
+                    else
+                        $team->points = 0;
+                    
+                    $arr[] = $team;
+                }
+            }
+        }
+        
+        return $arr;
+        
+    }
+    
     function getTeamsPlayingInWeek($weekId)
     {
         $query = $this->db->
-               select('DISTINCT(u.email) as email, t.name, t.id')->
+               select('t.id')->
                from('matches m')->
                join('teams t','t.id = m.home_team_id')->
-               join('users u','u.team_id = t.id')->
                where('m.week_id',$weekId)->
                get();
         
+        $CI =& get_instance();
+        $CI->load->model('Teams_model');
         $arr = Array();
         foreach($query->result() as $row)
         {
-            $arr[] = $row;
+            $team = $CI->Teams_model->getById($row->id);
+            $arr[] = $team;
         }
         return $arr;                
 

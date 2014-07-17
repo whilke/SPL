@@ -160,3 +160,10 @@ background:
 url(/assets/images/heroes.png) ;
 background-position: -384px -384px;
 }
+
+.hero-blazer
+{
+background:
+url(/assets/images/heroes.png) ;
+background-position: -512px -384px;
+}

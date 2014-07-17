@@ -283,7 +283,7 @@ class Mahana_messaging
      * @param   integer  $priority
      * @return  array
      */
-    function send_new_message($sender_id, $recipients, $subject = '', $body = '', $priority = PRIORITY_NORMAL)
+    function send_new_message($sender_id, $recipients, $subject = '', $body = '', $relay=false, $priority = PRIORITY_NORMAL)
     {
         if (empty($sender_id))
         {
@@ -301,7 +301,33 @@ class Mahana_messaging
 
         if ($thread_id = $this->ci->mahana_model->send_new_message($sender_id, $recipients, $subject, $body, $priority))
         {
-            return $this->_success($thread_id, MSG_MESSAGE_SENT);
+            $r = $this->_success($thread_id, MSG_MESSAGE_SENT);
+            
+            if ($relay == true && true)
+            {
+                $ci = $this->ci;
+                
+                $ci->load->library('email');
+                $ci->load->model('ion_auth_model', 'ion_auth');
+                $a = array(
+                          'mailtype' => 'html',
+                      );
+                
+                $uId = $recipients;                
+                $user = $ci->ion_auth->user($uId)->row();
+                if ($user != null)
+                {
+                    $ci->email->initialize($a);
+                    $ci->email->clear();
+                    $ci->email->from("game@strifeproleague.org", 'SPL Game');
+                    $ci->email->to($user->email);
+                    $ci->email->subject("SPL Mail: " . $subject);
+                    $ci->email->message($body);                    
+                }
+                
+            }
+            
+            return $r;
         }
 
         // General Error Occurred

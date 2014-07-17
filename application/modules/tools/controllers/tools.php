@@ -23,103 +23,12 @@ class Tools extends MY_Controller
 
     }
     
-    private function sendEmail($from, $to, $subject, $message)
+    private function sendEmail($to, $subject, $message)
     {
-        /*
-        if (true)
-        {
-            print("Sending email to " . $to . " subj: " . $subject);
-            return;
-        }
-        */
-         
-        
-        $this->email->clear();
-        $this->email->from($from, 'SPL Game');
-        $this->email->to($to);
-        $this->email->subject($subject);
-        $this->email->message($message);
-
-        if ($this->email->send())
-        {
-            return TRUE;
-        }
-        else
-        {
-            return FALSE;
-        }        
+        $this->load->library('mahana_messaging');
+        $this->mahana_messaging->send_new_message(2, $to, $subject, $message, false);            
     }
     
-    public function migratePlayers()
-    {
-        $this->model('Ion_auth_model');
-        $users = $this->Ion_auth_model->users();
-        foreach($users->result() AS $user)
-        {
-            if ($user->username != '')
-            {
-                //see if this user is upgraded.
-                $extra = $this->Ion_auth_model->user_extra($user->id)->row();
-                if ($extra == null)
-                {
-                    $this->Ion_auth_model->create_user_extra($user->id);
-                }
-                else
-                {
-                    if ($extra->region == null || $extra->region == '' || $extra->region == 'Unknown')
-                    {
-                      if ($user->team_id > 0)
-                      {
-                          $this->model('Teams_model');
-                          $team = $this->Teams_model->getById($user->team_id);
-                          
-                          $data = array();
-                          $data['region'] = $team->region;
-                          $this->Ion_auth_model->update_user_extra($user->id, $data);                          
-                      }
-                    }
-                }
-            }
-        }
-    }
-    
-    public function migrateOwners()
-    {
-        $this->model('Ion_auth_model');
-        
-        $season = $this->Seasons_model->GetCurrentSeason();
-        $rawteams = $this->Seasons_model->getTeamsByPoints($season->id, false);
-        //scrub out teams below our point cap
-        $teams = array();
-        foreach($rawteams AS $team)
-        {
-            if ($team->points >140)
-                $teams[] = $team;
-            
-        }
-                
-        //now go through this list of teams and upgrade the captain to the owner.
-        foreach($teams AS $team)
-        {
-            $id = $team->teamId;
-            //find the userid set with this.
-            $teamBlob = $this->Teams_model->getById($id);
-            $userName = $teamBlob->players[0]->name;
-         
-            $oUser = $this->Ion_auth_model->where('teamname',$teamBlob->name)->limit(1)->users()->row();
-            $this->Ion_auth_model->update($oUser->id, ['username'=>$userName, 'team_id'=>$id]);  
-            $this->Ion_auth_model->add_to_group(5, $oUser->id);
-        }
-        
-        //delete teams/users not in this season now.
-        $teams = $this->Seasons_model->getTeamsNotInSeason(0);
-        foreach($teams AS $team)
-        {
-            $this->Teams_model->delete($team->id);
-            $this->Ion_auth_model->delete_user($team->userid);
-        }
-
-    }
     
     public function createTimeBuckets()
     {
@@ -265,6 +174,136 @@ class Tools extends MY_Controller
         return 12;
     }
     
+    public function matchRegions($team1, $team2)
+    {
+        $server1 = "ERR";
+        $server2 = "ERR";
+
+        if ($team1->region == "EU" && $team2->region == "EU")
+        {
+            $server1 = "EU";
+            $server2 = "EU";
+        }
+        else if (($team1->region == "USE" || $team1->region =="USW") &&
+            ($team2->region == "USE" || $team2->region =="USW"))
+        {
+            //US vs US
+            $server1 = "USE";
+            $server2 = "USW";
+        }
+        else if ($team1->region == "USE" && $team2->region == "EU")
+        {
+            //USE vs EU
+            $server1 = "USE";
+            $server2 = "EU";    
+        }
+        else if ($team1->region == "EU" && $team2->region == "USE")
+        {
+            //EU vs USE
+            $server1 = "EU";
+            $server2 = "USE";                    
+
+        }
+        else if ($team1->region == "SEA" && $team2->region == "SEA")
+        {
+            //SEA vs SEA
+            $server1 = "SEA";
+            $server2 = "SEA";  
+
+        }                
+        else if ( ($team1->region == "SEA" && $team2->region == "EU") ||
+                ($team1->region == "EU" && $team2->region == "SEA") )
+        {
+            //EU vs SEA
+            $server1 = "CIS";
+            $server2 = "CIS";   
+
+        }
+        else if ( ($team1->region == "USW" && $team2->region == "EU") ||
+                ($team1->region == "EU" && $team2->region == "USW") )
+        {
+            //EU vs USW
+            $server1 = "USE";
+            $server2 = "USE";       
+
+        }
+        else if ( ($team1->region == "USW" && $team2->region == "EU") ||
+                ($team1->region == "EU" && $team2->region == "USW") )
+        {
+            //EU vs USW
+            $server1 = "USE";
+            $server2 = "USE"; 
+
+        }
+        else if ( ($team1->region == "USE" || $team1->region == "USW") &&
+                $team2->region == "SEA")
+        {
+            //SEA vs US
+            $server1 = "USW";
+            $server2 = "USW";    
+
+        }
+        else if ( ($team2->region == "USE" || $team2->region == "USW") &&
+                $team1->region == "SEA")
+        {
+            //SEA vs US
+            $server1 = "USW";
+            $server2 = "USW";                                        
+
+        }        
+        
+        $arr = array();
+        $arr[1] = $server1;
+        $arr[2] = $server2;
+        
+        return $arr;
+    }
+    public function matchStartTime($team1, $team2)
+    {
+        if ($team1->region === $team2->region)
+        {
+            if ($team1->region === "EU")
+            {
+                return 14;
+            }
+            else if ($team1->region === "SEA")
+            {
+                return 4;
+            }
+            else if ($team1->region === "CIS")
+            {
+                return 14;
+            }
+            else if ($team1->region === "USE")
+            {
+                return 18;
+            }
+            else if ($team1->region === "USW")
+            {
+                return 20;
+            }
+        }
+        else
+        {
+            if (
+                    ($team1->region === "USE" && $team2->region === "USW") ||
+                    ($team1->region === "USW" && $team2->region === "USE") 
+                )
+            {
+                return 18;
+            }
+            if (
+                    ($team1->region === "USE" && $team2->region === "EU") ||
+                    ($team1->region === "EU" && $team2->region === "USE") 
+                )
+            {
+                return 16;
+            }
+
+        }
+        return 12;
+    }
+    
     public function adjustStart($buckets, $group, $start)
     {
         while(true)
@@ -314,9 +353,7 @@ class Tools extends MY_Controller
         {
             $team = $this->Teams_model->getById($team['id']);
             foreach($team->players AS $player)
-            {
-                if (!$player->converted) continue;
-                
+            {                
                 $p = $this->Teams_model->getPlayerByName($player->name);
                 if ($p!= null)
                 {
@@ -373,6 +410,110 @@ class Tools extends MY_Controller
         
     }
     
+    private function findTeamWithLeastBuys($teams)
+    {
+        $foundIdx = NULL;
+        $buys = 100;
+        foreach($teams as $key => $team)
+        {
+            if ($team->buys < $buys)
+            {
+                $foundIdx = $key;
+                $buys = $team->buys;
+            }
+        }
+        
+        return $foundIdx;
+    }
+    
+    public function CreateChallengerMatches($season, $week)
+    {
+        $gameId = 1; 
+        $teams = $this->Seasons_model->getActiveChallengerTeams($season->id);
+        usort($teams, "teamPointSortLocal");
+        
+        //okay, now that this is sorted, we want to check to see if there needs to be a buy, and who hasn't had one yet.
+        $count = count($teams);
+        $iseven = (($count % 2) == 0);
+        
+        if (!$iseven)
+        {
+            //okay this gets a bit tricky, but we need to find a team with the least amount of buys, and put them at the bottom.
+            $lowTeamKey = $this->findTeamWithLeastBuys($teams);
+            $team = $teams[$lowTeamKey];
+            unset($teams[$lowTeamKey]);
+            
+            //okay update this team as having a buy this week.
+            $data = array();
+            $data['buys'] = $team->buys+1;
+            $this->Teams_model->edit($team->id, $data);
+            
+            
+            $date = new DateTime($week->end);
+            $date->sub(new DateInterval('P1D'));
+
+            $date_day = $date->format('Y-m-d');
+            $match_day = $date_day;
+            $match_day .= ' 00:00:00';
+            
+            $matchId = $this->Seasons_model->newMatch($season->id, $week->id, $team->id, 0, 'USE', $match_day, $gameId);
+            $match = $this->Seasons_model->getMatch($matchId, false);
+            $match->active=false;
+            $match->home_team_state_id = 4;
+            $match->away_tam_state_id = 3;
+            $match->home_team_points = 35;
+            $match->away_team_points = 0;
+            $match->active =false;
+            $match->match_type=0;
+            $match->replay_processed=1;
+            
+            $this->Seasons_model->editMatch($match);
+            $this->Stats_model->updateMatchStats($matchId, true, 
+                    $team->id, 0, null );
+            
+            $matchId = $this->Seasons_model->newMatch($season->id, $week->id, $team->id, 0, 'USE', $match_day, $gameId);
+            $match = $this->Seasons_model->getMatch($matchId, false);
+            $match->active=false;
+            $match->home_team_state_id = 4;
+            $match->away_tam_state_id = 3;
+            $match->home_team_points = 35;
+            $match->away_team_points = 0;
+            $match->active =false;
+            $match->match_type=0;
+            $match->replay_processed=1;
+            
+            $this->Seasons_model->editMatch($match);
+            $this->Stats_model->updateMatchStats($matchId, true, 
+                    $team->id, 0, null );
+            
+        }
+        
+        //teams should be even now and very easy to create.
+        $half = floor(count($teams) / 2);
+        
+        for ($i = 1; $i <= $half; $i++) 
+        {
+            $home = array_shift($teams);
+            $away = array_shift($teams);
+            
+            $date = new DateTime($week->end);
+            $date->sub(new DateInterval('P1D'));
+
+            $date_day = $date->format('Y-m-d');
+            $match_day = $date_day;
+            $startTime = $this->matchStartTime($home, $away);
+            $regions = $this->matchRegions($home, $away);
+            $match_day1 = $match_day . ' ' . $startTime . ":00:00";
+            $match_day2 =$match_day . ' ' . $startTime+1 . ":00:00";
+            
+            $this->Seasons_model->newMatch($season->id, $week->id, $home->id, $away->id, $regions[1], $match_day1, ++$gameId);
+            $this->Seasons_model->newMatch($season->id, $week->id, $away->id, $home->id, $regions[2], $match_day2, ++$gameId);
+
+        }
+
+    }
+    
+    
     public function startweek()
     {
         if(!$this->input->is_cli_request())
@@ -383,6 +524,10 @@ class Tools extends MY_Controller
         
         $season = $this->Seasons_model->GetCurrentSeason();
         $week = $this->Seasons_model->getCurrentWeek($season->id);
+        
+        //create the challenger matches
+        $this->CreateChallengerMatches($season, $week);
+                
         $teams = $this->Seasons_model->getTeamsPlayingInWeek($week->id);
         
         foreach($teams AS $team)
@@ -391,7 +536,7 @@ class Tools extends MY_Controller
 
             $msg = $this->twiggy->layout('email')->template('startweek')->render();
 
-            $this->sendEmail('game@strifeproleague.com', $team->email, 
+            $this->sendEmail($team->getContactPlayer()->id, 
                     'SPL: Start of week', $msg);        
         }
         
@@ -438,12 +583,12 @@ class Tools extends MY_Controller
 
                     $msg = $this->twiggy->layout('email')->template('matchtime_reject')->render();
 
-                    $email = $this->Teams_model->getEmail($match->home_team_id);                
-                    $this->sendEmail('game@strifeproleague.com', $email, 
+                    $homeTeam = $this->Teams_model->getById($match->home_team_id);                
+                    $this->sendEmail($homeTeam->getContactPlayer()->id, 
                             'Match Time System: Auto Accepted', $msg);
 
-                    $email = $this->Teams_model->getEmail($match->away_team_id);                
-                    $this->sendEmail('game@strifeproleague.com', $email, 
+                    $awayTeam = $this->Teams_model->getById($match->away_team_id);                
+                    $this->sendEmail($awayTeam->getContactPlayer()->id, 
                             'Match Time System: Auto Accepted', $msg);
 
 
@@ -461,12 +606,12 @@ class Tools extends MY_Controller
 
                 $msg = $this->twiggy->layout('email')->template('matchtime_accept')->render();
 
-                $email = $this->Teams_model->getEmail($match->home_team_id);                
-                $this->sendEmail('game@strifeproleague.com', $email, 
+                $homeTeam = $this->Teams_model->getById($match->home_team_id);                
+                $this->sendEmail($homeTeam->getContactPlayer()->id, 
                         'Match Time System: Auto Accepted', $msg);
                 
-                $email = $this->Teams_model->getEmail($match->away_team_id);                
-                $this->sendEmail('game@strifeproleague.com', $email, 
+                $awayTeam = $this->Teams_model->getById($match->away_team_id);                
+                $this->sendEmail($awayTeam->getContactPlayer()->id, 
                         'Match Time System: Auto Accepted', $msg);
                 
                                 
@@ -485,12 +630,12 @@ class Tools extends MY_Controller
 
             $msg = $this->twiggy->layout('email')->template('matchtime_expire')->render();
 
-            $email = $this->Teams_model->getEmail($match->home_team_id);                
-            $this->sendEmail('game@strifeproleague.com', $email, 
+            $homeTeam = $this->Teams_model->getEmail($match->home_team_id);                
+            $this->sendEmail($homeTeam->getContactPlayer()->id, 
                     'Match: Expired', $msg);
 
-            $email = $this->Teams_model->getEmail($match->away_team_id);                
-            $this->sendEmail('game@strifeproleague.com', $email, 
+            $awayTeam = $this->Teams_model->getEmail($match->away_team_id);                
+            $this->sendEmail($awayTeam->getContactPlayer()->id, 
                     'Match: Expired', $msg);
                         
             $this->Seasons_model->editMatch($match);
@@ -499,24 +644,7 @@ class Tools extends MY_Controller
            
         }
     }
-    
-    public function team_email($seasonId)
-    {
-        if(!$this->input->is_cli_request())
-        {
-            echo "This script can only be accessed via the command line" . PHP_EOL;
-            return;
-        }        
-        
-        $emails = $this->Seasons_model->getEmailListForSeason($seasonId);
-        
-        $email_list = "";
-        foreach($emails AS $email){
-            $email_list .= $email . ";";
-        }
-        echo($email_list);
-    }
-    
+      
     public function parse_stats()
     {
         if(!$this->input->is_cli_request())
@@ -695,4 +823,13 @@ protected function delTree($dir) {
     } 
     return rmdir($dir); 
   } 
+}
+
+function teamPointSortLocal($a, $b)
+{
+    if ($a->points == $b->points)
+    {
+        return ($a->name < $b->name) ? -1: 1;        
+    }
+    return ($a->points < $b->points) ? 1 : -1;        
 }

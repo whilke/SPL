@@ -312,10 +312,6 @@ class Standings extends MY_Controller
                     else
                         $email = $this->Teams_model->getEmail($match->home_team_id);
 
-                    //$this->sendEmail('game@strifeproleague.com', $email, 
-                    //        'Match Status: Reported', $msg);
-                    
-                    
                     
                     redirect('standings/match/'.$id, 'refresh'); //use redirects instead of loading views for compatibility with MY_Controller libraries
                     
@@ -461,13 +457,13 @@ class Standings extends MY_Controller
                     $this->twiggy->set('match', $match);
                     $msg = $this->twiggy->layout('email')->template('matchtime_new')->render();
                     
-                    $email = "";
+                    $contactId = 0;
                     if ($user->teamname == $match->homeTeam)
-                        $email = $this->Teams_model->getEmail($match->away_team_id);
+                        $contactId = $this->Teams_model->getById($match->away_team_id)->getContactPlayer()->id;
                     else
-                        $email = $this->Teams_model->getEmail($match->home_team_id);
+                        $contactId = $this->Teams_model->getById($match->home_team_id)>getContactPlayer()->id;
 
-                    $this->sendEmail('game@strifeproleague.com', $email, 
+                    $this->sendEmail($contactId, 
                             'Match Time System: New Time Request', $msg);
                                        
                     $this->Seasons_model->setMatchProposedTime($match, $gmt_prop_date ." ".$gmt_prop_time, $team->id);                    
@@ -526,11 +522,11 @@ class Standings extends MY_Controller
                                                 
                         $email = "";
                         if ($user->teamname == $match->homeTeam)
-                            $email = $this->Teams_model->getEmail($match->away_team_id);
+                            $email = $this->Teams_model->getById($match->away_team_id)->getContactPlayer()->id;
                         else
-                            $email = $this->Teams_model->getEmail($match->home_team_id);
+                            $email = $this->Teams_model->getById($match->home_team_id)->getContactPlayer()->id;
 
-                        $this->sendEmail('game@strifeproleague.com', $email, 
+                        $this->sendEmail($email, 
                                 'Match Time System: Request Update', $msg);
                         
                         
@@ -589,21 +585,9 @@ class Standings extends MY_Controller
         
     }
     
-    private function sendEmail($from, $to, $subject, $message)
-        {
-            $this->email->clear();
-            $this->email->from($from);
-            $this->email->to($to);
-            $this->email->subject($subject);
-            $this->email->message($message);
-
-            if ($this->email->send())
-            {
-                return TRUE;
-            }
-            else
-            {
-                return FALSE;
-            }        
-        }    
+    private function sendEmail($to, $subject, $message)
+    {
+        $this->load->library('mahana_messaging');
+        $this->mahana_messaging->send_new_message(2, $to, $subject, $msg, true);            
+    }  
 }

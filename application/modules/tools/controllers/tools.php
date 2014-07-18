@@ -29,6 +29,16 @@ class Tools extends MY_Controller
         $this->mahana_messaging->send_new_message(2, $to, $subject, $message, false);            
     }
     
+    public function emails()
+    {
+        $this->load->model('ion_auth_model','ion_auth');
+        $emails = $this->ion_auth->users()->where('active',true);
+        foreach($emails->result() as $email)
+        {
+            print($email->email) . ';';
+        }
+    }
+    
     
     public function createTimeBuckets()
     {

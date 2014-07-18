@@ -240,6 +240,7 @@ class Teams_model extends CI_Model
             'name'=>$teamname,
             'region'=>'USE',
             'active'=>true,
+            'invites'=>2,
         );
         
         $this->db->insert('teams', $data);

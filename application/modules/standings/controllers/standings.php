@@ -588,6 +588,6 @@ class Standings extends MY_Controller
     private function sendEmail($to, $subject, $message)
     {
         $this->load->library('mahana_messaging');
-        $this->mahana_messaging->send_new_message(2, $to, $subject, $message, false);            
+        $this->mahana_messaging->send_new_message(2, $to, $subject, $message, true);            
     }  
 }

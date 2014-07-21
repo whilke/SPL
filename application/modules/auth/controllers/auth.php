@@ -843,11 +843,16 @@ class Auth extends MY_Controller {
         $weeks = $this->Seasons_model->getWeeksForSeason($seasonId);
         
         $dWeeks = Array();
+        $lastWeek = null;
         foreach($weeks AS $week)
         {
+//            $dWeeks[] = $week;
             $dWeeks[] = $week;
-            $dWeeks[] = $week;
-        }        
+            $lastWeek = $week;
+        }
+        $dWeeks[] = $lastWeek;
+        $dWeeks[] = $lastWeek;
+        
         $weeks = $dWeeks;
         
         $gameId = 1;
@@ -855,7 +860,7 @@ class Auth extends MY_Controller {
         $groups = $this->Seasons_model->getGroupsForSeason($seasonId);
         foreach($groups AS $group)
         {
-            $registeredTeams = $this->Seasons_model->getTeamsInGroup($group->id);
+            $registeredTeams = $this->Seasons_model->getTeamsInGroup($seasonId,$group->id);
         
             $schedule = $this->scheduler($registeredTeams);
 

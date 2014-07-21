@@ -903,6 +903,7 @@ class Seasons_model extends CI_Model
                select('*')->
                from('season_group sg')->
                where('sg.season_id', $seasonId)->
+               where('sg.isopen', false)-> 
                get();        
 
         $arr = Array();
@@ -913,7 +914,7 @@ class Seasons_model extends CI_Model
         return $arr;        
     }
     
-    function getTeamsInGroup($groupId)
+    function getTeamsInGroup($seasonId, $groupId)
     {
         $query = $this->db->
                select('teams.*, sg.name as group_name')->
@@ -922,6 +923,8 @@ class Seasons_model extends CI_Model
                join('season_group_teams sgt', 'sgt.team_id = teams.id', 'left outer')->
                join('season_group sg', 'sg.id = sgt.season_group_id', 'left outer')->
                where('sg.id', $groupId)->
+               where('seasons_teams.season_id',$seasonId)->
+               order_by('sgt.seeding')->
                get();
 
         $arr = Array();

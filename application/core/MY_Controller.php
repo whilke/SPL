@@ -88,7 +88,8 @@ class MY_Controller extends MX_Controller {
                 'isAdmin' => $isAdmin, 
                 'isGlobalManager' => $isGlobalManager, 
                 'isManager' => $isManager,
-                'mailCount' => $count
+                'mailCount' => $count,
+                'team_id' => $user->team_id,
                ), TRUE);
         }
         else

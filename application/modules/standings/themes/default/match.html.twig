@@ -81,7 +81,7 @@
                         <td id="mscheduleDate" >{{match.gamedate}}</td>
                     </tr>
                 {% if match.proposeddate != "" and isOwner %}
-                    {% if match.who_proposed_team == user.uname %}
+                    {% if match.who_proposed_team_id == user.team_id %}
                     <tr>
                         <td style="vertical-align: middle !important;" >Proposed:</td>
                         <td>

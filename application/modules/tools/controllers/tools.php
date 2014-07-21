@@ -26,7 +26,7 @@ class Tools extends MY_Controller
     private function sendEmail($to, $subject, $message)
     {
         $this->load->library('mahana_messaging');
-        $this->mahana_messaging->send_new_message(2, $to, $subject, $message, true);            
+        $this->mahana_messaging->send_new_message(2, $to, $subject, $message, true, true);            
     }
     
     public function emails()
@@ -514,7 +514,7 @@ class Tools extends MY_Controller
             $startTime = $this->matchStartTime($home, $away);
             $regions = $this->matchRegions($home, $away);
             $match_day1 = $match_day . ' ' . $startTime . ":00:00";
-            $match_day2 =$match_day . ' ' . $startTime+1 . ":00:00";
+            $match_day2 = $match_day . ' ' . $startTime+1 . ":00:00";
             
             $this->Seasons_model->newMatch($season->id, $week->id, $home->id, $away->id, $regions[1], $match_day1, ++$gameId);
             $this->Seasons_model->newMatch($season->id, $week->id, $away->id, $home->id, $regions[2], $match_day2, ++$gameId);

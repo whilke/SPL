@@ -283,7 +283,7 @@ class Mahana_messaging
      * @param   integer  $priority
      * @return  array
      */
-    function send_new_message($sender_id, $recipients, $subject = '', $body = '', $relay=false, $priority = PRIORITY_NORMAL)
+    function send_new_message($sender_id, $recipients, $subject = '', $body = '', $relay=false, $loadModel = false, $priority = PRIORITY_NORMAL)
     {
         if (empty($sender_id))
         {
@@ -308,10 +308,17 @@ class Mahana_messaging
                 $ci = $this->ci;
                 
                 $ci->load->library('email');
-                try {
-                $ci->load->model('ion_auth_model', 'ion_auth');
-                } catch(Exception $e)
-                {}
+                try 
+                {
+                    if ($loadModel)
+                    {
+                        $ci->load->model('ion_auth_model', 'ion_auth');                        
+                    }
+                } 
+                catch(Exception $e)
+                {
+                    
+                }
                 
                 $a = array(
                           'mailtype' => 'html',

@@ -32,7 +32,7 @@
         {{data.gmt_prop_time|bs_form_input()}}                   
         <br/>
     {% else %}
-        {% if match.who_proposed_team == user.uname %}
+        {% if match.who_proposed_team_id == user.team_id %}
             <div class="row">
                 Cancel your pending match time proposal?
                 <p>

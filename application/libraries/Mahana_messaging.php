@@ -308,7 +308,11 @@ class Mahana_messaging
                 $ci = $this->ci;
                 
                 $ci->load->library('email');
+                try {
                 $ci->load->model('ion_auth_model', 'ion_auth');
+                } catch(Exception $e)
+                {}
+                
                 $a = array(
                           'mailtype' => 'html',
                       );

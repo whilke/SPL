@@ -461,7 +461,7 @@ class Standings extends MY_Controller
                     if ($user->teamname == $match->homeTeam)
                         $contactId = $this->Teams_model->getById($match->away_team_id)->getContactPlayer()->id;
                     else
-                        $contactId = $this->Teams_model->getById($match->home_team_id)>getContactPlayer()->id;
+                        $contactId = $this->Teams_model->getById($match->home_team_id)->getContactPlayer()->id;
 
                     $this->sendEmail($contactId, 
                             'Match Time System: New Time Request', $msg);

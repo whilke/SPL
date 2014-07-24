@@ -333,7 +333,8 @@ class Mahana_messaging
                     $ci->email->from("game@strifeproleague.org", 'SPL Game');
                     $ci->email->to($user->email);
                     $ci->email->subject("SPL Mail: " . $subject);
-                    $ci->email->message($body);                    
+                    $ci->email->message($body);   
+                    $ci->email->send();
                 }
                 
             }

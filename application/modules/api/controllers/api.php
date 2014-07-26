@@ -28,6 +28,7 @@ class api extends REST_Controller
         }
          
         $this->load->model('Teams_model');
+        $this->load->model('Seasons_model');
         
         $raw_team = $this->Teams_model->getById($id);
         
@@ -42,13 +43,18 @@ class api extends REST_Controller
         $team->name = $raw_team->name;
         $team->logo = $raw_team->logo;
         $team->region = $raw_team->region;
-        $team->contact = $raw_team->contact;
+        
+        $season = $this->Seasons_model->GetCurrentSeason();
+        $isActive = $this->Seasons_model->isTeamInSeason($id, $season->id);
+        $team->Active = $isActive;
+
         
         $team->players = array();        
         foreach($raw_team->players AS $player)
         {
             $team->players[] = $this->Teams_model->getPlayer($player->strife_id);        
         }
+        
 
 
         $this->response($team, 200);                

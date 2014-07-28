@@ -370,7 +370,7 @@ class Teams_model extends CI_Model
         $query = $this->db->
                 select('u.email')->
                 from('teams t')->
-                join('users u', 'u.teamname=t.name')->
+                join('users u', 'u.team_id=t.id')->
                 where('t.id', $teamId)->
                 limit(1)->
                 get();

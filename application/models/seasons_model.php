@@ -974,7 +974,7 @@ class Seasons_model extends CI_Model
             $team = $ci->Teams_model->getById($row->team_id);
             if ($team != null)
             {
-                $starters = $team->getStarters();
+                $starters = $team->players;
                 if (sizeof($starters) >= 5)
                 {
                     //valid team! we now need the points.

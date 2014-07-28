@@ -640,11 +640,11 @@ class Tools extends MY_Controller
 
             $msg = $this->twiggy->layout('email')->template('matchtime_expire')->render();
 
-            $homeTeam = $this->Teams_model->getEmail($match->home_team_id);                
+            $homeTeam = $this->Teams_model->getById($match->home_team_id);                
             $this->sendEmail($homeTeam->getContactPlayer()->id, 
                     'Match: Expired', $msg);
 
-            $awayTeam = $this->Teams_model->getEmail($match->away_team_id);                
+            $awayTeam = $this->Teams_model->getById($match->away_team_id);                
             $this->sendEmail($awayTeam->getContactPlayer()->id, 
                     'Match: Expired', $msg);
                         

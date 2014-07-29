@@ -26,7 +26,7 @@ class Tools extends MY_Controller
     private function sendEmail($to, $subject, $message)
     {
         $this->load->library('mahana_messaging');
-        $this->mahana_messaging->send_new_message(2, $to, $subject, $message, true, true);            
+        $this->mahana_messaging->send_new_message(2, $to, $subject, $message, false, true);            
     }
     
     public function emails()
@@ -438,11 +438,11 @@ class Tools extends MY_Controller
     
     public function CreateChallengerMatches($season, $week)
     {
-        $gameId = 1; 
+        $gameId = 32; 
         $teams = $this->Seasons_model->getActiveChallengerTeams($season->id);
         usort($teams, "teamPointSortLocal");
         
-        //okay, now that this is sorted, we want to check to see if there needs to be a buy, and who hasn't had one yet.
+        //okay, now that this is sorted, we want to secheck to see if there needs to be a buy, and who hasn't had one yet.
         $count = count($teams);
         $iseven = (($count % 2) == 0);
         
@@ -466,7 +466,7 @@ class Tools extends MY_Controller
             $match_day = $date_day;
             $match_day .= ' 00:00:00';
             
-            $matchId = $this->Seasons_model->newMatch($season->id, $week->id, $team->id, 0, 'USE', $match_day, $gameId);
+            $matchId = $this->Seasons_model->newMatch($season->id, $week->id, $team->id, 0, 'USE', $match_day, 'G' . ++$gameId);
             $match = $this->Seasons_model->getMatch($matchId, false);
             $match->active=false;
             $match->home_team_state_id = 4;
@@ -481,7 +481,7 @@ class Tools extends MY_Controller
             $this->Stats_model->updateMatchStats($matchId, true, 
                     $team->id, 0, null );
             
-            $matchId = $this->Seasons_model->newMatch($season->id, $week->id, $team->id, 0, 'USE', $match_day, $gameId);
+            $matchId = $this->Seasons_model->newMatch($season->id, $week->id, $team->id, 0, 'USE', $match_day, 'G' . ++$gameId);
             $match = $this->Seasons_model->getMatch($matchId, false);
             $match->active=false;
             $match->home_team_state_id = 4;
@@ -514,10 +514,10 @@ class Tools extends MY_Controller
             $startTime = $this->matchStartTime($home, $away);
             $regions = $this->matchRegions($home, $away);
             $match_day1 = $match_day . ' ' . $startTime . ":00:00";
-            $match_day2 = $match_day . ' ' . $startTime+1 . ":00:00";
+            $match_day2 = $match_day . ' ' . ($startTime+1) . ":00:00";
             
-            $this->Seasons_model->newMatch($season->id, $week->id, $home->id, $away->id, $regions[1], $match_day1, ++$gameId);
-            $this->Seasons_model->newMatch($season->id, $week->id, $away->id, $home->id, $regions[2], $match_day2, ++$gameId);
+            $this->Seasons_model->newMatch($season->id, $week->id, $home->id, $away->id, $regions[1], $match_day1, 'G' . ++$gameId);
+            $this->Seasons_model->newMatch($season->id, $week->id, $away->id, $home->id, $regions[2], $match_day2, 'G' . ++$gameId);
 
         }
 

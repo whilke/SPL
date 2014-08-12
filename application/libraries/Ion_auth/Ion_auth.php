@@ -481,8 +481,7 @@ class Ion_auth
     {
         return $this->in_group(array(5), $id);
     }
-    
-    
+        
     /**
      * in_group
      *

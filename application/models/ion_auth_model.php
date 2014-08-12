@@ -232,6 +232,24 @@ class Ion_auth_model extends CI_Model
      *
      * @author Mathew
      */
+    
+    public function getBadges($id=false)
+    {
+        $id || $id = $this->session->userdata('user_id');
+        
+         $query = $this->db->
+                from('user_badges ub')->
+                join('badges b','b.id = ub.badge_id')->
+                where('ub.user_id', $id)->
+                get();
+        
+        $badges = array();
+        foreach($query->result() as $row)
+        {
+            $badges[] = $row;
+        }
+        return $badges;
+    }
 
     /**
      * Hashes the password to be stored in the database.

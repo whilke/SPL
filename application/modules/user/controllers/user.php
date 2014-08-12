@@ -293,6 +293,10 @@ class User extends MY_Controller
                     $this->twiggy->set('playerType', 'Free Agent');
             }
         }
+        
+        $badges = $this->ion_auth->getBadges($portalUser->id);
+        $this->twiggy->set('badges', $badges);
+        
         $this->twiggy->set('canInviteMember', $canInviteMember);
         $this->twiggy->set('canInviteSub', $canInviteSub);
                 

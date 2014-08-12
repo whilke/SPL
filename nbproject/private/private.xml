@@ -8,6 +8,7 @@
             <file>file:/home/bill/github/spl/index.php</file>
             <file>file:/home/bill/github/spl/application/modules/ladder/themes/default/game.html.twig</file>
             <file>file:/home/bill/github/spl/application/themes/default/_layouts/index.html.twig</file>
+            <file>file:/home/bill/github/spl/application/libraries/Ion_auth/Ion_auth.php</file>
             <file>file:/home/bill/github/spl/application/modules/ladder/controllers/ladder.php</file>
             <file>file:/home/bill/github/spl/application/modules/ladder/controllers/LadderApi.php</file>
         </group>

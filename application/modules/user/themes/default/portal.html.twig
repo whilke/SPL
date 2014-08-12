@@ -54,7 +54,26 @@
     
 
     <br/>
-    <div class="col-md-12">        
+    <div class="col-md-12"> 
+        <div class="row">
+        <div class="col-md-12">
+            <!--logo block-->            
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <h3 class="panel-title" id='bio_edit_area'>
+                        Badges
+                    </h3>
+                </div>
+                <div class="panel-body" style="height:110px;">
+                    {%for badge in badges%}
+                        <img src="{{badge.img|assets_url}}" alt="{{badge.desc}}" title="{{badge.desc}}"
+                             style="margin-top: -10px;"/>
+                    {%endfor%}
+                </div>
+            </div>
+        </div>            
+        </div>
+        <div class="row">
         <div class="col-md-9">
             <!--logo block-->            
             <div class="panel panel-info">
@@ -182,6 +201,7 @@
                     <a id='contact_delete' href="javascript://;" class="btn btn-warning" style="padding:0px;">delete</a>
                 </div>                    
             </div>
+        </div>
         </div>
     </div>
 {% endblock %}

@@ -359,9 +359,8 @@ class Standings extends MY_Controller
 
         $heroList[0] = 'Select a hero';
         $heroes = $this->Stats_model->getHeroList();
-        foreach($heroes AS $hero)
-            $heroList[] = $hero;
-        $test = $heroList;
+        foreach($heroes AS $key=>$hero)
+            $heroList[$key] = $hero;
         $this->data['heroList'] = $heroList;
         
         

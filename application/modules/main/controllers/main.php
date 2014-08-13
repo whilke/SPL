@@ -131,11 +131,7 @@ class Main extends MY_Controller
             $statBlock->stats->neuatrals = 0;
             return;
         }
-
-        $d = $avgDeaths;
-        if ($d == 0) $d = 1;
-        $avgkda = round(($avgKills + $avgAssists) / $d / $totalMatches, 1);
-        
+       
 
         $gpm =  round($gpm / $totalMatches);
         $avgLen = round($avgLen / $totalMatches,1);
@@ -144,6 +140,12 @@ class Main extends MY_Controller
         $avgAssists = round($avgAssists / $totalMatches,1);
         $avgCreeps = round($avgCreeps / $totalMatches,1);
         $avgNeut = round($avgNeut / $totalMatches,1);
+        
+        $d = $avgDeaths;
+        if ($d < 1) 
+           $d +=1.0;
+        $avgkda = round(($avgKills + $avgAssists) / $d, 1);        
+
 
         $statBlock->stats = new stdClass();
         $statBlock->stats->gpm = $gpm;

@@ -198,17 +198,19 @@ class User extends MY_Controller
                             $totalMatches++;
                         }
 
-                        $d = $avgDeaths;
-                        if ($d == 0) $d = 1;
-                        $avgkda = round(($avgKills + $avgAssists) / $d, 1);
 
                         $gpm =  round($gpm / $totalMatches);
                         $avgLen = round($avgLen / $totalMatches);
-                        $avgKills = round($avgKills / $totalMatches);
-                        $avgDeaths = round($avgDeaths / $totalMatches);
-                        $avgAssists = round($avgAssists / $totalMatches);
-                        $avgCreeps = round($avgCreeps / $totalMatches);
-                        $avgNeut = round($avgNeut / $totalMatches);
+                        $avgKills = round($avgKills / $totalMatches,1);
+                        $avgDeaths = round($avgDeaths / $totalMatches,1);
+                        $avgAssists = round($avgAssists / $totalMatches,1);
+                        $avgCreeps = round($avgCreeps / $totalMatches,1);
+                        $avgNeut = round($avgNeut / $totalMatches,1);
+
+                        $d = $avgDeaths;
+                        if ($d < 1) 
+                           $d +=1.0;
+                        $avgkda = round(($avgKills + $avgAssists) / $d, 1);    
 
                         $player->AvgStats = new stdClass();
                         $player->AvgStats->gpm = $gpm;

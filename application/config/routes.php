@@ -42,6 +42,9 @@ $route['default_controller'] = "main";
 
 $route['404_override'] = '';
 
+$route['poll\/page\/[0-9]+'] = 'poll';
+$route['poll\/page'] = 'poll';
+
 
 /* End of file routes.php */
 /* Location: ./application/config/routes.php */

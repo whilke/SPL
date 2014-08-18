@@ -43,13 +43,15 @@
         <a href="{{s|site_url}}" rel="async" ajaxify="{{s2|site_url}}">
           Create a Team</a>
     </h3>
-    {%elseif canInviteMember or canInviteSub%}
+    {#
+    {%elseif canInviteMember or canInviteSub %}
     <h4 style='text-align:center;'>
         {% set s = 'team/invite/' ~ portalUser.id   %}
         {% set s2 = 'team/team_ajax/ion_team_dialog/invite/' ~ portalUser.id %}
         <a href="{{s|site_url}}" rel="async" ajaxify="{{s2|site_url}}">
           Invite a {{playerType}} to your team {%if inviteCount is defined and portalUser.isregplayer %}:  ({{inviteCount}} invites to use.){%endif%}</a>
     </h4>
+    #}
     {%endif%}
     
 

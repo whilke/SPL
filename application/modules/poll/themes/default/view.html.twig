@@ -1,0 +1,35 @@
+{% extends _layout %}
+
+{% block css %}
+<link rel="stylesheet" href="{{'css/base.css'|assets_url()}}">
+{% endblock %}
+
+{% block content %}
+<div id="container">
+	<div id="content" role="main">
+		<h2>Polls</h2>
+		<p>{{'poll'|anchor('Back to poll listing')}}</p>
+		<div class="poll">
+                        <h3>{{data.poll.title}}</h3>
+                        {%if data.poll is not empty %}
+			<dl class="options">
+                            {%for option in data.poll.options%}
+                                <dt>{{option.title}} <span class="vote_count">({{option.votes}})</span></dt>
+                                <dd><span class="poll_bg"><span class="poll_bar" style="width: {{option.percentage}}%"></span></span></dd>
+                                {%set l = 'poll/vote/' ~ data.poll.poll_id ~ '/' ~ option.option_id%}
+                                {%set options = {'class':'btn_add'} %}
+                                <dd>{{l|anchor('Vote',options)}}</dd>
+                            {%endfor%}
+			</dl>
+                        {% if user.IsAdmin %}
+                        {%set l = 'poll/delete/' ~ data.poll.poll_id%}
+                        {%set options = {'class':'btn_delete'} %}
+                        <p>{{l|anchor('Delete this poll', options)}}</p>
+                        {%endif%}
+                        {%else%}
+                            <p>That poll does not exist.</p>
+                        {%endif%}
+		</div>
+	</div>
+</div>
+{% endblock %}

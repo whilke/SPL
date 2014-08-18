@@ -1,0 +1,57 @@
+{% extends _layout %}
+{% block js_headers %}
+<script src="{{'/js/jQuery.WMAdaptiveInputs.js'|assets_url}}"></script>
+<script type="text/javascript" charset="utf-8">
+        $(function(){
+                $('#poll_options').WMAdaptiveInputs({
+                        minOptions: '{{data.min_options}}',
+                        maxOptions: '{{data.max_options}}',
+                        inputNameAttr: 'options[]',
+                        inputClassAttr: 'btn_remove'
+                });
+                $('form.adpt_inputs_form').each(function(){
+                        $this = $(this);
+                        $this.find('input[name="adpt_submit"]').on('click', function(event){
+                                event.preventDefault();
+                                var str = $this.serialize();
+                                $.post('{{'poll/create'|site_url}}', str, function(response){
+                                        var jsonObj = $.parseJSON(response);
+                                        if (jsonObj.fail == false){
+                                                window.location.replace("{{'poll'|site_url}}");
+                                        }else{
+                                                alert(jsonObj.error_messages);
+                                                $this.find('.adpt_errors').html(jsonObj.error_messages).hide().slideDown();
+                                        }
+                                });
+                        });
+                });
+        });
+</script>    
+{%endblock%}
+{% block content %}
+<div id="container" class="col-md-5 col-md-offset-3">
+    <div id="content" role="main">
+        <h2>Create a new poll</h2>
+        <p>{{'poll'|anchor('Back to poll listing')}}</p>
+        
+        <div class="adpt_errors">
+        </div>
+        {% set items = { 'class': 'adpt_inputs_form'} %}
+        {{'poll/create'|form_open(items)}}
+        <ul class="adpt_errors"></ul>
+        <dl>
+            <dt>Title:</dt>            
+            {{data.title|bs_form_input()}}
+        </dl>
+        <div id="poll_options" class="adpt_inputs">
+            <p>Options:</p>
+            <ol class="adpt_inputs_list"></ol>
+            <p><a href="#" class="adpt_add_option btn_add">Add option</a></p>
+        </div>
+        
+        {{'adpt_submit'|bs_form_submit('Create New Poll')}}        
+
+        {{form_close()}}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends _layout %}
+{% block content %}
+<div id="container">
+    <div id="content" role="main">
+        <h2>Polls</h2>
+        {% if user.isAdmin %}
+            <p>
+            <a href="{{'poll/create'|site_url}}">Create new poll</a> |
+            <a href="{{'poll/data'|site_url}}">View raw data</a>
+            </p>
+        {%endif%}
+        {%for poll in data.results%}
+            <div class="poll">
+                <p>
+                {%set l = 'poll/view/' ~ poll.poll_id%}
+                <a href="{{l|site_url}}">{{poll.title}}</a>
+                </p>
+            </div>
+        {%endfor%}
+    </div>
+</div>
+{% endblock %}

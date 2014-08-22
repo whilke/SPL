@@ -378,8 +378,8 @@ function query_twitch()
 {
     checkMsgCount();
     
-    $.getJSON( "http://api.justin.tv/api/stream/summary.json?channel=splcast&jsonp=?", function( data ) {
-        if (data.streams_count > 0)
+    $.getJSON( "https://api.twitch.tv/kraken/streams/splcast?callback=?", function( data ) {
+        if (data.stream != null)
         {
             if (!player_loaded && !skipPlayerLoad)
             {
@@ -422,7 +422,7 @@ function query_twitch()
                 $("#flap").hide();
             }
             
-            var viewers = data.viewers_count;
+            var viewers = data.stream.viewers;
             $("#viewerCount").html("Live Viewers: " + viewers);
         }
     });

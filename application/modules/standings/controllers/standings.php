@@ -148,7 +148,7 @@ class Standings extends MY_Controller
         }
         if ($state == '2' || $state == '3') // loss
         {
-            return  10 + 10;
+            return  5 + 10;
         }
         if ($state == '5') // no show
         {

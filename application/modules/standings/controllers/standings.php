@@ -24,6 +24,7 @@ class Standings extends MY_Controller
     public function index($id=0)
     {
         $this->model('Seasons_model');
+        $this->model('Teams_model');
         
         $isManager = $this->ion_auth->is_manager();
         
@@ -38,6 +39,17 @@ class Standings extends MY_Controller
         if ($season != null)
         {
             $stats = $this->Seasons_model->getTeamsByPoints($season->id, 0, !$isManager);
+            
+            foreach($stats as $stat)
+            {
+                $team = $this->Teams_model->getById($stat->teamId);
+                $plrs = $team->getStarters();
+                if (count($plrs) >= 5)
+                    $stat->isValid = true;
+                else
+                    $stat->isValid = false;
+            }
+            
             $this->twiggy->set('stats', $stats);
             $this->twiggy->set('season', $season);
             

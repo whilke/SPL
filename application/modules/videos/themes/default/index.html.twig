@@ -1,0 +1,44 @@
+{% extends _layout %}
+
+{% block content %}
+    <br/>
+    <div class='col-md-8 col-md-offset-2'>
+    {% if user.isAdmin %}
+        <a class="btn btn-sm btn-info pull-right" href="{{'videos/create'|site_url}}" rel="async" 
+           ajaxify="{{'videos/Video_Ajax/dialog/create'|site_url}}">Create Video</a>
+    {%endif%}
+    <h3>Videos</h3>
+    
+    {%for video in videos%}
+        
+            <div class="panel panel-primary" style='padding:0px;'>
+                <div class="panel-heading">
+                    
+                    <span class='panel-title'>
+                        {%if user.isAdmin %}
+                            {% set l = 'videos/create/' ~ video.id %}
+                            {% set l2 = 'videos/Video_Ajax/dialog/create/' ~ video.id %}
+                            <a href="{{l|site_url}}" rel="async" 
+                              ajaxify="{{l2|site_url}}">
+                            <span style='font-size:12px; margin-right:10px;'
+                                  >
+                                Edit
+                            </span>
+                            </a>
+                        {%endif%}
+                        {{video.title}}
+                        <span class='pull-right'>{{video.dateline}}</span>
+                    </span>
+                </div>
+                <div class="panel-body" style='padding:5px;'>
+                    {{video.desc}} <br/>
+                    {% set l = 'videos/player/' ~ video.id %}
+                    <a href='{{l|site_url}}' class='btn btn-primary pull-right'>Watch now</a>
+                    <div style='margin-top:20px;' class='small'><strong>by {{video.who}}</strong></div>
+                </div>
+            </div>
+        
+    {%endfor%}
+    </div>
+{% endblock %}
+

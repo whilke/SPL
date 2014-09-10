@@ -1,0 +1,43 @@
+{% extends _layout %}
+
+{% block content %}
+<div class="row">
+<div class="col-lg-offset-2 col-lg-8">
+<h1>New Video</h1>
+
+{% if data.message != "" %}
+<div class="alert alert-info" id="infoMessage">{{ data.message}}</div>
+{% endif%}
+
+{{'videos/create'|form_open()}}
+    <p>
+        Title:
+        {{data.title|bs_form_input()}}
+    </p>
+    <p>
+        Desc:
+        {{data.desc|bs_form_textarea()}}
+    </p>
+    <p>
+        Dateline:
+        {{data.dateline|bs_form_input()}}
+    </p>
+     <p>
+        who:
+        {{data.who|bs_form_input()}}
+    </p>
+    <p>
+        Url:
+        {{data.url|bs_form_input()}}
+    </p>
+   
+    {{data.id|bs_form_input()}}     
+    
+    <br/>
+    {{'submit'|bs_form_submit('Create')}}
+
+{{form_close()}}
+</div>
+</div>
+{% endblock %}
+

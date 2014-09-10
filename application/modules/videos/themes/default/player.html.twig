@@ -1,0 +1,20 @@
+{% extends _layout %}
+
+{% block content %}
+<div class="row" style="margin-left:15px;">
+    <h3>SPL Video Player</h3>
+</div>
+<div class='row'>
+    <div class="col-md-12">
+    <iframe class="col-sm-12" height="650" frameborder="0" wmode="Opaque" allowfullscreen="" 
+            src="{{video.url}}"></iframe>
+    </div>    
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <span style="margin-left:15px; font-size:25px;">{{video.title}}</span>
+        <span style="margin-right:15px;" class='pull-right'>{{video.dateline}}</span>
+    <div>
+</div>
+{% endblock %}
+

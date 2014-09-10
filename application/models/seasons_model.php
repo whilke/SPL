@@ -596,7 +596,7 @@ class Seasons_model extends CI_Model
         }
         else 
         {
-            $addedQuery = "matches.match_type is not";
+            $addedQuery = "matches.match_type is not null";
         }
 
         

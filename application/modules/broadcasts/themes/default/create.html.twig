@@ -1,0 +1,124 @@
+{% extends _layout %}
+
+{% block content %}
+<div class="row">
+<div class="col-lg-offset-2 col-lg-8">
+<h1>New Broadcast</h1>
+
+{% if data.message != "" %}
+<div class="alert alert-info" id="infoMessage">{{ data.message}}</div>
+{% endif%}
+
+{{'broadcasts/create'|form_open()}}
+    <p>
+        Match:
+        {{'match_pick'|bs_form_dropdown(matchList, match_pick)}}
+    </p>
+    <p>
+        Title:
+        {{data.title|bs_form_input()}}
+    </p>
+    <p>
+        Desc:
+        {{data.desc|bs_form_textarea()}}
+    </p>
+    <p>
+        Url:
+        {{data.url|bs_form_input()}}
+    </p>
+    <div class="row">
+        <div class="col-md-2">
+            Date:
+        </div>
+        <div class="col-md-5">
+            {{data.prop_date|bs_form_input()}}                   
+        </div>
+        <div class="col-md-5">
+            {{data.prop_time|bs_form_input()}}                   
+        </div>
+    </div>
+    {{data.gmt_prop_date|bs_form_input()}}                   
+    {{data.gmt_prop_time|bs_form_input()}}     
+    {{data.broadcast_id|bs_form_input()}}     
+    
+    <br/>
+    {{'submit'|bs_form_submit('Create')}}
+
+{{form_close()}}
+</div>
+</div>
+
+<link rel="stylesheet" href="{{'css/jquery.timepicker.css'|assets_url()}}">
+<script src="{{'js/jquery.timepicker.min.js'|assets_url()}}"></script>
+<script src="{{'js/moment.min.js'|assets_url()}}"></script>
+<script type='text/javascript'>
+    
+function toUTC(/*Date*/date) {
+    return Date.UTC(
+        date.getFullYear()
+        , date.getMonth()
+        , date.getDate()
+        , date.getHours()
+        , date.getMinutes()
+        , date.getSeconds()
+        , date.getMilliseconds()
+    );
+} 
+Date.prototype.addHours= function(h){
+    this.setHours(this.getHours()+h);
+    return this;
+}    
+Date.prototype.subHours= function(h){
+    this.setHours(this.getHours()-h);
+    return this;
+}  
+ 
+    var now = new Date();
+        
+    $(document).ready(function(){
+        
+        $gmt_date = $("#gmt_prop_date").val();
+        $gmt_time = $("#gmt_prop_time").val();
+       
+        $('.btn').click(function() {
+
+            var local_date = $("#prop_date").val();
+            var local_time = $("#prop_time").val();   
+            
+            var local_dt = local_date + " " + local_time;
+            
+            var myDate = moment(local_dt, "MM/DD/YYYY h:mma");
+            myDate.utc();
+            var gmt_date = myDate.format("YYYY-MM-DD");
+            var gmt_time = myDate.format("HH:mm");
+            
+            $("#gmt_prop_date").val(gmt_date);
+            $("#gmt_prop_time").val(gmt_time);                        
+        });       
+       
+                
+        $( "#prop_date" ).datepicker
+        ({            
+            minDate: now,
+          });
+          
+        $('#prop_time').timepicker();
+        $("#prop_time").keypress(function(event) {event.preventDefault();});
+        $("#prop_time").bind("cut copy paste", function(event) {event.preventDefault();});
+        
+        if ($gmt_date  != '' && $gmt_time != '')
+        {
+            var strDateTime = $gmt_date + " " + $gmt_time + " GMT";
+            var myDate = moment(strDateTime);
+            var d1 = myDate.format("MM/DD/YYYY")
+            var d2 = myDate.format("hh:mm A")
+            
+            $("#prop_date").val(d1);
+            $("#prop_time").val(d2);            
+        }
+        
+    });
+</script>    
+
+{% endblock %}
+

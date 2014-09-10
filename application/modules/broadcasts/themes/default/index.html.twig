@@ -1,0 +1,75 @@
+{% extends _layout %}
+
+{% block content %}
+    <br/>
+    <div class='col-md-8 col-md-offset-2'>
+    {% if user.isAdmin %}
+        <a class="btn btn-sm btn-info pull-right" href="{{'broadcasts/create'|site_url}}" rel="async" 
+           ajaxify="{{'broadcasts/Broadcast_Ajax/dialog/create'|site_url}}">Create Broadcast</a>
+    {%endif%}
+    <h3>Upcoming Broadcasts</h3>
+    
+    {%for cast in casts%}
+        
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    
+                    <span class='panel-title'>
+                        {%if user.isAdmin %}
+                            {% set l = 'broadcasts/create/' ~ cast.id %}
+                            {% set l2 = 'broadcasts/Broadcast_Ajax/dialog/create/' ~ cast.id %}
+                            <a href="{{l|site_url}}" rel="async" 
+                              ajaxify="{{l2|site_url}}">
+                            <span style='font-size:12px; margin-right:10px;'>
+                                Edit
+                            </span>
+                            </a>
+                        {%endif%}
+                        {{cast.title}} 
+                        <span style='font-size:12px;'>   
+                        <a href='{{cast.url}}' target='_blank' style='color:white;'>
+                            <img src='{{'images/twitch_glyph.jpg'|assets_url()}}' width='16px' height='16px' />
+                        </a>
+                        </span>                        
+                    </span>
+                    <span class="panel-title pull-right ts" data-ts='{{cast.timestamp}}'>
+                    </span>
+                </div>
+                <div class="panel-body">
+                    {{cast.desc}}
+                </div>
+            </div>
+        
+    {%endfor%}
+    </div>
+{% endblock %}
+
+{% block js %}
+<script src="{{'js/moment.min.js'|assets_url()}}"></script>
+<script type="text/javascript">
+    function getTimezone()
+    {
+        var now = new Date().toString();
+        var TZ = now.indexOf('(') > -1 ?
+        now.match(/\([^\)]+\)/)[0].match(/[A-Z]/g).join('') :
+        now.match(/[A-Z]{3,4}/)[0];
+        if (TZ == "GMT" && /(GMT\W*\d{4})/.test(now)) TZ = RegExp.$1;
+        return TZ;
+    }
+    
+    $( document ).ready(function() {
+        $(".ts").each(function () {
+            schDate = $(this).data('ts');
+            if (schDate != 0)
+            {
+                var strDateTime = schDate + " GMT";
+                var myDate = moment(strDateTime);
+                var d = myDate.format("MM/DD/YYYY hh:mm A ") + getTimezone();
+                $(this).html( d );
+            }
+            
+        });
+    }); 
+</script>
+{% endblock %}
+

@@ -1,5 +1,14 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
+function SortCasts($a, $b)
+{
+    $t1 = strtotime($a->timestamp);
+    $t2 = strtotime($b->timestamp);
+    
+    return ($t1 - $t2);
+}
+
+
 class Main extends MY_Controller 
 {
     function __construct()
@@ -10,8 +19,46 @@ class Main extends MY_Controller
         $this->model('Teams_model');
     }
     
+    function getNextBroadcast()
+    {
+        $this->load->model('seasons_model', 'Matches');
+        $this->load->model('broadcasts_model','Broadcasts');
+        $casts = $this->Broadcasts->getList();
+        
+        if ($casts != null)
+        {
+            foreach($casts as $key=>$cast)
+            {
+                if ($cast->isMatch == 1)
+                {
+                    $match = $this->Matches->getMatch($cast->match_id, false);
+                    $cast->title = $match->homeTeam . " vs " . $match->awayTeam;
+                    $cast->timestamp = $match->gamedate;
+                }
+                
+                date_default_timezone_set('GMT');
+                $t = strtotime($cast->timestamp . " GMT");
+                $now = strtotime('now');
+                
+                if ($t < $now)
+                {
+                    unset($casts[$key]);
+                }
+            }
+
+            usort($casts, "SortCasts");        
+            
+            if (count($casts) > 0)
+                return $casts[0];            
+        }
+        
+        return null;
+    }
+    
     function index()
     {
+        $cast = $this->getNextBroadcast();
+        $this->twiggy->set('nextCast', $cast);
         $this->twiggy->template('index')->display();
     }
     

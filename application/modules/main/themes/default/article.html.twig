@@ -1,0 +1,45 @@
+{% extends _layout %}
+{% block content %}
+<div class="row">
+    <div class="col-md-12">        
+        <h4><a href="{{'main/news'|site_url}}">Back to news...</a></h4>
+        <div>
+         <h3><strong>{{news.title}}</strong> <span style="font-size: 14px;" class="news-dt" data-dt="{{news.timestamp}}"></span></h3>
+         <hr>
+         <p>{{news.desc}}</p>
+        </div>        
+        <br/>
+        
+    </div>
+</div>
+    
+{% endblock %}
+
+{% block js %}
+<script src="{{'js/moment.min.js'|assets_url()}}"></script>
+<script type="text/javascript">
+    function getTimezone()
+    {
+        var now = new Date().toString();
+        var TZ = now.indexOf('(') > -1 ?
+        now.match(/\([^\)]+\)/)[0].match(/[A-Z]/g).join('') :
+        now.match(/[A-Z]{3,4}/)[0];
+        if (TZ == "GMT" && /(GMT\W*\d{4})/.test(now)) TZ = RegExp.$1;
+        return TZ;
+    }
+    
+    $( document ).ready(function() {
+        $(".news-dt").each(function () {
+            schDate = $(this).data('dt');
+            if (schDate != 0)
+            {
+                var strDateTime = schDate + " GMT";
+                var myDate = moment(strDateTime);
+                var d = "[" + myDate.format("MMMM Do, YYYY") + "]";
+                $(this).html( d );
+            }
+            
+        });
+    }); 
+</script>
+{% endblock %}

@@ -58,6 +58,25 @@ class Main extends MY_Controller
     function index()
     {
         $cast = $this->getNextBroadcast();
+        
+        //get videos.
+        $this->load->model('videos_model','Videos');
+        $videos = $this->Videos->getList();
+        
+        if (count($videos) > 0 && $videos[0]->isFeatured)
+        {
+            $this->twiggy->set('featureVideo', $videos[0]);
+            unset($videos[0]);
+        }
+        
+        $videos = array_slice($videos, 0, 4);
+        $this->twiggy->set('videos', $videos);
+        
+        $this->load->model('News_model', 'News');        
+        $news = $this->News->getList();
+        $news = array_slice($news,0,4);
+        $this->twiggy->set('news', $news);
+        
         $this->twiggy->set('nextCast', $cast);
         $this->twiggy->template('index')->display();
     }
@@ -138,6 +157,159 @@ class Main extends MY_Controller
     function bfbheropool()
     {
         $this->twiggy->template('bfbheropool')->display();
+    }
+    
+    function news()
+    {
+        $this->load->model('News_model', 'News');
+        $news = $this->News->getList();
+                
+        $this->twiggy->set('news', $news);
+        $this->twiggy->template('news')->display();
+    }
+    
+    function article($id)
+    {
+        $this->load->model('News_model', 'News');
+        $news = $this->News->get($id);
+                
+        $this->twiggy->set('news', $news);
+        $this->twiggy->template('article')->display();
+    }
+    
+    function newarticle($id=0,$fromAjax=false)
+    {        
+        if (is_array($id))
+        {
+            $fromAjax = $id['fromajax'];
+            $id = $id['id'];
+        }
+        
+        $this->load->library('form_validation');
+        $this->load->helper('url');
+        $this->lang->load('auth');
+        $this->load->helper('language');
+        $this->load->model('News_model', 'News');
+
+        //validate form input        
+        $flashMsg = '';
+        $desc = $this->input->post('desc');
+        if ($desc != '')
+        {
+            $bId = $this->input->post('id');
+            $prop_date = $this->input->post('prop_date');
+            $prop_time = $this->input->post('prop_time');
+            $gmt_prop_date = $this->input->post('gmt_prop_date');
+            $gmt_prop_time = $this->input->post('gmt_prop_time');
+            $title = $this->input->post('title');
+            
+            $props = array();
+                $props['title'] = $title;
+                $props['desc'] = $desc;
+                $props['timestamp'] = $gmt_prop_date ." ".$gmt_prop_time;
+            
+            if ($bId > 0)
+            {
+                $this->News->edit($bId, $props);
+                
+            }
+            else 
+            {
+                $this->News->add($props);
+            }
+            
+            redirect('main/news', 'refresh');            
+            return;
+        }
+        
+        
+        
+        $new = null;
+        if ($id > 0)
+        {
+            $new = $this->News->get($id);
+            $ex = explode(" ", $new->timestamp);
+            $new->gmt_prop_date = $ex[0];
+            $new->gmt_prop_time = $ex[1];
+        }
+        else
+        {
+            $new = (object)array(
+              'id'=>'0',
+              'title'=>'',
+              'desc'=>'',
+              'gmt_prop_date'=>'',
+              'gmt_prop_time'=>'',
+              'url'=>''
+            );
+        }
+                       
+        $this->data = array();
+        $this->data['message'] = (validation_errors() ? validation_errors() : $flashMsg);
+        
+        $this->data['title'] = array(
+                'name'  => 'title',
+                'id'    => 'title',
+                'type'  => 'text',
+                'value' => set_value('title', $new->title),
+            );        
+        
+        $this->data['desc'] = array(
+                'name'  => 'desc',
+                'id'    => 'desc',
+                'type'  => 'text',
+                'cols'  => '40',
+                'rows'  => '5',
+                'value' => set_value('desc', $new->desc),
+            );    
+        
+              
+       
+        $this->data['prop_date'] = array(
+                'name'  => 'prop_date',
+                'id'    => 'prop_date',
+                'type'  => 'text',
+                'value' => set_value('prop_date'),
+            );        
+        
+        $this->data['prop_time'] = array(
+                'name'  => 'prop_time',
+                'id'    => 'prop_time',
+                'type'  => 'text',
+                'value' => set_value('prop_time'),
+            ); 
+        
+        
+        $this->data['gmt_prop_date'] = array(
+                'name'  => 'gmt_prop_date',
+                'id'    => 'gmt_prop_date',
+                'type'  => 'hidden',
+                'value' => set_value('gmt_prop_date',$new->gmt_prop_date),
+            ); 
+        $this->data['gmt_prop_time'] = array(
+                'name'  => 'gmt_prop_time',
+                'id'    => 'gmt_prop_time',
+                'type'  => 'hidden',
+                'value' => set_value('gmt_prop_time', $new->gmt_prop_time),
+            ); 
+
+        $this->data['id'] = array(
+                'name'  => 'id',
+                'id'    => 'id',
+                'type'  => 'hidden',
+                'value' => set_value('id', $new->id),
+            ); 
+        
+        $this->twiggy->set('data', $this->data);        
+        $view = 'newarticle';
+        if ( ! $fromAjax)
+        {
+            $this->twiggy->template($view)->display();
+        }
+        else
+        {
+            $this->twiggy->layout('dialog')->template($view)->display();
+        }
     }
     
     function avgStats($matches, $statBlock)

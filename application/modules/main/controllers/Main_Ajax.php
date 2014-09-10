@@ -1,6 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class Video_Ajax extends Ajax_Controller {
+class Main_Ajax extends Ajax_Controller {
 
     /**
      * Launch dialog that contains a specific Ion auth page content
@@ -13,11 +13,11 @@ class Video_Ajax extends Ajax_Controller {
     function dialog($page, $id=0)
     {
         if (in_array($page, array(
-            'create',
+            'newarticle',
         )))
         {
             $this->response->dialog(array(
-                'body' => Modules::run('videos/' . $page, array('id'=>$id,'fromajax'=> true))
+                'body' => Modules::run('main/' . $page, array('id'=>$id,'fromajax'=> true))
             ));
         }
         $this->response->send();

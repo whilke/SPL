@@ -1,13 +1,13 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class Videos_model extends CI_Model
+class News_model extends CI_Model
 {   
     
     public function get($id)
     {
         $query = $this->db->
-            from('videos v')->
-            where('v.id', $id)->
+            from('news n')->
+            where('n.id', $id)->
             limit(1)->
             get();
         
@@ -24,7 +24,7 @@ class Videos_model extends CI_Model
     public function add($props=array())
     {
        
-        $this->db->insert('videos', $props);
+        $this->db->insert('news', $props);
         $id = $this->db->insert_id();
         return $id;        
     }
@@ -32,7 +32,7 @@ class Videos_model extends CI_Model
     public function edit($id, $props)
     {
         $this->db->trans_begin();
-        $this->db->update('videos', $props, array('id' => $id));
+        $this->db->update('news', $props, array('id' => $id));
         if ($this->db->trans_status() === FALSE)
         {
             $this->db->trans_rollback();
@@ -45,11 +45,10 @@ class Videos_model extends CI_Model
     public function getList()
     {
         $query = $this->db
-                ->select('v.*')
-                ->from('videos v')
-                ->where('v.deleted', 0)
-                ->order_by('v.isFeatured desc')
-                ->order_by('v.timestamp desc')
+                ->select('n.*')
+                ->from('news n')
+                ->where('n.deleted', 0)
+                ->order_by('n.timestamp desc')
                 ->get();
         
         if ($query->num_rows > 0)

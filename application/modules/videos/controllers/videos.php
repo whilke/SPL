@@ -55,13 +55,26 @@ class Videos extends MY_Controller
             $url = $this->input->post('url');
             $who = $this->input->post('who');
             $desc = $this->input->post('desc');
+            $feature = $this->input->post('isFeatured');
+            $playlist = $this->input->post('isPlaylist');
             
             $props = array();
             $props['title'] = $title;
             $props['who'] = $who;
-            $props['url'] = $url;
+            if ($playlist)
+            {
+                $props['playlist'] = $url;
+                $props['url'] = null;
+            }
+            else
+            {
+                $props['url'] = $url;
+                $props['playlist'] = null;
+            }
+            
             $props['dateline'] = $dateline;
             $props['desc'] = $desc;
+            $props['isFeatured'] = $feature;
             
             if ($bId > 0)
             {
@@ -82,6 +95,11 @@ class Videos extends MY_Controller
         if ($id > 0)
         {
             $video = $this->Videos->get($id);
+            if ($video->url == '')
+            {
+                $video->isPlaylist = true;
+                $video->url = $video->playlist;
+            }
         }
         else
         {
@@ -90,7 +108,10 @@ class Videos extends MY_Controller
               'title'=>'',
               'who'=>'',
               'dateline'=>'',
-              'url'=>''
+              'url'=>'',
+              'desc'=>'',
+              'isFeatured'=>'',  
+              'isPlaylist'=>'',
             );
         }
 
@@ -111,7 +132,7 @@ class Videos extends MY_Controller
                 'type'  => 'text',
                 'cols'  => '40',
                 'rows'  => '5',
-                'value' => set_value('desc', $cast->desc),
+                'value' => set_value('desc', $video->desc),
             );    
         $this->data['who'] = array(
                 'name'  => 'who',
@@ -126,7 +147,21 @@ class Videos extends MY_Controller
                 'type'  => 'text',
                 'value' => set_value('url', $video->url),
             );            
+
+        $this->data['isFeatured'] = array(
+                'name'  => 'isFeatured',
+                'id'    => 'isFeatured',
+                'value' => '1',
+                'checked' => set_value('isFeatured', $video->isFeatured),
+            );            
         
+        
+        $this->data['isPlaylist'] = array(
+                'name'  => 'isPlaylist',
+                'id'    => 'isPlaylist',
+                'value' => '1',
+                'checked' => set_value('isPlaylist', $video->isPlaylist),
+            );
        
         $this->data['dateline'] = array(
                 'name'  => 'dateline',

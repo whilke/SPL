@@ -224,6 +224,8 @@
                                 </ul>
                             </li>
                             {%endfor%}
+                            <li><a href="{{'main/rules'|site_url}}" class="myNavLinks" style="padding-top:0px;">Rules</a></li>
+
                           </ul>
                         </li>
 
@@ -238,8 +240,6 @@
                         <li><a href="{{'broadcasts'|site_url}}" class="myNavLinks" style="padding-top:0px;">Broadcasts</a></li>
                         <li><a href="{{'team/search'|site_url}}" class="myNavLinks" style="padding-top:0px;">Team Search</a></li>
                         <li><a href="{{'main/contact'|site_url}}" class="myNavLinks" style="padding-top:0px;">Contact</a></li>
-                        <li><a href="{{'main/rules'|site_url}}" class="myNavLinks" style="padding-top:0px;">Rules</a></li>
-                        <li><a href="{{'main/about'|site_url}}" class="myNavLinks" style="padding-top:0px;">About Us</a></li>
                         <li class='hidden-sm hidden-xs hidden-md'>
                             {{'main/search'|form_open()}}
                             <input id='search' name='search' style='margin-left:30px; width:110px;'> <button class='btn btn-primary' style='height:20px;padding-top: 0px;'>
@@ -309,6 +309,12 @@
                     </div>
                 </div>
                 <div class="col-xs-4 hidden-xs hidden-sm">
+                    <a href='http://www.twitch.tv/SPLCast' target='_blank'> 
+                        <img style='margin:5px;'src="{{'images/twitch_glyph.png'|assets_url()}}" width='32' height='32' class='pull-right'/></a>
+                    <a href='http://www.facebook.com/strifeproleague' target='_blank'>
+                        <img style='margin:5px;' src="{{'images/glyphicons_social_30_facebook.png'|assets_url()}}" width='32' height='32' class='pull-right'/></a>
+                    <a href='http://www.twitter.com/strifeproleague' target='_blank'>
+                        <img style='margin:5px;' src="{{'images/glyphicons_social_31_twitter.png'|assets_url()}}" width='32' height='32' class='pull-right'/></a>
                 </div>
             </div>
         </div>
@@ -327,6 +333,7 @@
                     <p class="text-right text-muted">
                         &copy;2014 StrifeProLeague.org. All rights reserved. |
                     <a href="/assets/privacy.html" target="_blank">Privacy Policy</a> |
+                    <a href="{{'main/about'|site_url}}">About Us</a>
                     </p>
                 </div>
             </div>

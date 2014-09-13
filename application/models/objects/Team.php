@@ -20,6 +20,25 @@ class Team
         $this->players = array();
     }
     
+    public function isTeamOwner($id)
+    {
+        $man = $this->getManager();
+        if ($man != null)
+        {
+            if ($man->id == $id)
+                return true;
+        }
+        
+        $cap = $this->getCaptain();
+        if ($cap != null)
+        {
+            if ($cap->id == $id)
+                return true;
+        }
+        
+        return false;
+    }
+    
     public function getCaptain()
     {
         if ($this->__captain != null)
@@ -54,9 +73,20 @@ class Team
         return $this->__manager;
     }
     
-    public function setManager($player)
+    public function setManager($newPlayer)
     {
-        $this->__manager = $player;   
+        //remove this player from the captain role.
+         foreach($this->players as $player)
+        {
+            if (array_key_exists( 'isOwner', $player->bestGroup ) ) 
+            {
+                if ($player->id == $newPlayer->id)
+                {
+                    $player->bestGroup= array('isManager'=>true); 
+                }
+            }
+        }
+        $this->__manager = $newPlayer;   
     }
 
     

@@ -470,15 +470,42 @@ class Standings extends MY_Controller
                     
                     $contactId = 0;
                     if ($user->teamname == $match->homeTeam)
-                        $contactId = $this->Teams_model->getById($match->away_team_id)->getContactPlayer()->id;
+                    {
+                        $p = $this->Teams_model->getById($match->away_team_id)->getManager();
+                        if ($p != null)
+                        {
+                            $contactId = $p->id;
+                            $this->sendEmail($contactId, 
+                                'Match Time System: New Time Request', $msg);
+                        }
+                        $p = $this->Teams_model->getById($match->away_team_id)->getCaptain();
+                        if ($p != null)
+                        {
+                            $contactId = $p->id;
+                            $this->sendEmail($contactId, 
+                                'Match Time System: New Time Request', $msg);
+                        }   
+                    }
                     else
-                        $contactId = $this->Teams_model->getById($match->home_team_id)->getContactPlayer()->id;
-
-                    $this->sendEmail($contactId, 
-                            'Match Time System: New Time Request', $msg);
+                    {
+                        $p = $this->Teams_model->getById($match->home_team_id)->getManager();
+                        if ($p != null)
+                        {
+                            $contactId = $p->id;
+                            $this->sendEmail($contactId, 
+                                'Match Time System: New Time Request', $msg);
+                        }
+                        $p = $this->Teams_model->getById($match->home_team_id)->getCaptain();
+                        if ($p != null)
+                        {
+                            $contactId = $p->id;
+                            $this->sendEmail($contactId, 
+                                'Match Time System: New Time Request', $msg);
+                        }              
+                    }
                                        
                     $this->Seasons_model->setMatchProposedTime($match, $gmt_prop_date ." ".$gmt_prop_time, $team->id);                    
-                    redirect('standings/match/' . $id, 'refresh');            
+                    redirect('standings/match/' . $id, 'refresh');
                 }
             }
             else if ($check == 2)
@@ -533,13 +560,40 @@ class Standings extends MY_Controller
                                                 
                         $email = "";
                         if ($user->teamname == $match->homeTeam)
-                            $email = $this->Teams_model->getById($match->away_team_id)->getContactPlayer()->id;
+                        {
+                            $p = $this->Teams_model->getById($match->away_team_id)->getManager();
+                            if ($p != null)
+                            {
+                                $contactId = $p->id;
+                                $this->sendEmail($contactId, 
+                                    'Match Time System: Request Update', $msg);
+                            }
+                            $p = $this->Teams_model->getById($match->away_team_id)->getCaptain();
+                            if ($p != null)
+                            {
+                                $contactId = $p->id;
+                                $this->sendEmail($contactId, 
+                                    'Match Time System: Request Update', $msg);
+                            }
+                        } 
                         else
-                            $email = $this->Teams_model->getById($match->home_team_id)->getContactPlayer()->id;
+                        {
+                            $p = $this->Teams_model->getById($match->home_team_id)->getManager();
+                            if ($p != null)
+                            {
+                                $contactId = $p->id;
+                                $this->sendEmail($contactId, 
+                                    'Match Time System: Request Update', $msg);
+                            }
+                            $p = $this->Teams_model->getById($match->home_team_id)->getCaptain();
+                            if ($p != null)
+                            {
+                                $contactId = $p->id;
+                                $this->sendEmail($contactId, 
+                                    'Match Time System: Request Update', $msg);
+                            }
+                        }
 
-                        $this->sendEmail($email, 
-                                'Match Time System: Request Update', $msg);
-                        
                         
                         redirect('standings/match/' . $id, 'refresh');                                    
                     }

@@ -546,8 +546,20 @@ class Tools extends MY_Controller
 
             $msg = $this->twiggy->layout('email')->template('startweek')->render();
 
-            $this->sendEmail($team->getContactPlayer()->id, 
-                    'SPL: Start of week', $msg);        
+            $p = $team->getManager();
+            if ($p != null)
+            {
+                $contactId = $p->id;
+                $this->sendEmail($contactId, 
+                    'SPL: Start of week', $msg);
+            }
+            $p = $team->getCaptain();
+            if ($p != null)
+            {
+                $contactId = $p->id;
+                $this->sendEmail($contactId, 
+                    'SPL: Start of week', $msg);
+            }   
         }
         
     }
@@ -593,15 +605,37 @@ class Tools extends MY_Controller
 
                     $msg = $this->twiggy->layout('email')->template('matchtime_reject')->render();
 
-                    $homeTeam = $this->Teams_model->getById($match->home_team_id);                
-                    $this->sendEmail($homeTeam->getContactPlayer()->id, 
+                    $homeTeam = $this->Teams_model->getById($match->home_team_id); 
+                    $p = $homeTeam->getManager();
+                    if ($p != null)
+                    {
+                        $contactId = $p->id;
+                        $this->sendEmail($contactId, 
                             'Match Time System: Auto Accepted', $msg);
-
-                    $awayTeam = $this->Teams_model->getById($match->away_team_id);                
-                    $this->sendEmail($awayTeam->getContactPlayer()->id, 
+                    }
+                    $p = $homeTeam->getCaptain();
+                    if ($p != null)
+                    {
+                        $contactId = $p->id;
+                        $this->sendEmail($contactId, 
                             'Match Time System: Auto Accepted', $msg);
-
-
+                    }   
+                    
+                    $awayTeam = $this->Teams_model->getById($match->away_team_id);  
+                    $p = $awayTeam->getManager();
+                    if ($p != null)
+                    {
+                        $contactId = $p->id;
+                        $this->sendEmail($contactId, 
+                            'Match Time System: Auto Accepted', $msg);
+                    }
+                    $p = $awayTeam->getCaptain();
+                    if ($p != null)
+                    {
+                        $contactId = $p->id;
+                        $this->sendEmail($contactId, 
+                            'Match Time System: Auto Accepted', $msg);
+                    }   
                     
                     $this->Seasons_model->unsetMatchProposedTime($match); 
                 }
@@ -617,12 +651,36 @@ class Tools extends MY_Controller
                 $msg = $this->twiggy->layout('email')->template('matchtime_accept')->render();
 
                 $homeTeam = $this->Teams_model->getById($match->home_team_id);                
-                $this->sendEmail($homeTeam->getContactPlayer()->id, 
+                $p = $homeTeam->getManager();
+                if ($p != null)
+                {
+                    $contactId = $p->id;
+                    $this->sendEmail($contactId, 
                         'Match Time System: Auto Accepted', $msg);
+                }
+                $p = $homeTeam->getCaptain();
+                if ($p != null)
+                {
+                    $contactId = $p->id;
+                    $this->sendEmail($contactId, 
+                        'Match Time System: Auto Accepted', $msg);
+                }   
                 
                 $awayTeam = $this->Teams_model->getById($match->away_team_id);                
-                $this->sendEmail($awayTeam->getContactPlayer()->id, 
+                $p = $awayTeam->getManager();
+                if ($p != null)
+                {
+                    $contactId = $p->id;
+                    $this->sendEmail($contactId, 
                         'Match Time System: Auto Accepted', $msg);
+                }
+                $p = $awayTeam->getCaptain();
+                if ($p != null)
+                {
+                    $contactId = $p->id;
+                    $this->sendEmail($contactId, 
+                        'Match Time System: Auto Accepted', $msg);
+                }   
                 
                                 
                 $this->Seasons_model->confirmMatchProposedTime($match, false);                    
@@ -641,13 +699,37 @@ class Tools extends MY_Controller
             $msg = $this->twiggy->layout('email')->template('matchtime_expire')->render();
 
             $homeTeam = $this->Teams_model->getById($match->home_team_id);                
-            $this->sendEmail($homeTeam->getContactPlayer()->id, 
+            $p = $homeTeam->getManager();
+            if ($p != null)
+            {
+                $contactId = $p->id;
+                $this->sendEmail($contactId, 
                     'Match: Expired', $msg);
+            }
+            $p = $homeTeam->getCaptain();
+            if ($p != null)
+            {
+                $contactId = $p->id;
+                $this->sendEmail($contactId, 
+                    'Match: Expired', $msg);
+            } 
 
             $awayTeam = $this->Teams_model->getById($match->away_team_id);                
-            $this->sendEmail($awayTeam->getContactPlayer()->id, 
+            $p = $awayTeam->getManager();
+            if ($p != null)
+            {
+                $contactId = $p->id;
+                $this->sendEmail($contactId, 
                     'Match: Expired', $msg);
-                        
+            }
+            $p = $awayTeam->getCaptain();
+            if ($p != null)
+            {
+                $contactId = $p->id;
+                $this->sendEmail($contactId, 
+                    'Match: Expired', $msg);
+            }       
+                                    
             $this->Seasons_model->editMatch($match);
             
             

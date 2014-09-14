@@ -29,6 +29,44 @@ class Tools extends MY_Controller
         $this->mahana_messaging->send_new_message(2, $to, $subject, $message, true, true);            
     }
     
+    public function getCaptainEmails()
+    {
+        $this->model('Seasons_model');
+        $this->model('Teams_model');
+        $this->load->model('ion_auth_model','ion_auth');
+
+        $season = $this->Seasons_model->GetCurrentSeason();
+        
+        $stats = $this->Seasons_model->getTeamsByPoints($season->id, 0, false);
+            
+        $emails = array();
+        foreach($stats as $stat)
+        {
+            $team = $this->Teams_model->getById($stat->teamId);
+            
+            $p = $team->getManager();
+            if ($p != null)
+            {
+                $u = $this->ion_auth->user($p->id)->row();
+                $email = $u->email;
+                $emails[] = $email;
+            }
+            $p = $team->getCaptain();
+            if ($p != null)
+            {
+                $u = $this->ion_auth->user($p->id)->row();
+                $email = $u->email;
+                $emails[] = $email;
+            }               
+        }
+        
+        foreach($emails as $email)
+        {
+            print $email . ";";
+        }
+
+    }
+    
     public function emails()
     {
         $this->load->model('ion_auth_model','ion_auth');

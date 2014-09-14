@@ -44,7 +44,8 @@ class Standings extends MY_Controller
             {
                 $team = $this->Teams_model->getById($stat->teamId);
                 $plrs = $team->getStarters();
-                if (count($plrs) >= 5)
+                $subs = $team->getSubs();
+                if (count($plrs)+count($subs) >= 5)
                     $stat->isValid = true;
                 else
                     $stat->isValid = false;

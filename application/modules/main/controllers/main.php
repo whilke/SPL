@@ -86,6 +86,11 @@ class Main extends MY_Controller
         $this->twiggy->template('about')->display();
     }
     
+    function tutorial()
+    {
+         $this->twiggy->template('tutorial')->display();
+    }
+    
     function search()
     {
         $this->load->model('Teams_model');

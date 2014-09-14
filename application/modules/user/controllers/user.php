@@ -277,7 +277,6 @@ class User extends MY_Controller
             if (!$bHasInvite)
             {
                 //does this owner have spots to invite someone with?
-                $players= $team->players;
                 $tot_members = count($team->getStarters());
                 $tot_subs = count($team->getSubs());
                

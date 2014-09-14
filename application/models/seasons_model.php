@@ -551,6 +551,7 @@ class Seasons_model extends CI_Model
 
         $today = new DateTime();
 
+        date_default_timezone_set("GMT");
         $arr = Array();
         foreach($query->result() as $row)
         {
@@ -582,6 +583,7 @@ class Seasons_model extends CI_Model
         $season = $this->get($seasonId);
         $seasonId = $season->id;
         
+        date_default_timezone_set("GMT");
         $date = new DateTime();
         $date->add(new DateInterval('P2W'));
         if (!$hideStats)
@@ -700,6 +702,7 @@ class Seasons_model extends CI_Model
         
             if ($query->num_rows() === 1)
             {
+                date_default_timezone_set("GMT");
                 $match = $query->row();
 
                 $oDate = new DateTime($match->gamedate);
@@ -778,6 +781,7 @@ class Seasons_model extends CI_Model
     function confirmMatchProposedTime($match, $formatDates=true)
     {
         $this->db->trans_begin();        
+        date_default_timezone_set("GMT");
         $data = new stdClass();
         if ($formatDates)
         {
@@ -825,6 +829,7 @@ class Seasons_model extends CI_Model
     {
         $this->db->trans_begin();
         
+        date_default_timezone_set('GMT');
         $now = new DateTime('now');
         $data = new stdClass();
         $data->proposeddate  = DateTime::createFromFormat("m/d/Y h:ia", $newTime)->format('Y-m-d H:i:s');

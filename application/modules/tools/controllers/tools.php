@@ -574,25 +574,28 @@ class Tools extends MY_Controller
 
         $this->syncPlayers();
         
+        date_default_timezone_set("GMT");
         $time = date("Y-m-d H:i:s");
         $now = new DateTime($time);
         $time = gmdate("Y-m-d H:i:s");
         $gmnow = new DateTime($time);
-
+        
+        
         $matches = $this->Seasons_model->getAllMatchProposals();
         foreach($matches AS $match)
         {
             //okay let's see if we are first past the proposed deadline.
-            $time = strtotime($match->proposeddate. ' UTC');
+            $time = strtotime($match->proposeddate. ' GMT');
             $prop_date = date("Y-m-d H:i:s", $time);
             $prop_date = new DateTime($prop_date);
             
-            $time = strtotime($match->proposeddate_timestamp);
+            $time = strtotime($match->proposeddate_timestamp . ' GMT');
             $timestamp = date("Y-m-d H:i:s", $time);
             $timestamp = new DateTime($timestamp);
-
-            $diff = $now->diff($timestamp);                
+            
+            $diff = $gmnow->diff($timestamp);                
             $days = intval( $diff->format('%d') );
+                    
             if ($gmnow > $prop_date)
             { 
                 //okay, this match is past the proposed time, check if it's been less
@@ -611,14 +614,14 @@ class Tools extends MY_Controller
                     {
                         $contactId = $p->id;
                         $this->sendEmail($contactId, 
-                            'Match Time System: Auto Accepted', $msg);
+                            'Match Time System: Auto Rejected', $msg);
                     }
                     $p = $homeTeam->getCaptain();
                     if ($p != null)
                     {
                         $contactId = $p->id;
                         $this->sendEmail($contactId, 
-                            'Match Time System: Auto Accepted', $msg);
+                            'Match Time System: Auto Rejected', $msg);
                     }   
                     
                     $awayTeam = $this->Teams_model->getById($match->away_team_id);  
@@ -627,14 +630,14 @@ class Tools extends MY_Controller
                     {
                         $contactId = $p->id;
                         $this->sendEmail($contactId, 
-                            'Match Time System: Auto Accepted', $msg);
+                            'Match Time System: Auto Rejected', $msg);
                     }
                     $p = $awayTeam->getCaptain();
                     if ($p != null)
                     {
                         $contactId = $p->id;
                         $this->sendEmail($contactId, 
-                            'Match Time System: Auto Accepted', $msg);
+                            'Match Time System: Auto Rejected', $msg);
                     }   
                     
                     $this->Seasons_model->unsetMatchProposedTime($match); 

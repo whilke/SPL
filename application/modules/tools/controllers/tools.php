@@ -4,6 +4,7 @@ class Tools extends MY_Controller
 {
     function __construct()
     {       
+        date_default_timezone_set('GMT');
         $this->load->database();       
         $this->load->library('email');
         

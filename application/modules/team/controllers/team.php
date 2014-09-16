@@ -736,7 +736,6 @@ class Team extends MY_Controller
         $this->data['role'] = $this->form_validation->set_value('role');
         $this->data['roles'] = array();
         
-        $players= $team->players;
         $tot_members = count($team->getStarters());
         $tot_subs = count($team->getSubs());
 

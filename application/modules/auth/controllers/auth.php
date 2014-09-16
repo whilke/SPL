@@ -842,6 +842,7 @@ class Auth extends MY_Controller {
         $season = $this->Seasons_model->get($seasonId);
         $weeks = $this->Seasons_model->getWeeksForSeason($seasonId);
         
+        /*
         $dWeeks = Array();
         $lastWeek = null;
         foreach($weeks AS $week)
@@ -854,8 +855,10 @@ class Auth extends MY_Controller {
         $dWeeks[] = $lastWeek;
         
         $weeks = $dWeeks;
+         * 
+         */
         
-        $gameId = 1;
+        $gameId = 218;
         //run throgh each group of the season and seed just that.
         $groups = $this->Seasons_model->getGroupsForSeason($seasonId);
         foreach($groups AS $group)
@@ -869,7 +872,7 @@ class Auth extends MY_Controller {
                 $localWeek = $weeks[$round];
 
                 $date = new DateTime($localWeek['end']);
-                $date->sub(new DateInterval('P1D'));
+                //$date->sub(new DateInterval('P1D'));
                 
                 $date_day = $date->format('Y-m-d');
                 $match_day1 = $date_day;
@@ -903,7 +906,7 @@ class Auth extends MY_Controller {
                         $server2 = "USW";
                         
                         $match_day1 .= ' 19:00:00';
-                        $match_day1 .= ' 21:00:00';
+                        $match_day2 .= ' 21:00:00';
                         
                     }
                     else if ($team1->region == "USE" && $team2->region == "EU")
@@ -928,6 +931,13 @@ class Auth extends MY_Controller {
                     }
                     else if ($team1->region == "SEA" && $team2->region == "SEA")
                     {
+                        
+                        $date->sub(new DateInterval('P1D'));
+
+                        $date_day = $date->format('Y-m-d');
+                        $match_day1 = $date_day;
+                        $match_day2 = $date_day;
+                
                         //SEA vs SEA
                         $server1 = "SEA";
                         $server2 = "SEA";  
@@ -940,8 +950,8 @@ class Auth extends MY_Controller {
                             ($team1->region == "EU" && $team2->region == "SEA") )
                     {
                         //EU vs SEA
-                        $server1 = "CIS";
-                        $server2 = "CIS";   
+                        $server1 = "SEA";
+                        $server2 = "EU";   
                         
                         $match_day1 .= ' 13:00:00';
                         $match_day2 .= ' 15:00:00';

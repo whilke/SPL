@@ -26,7 +26,7 @@ class Tools extends MY_Controller
     private function sendEmail($to, $subject, $message)
     {
         $this->load->library('mahana_messaging');
-        $this->mahana_messaging->send_new_message(2, $to, $subject, $message, true, true);            
+        $this->mahana_messaging->send_new_message(2, $to, $subject, $message, false, true);            
     }
     
     public function getCaptainEmails()
@@ -80,8 +80,9 @@ class Tools extends MY_Controller
     
     public function createTimeBuckets()
     {
-        $arr = array();
-        for($i =0; $i < 24; $i+=2)
+        $arr = array();       
+
+        for($i =-4; $i < 24; $i+=2)
         {
             $o = new stdClass();
             $o->idx = $i;
@@ -196,6 +197,16 @@ class Tools extends MY_Controller
             }
             else if ($group->g1->region === "USW")
             {
+                $this->model('Teams_model');
+                
+                $hTeam = $this->Teams_model->getById($group->g1->hTeam);
+                $aTeam = $this->Teams_model->getById($group->g1->aTeam);
+                
+                if ($hTeam->region == 'SEA' || $aTeam->region == 'SEA')
+                {
+                    return -4;
+                }
+
                 return 20;
             }
         }
@@ -215,7 +226,13 @@ class Tools extends MY_Controller
             {
                 return 16;
             }
-
+            if (
+                    ($group->g1->region === "SEA" && $group->g2->region === "EU") ||
+                    ($group->g1->region === "EU" && $group->g2->region === "SEA") 
+                )
+            {
+                return 9;
+            }
         }
         print ($group->g1->region);
         print ($group->g2->region);
@@ -347,7 +364,34 @@ class Tools extends MY_Controller
             {
                 return 16;
             }
-
+            if (
+                    ($team1->region === "USW" && $team2->region === "EU") ||
+                    ($team1->region === "EU" && $team2->region === "USW") 
+                )
+            {
+                return 18;
+            }
+            if (
+                    ($team1->region === "SEA" && $team2->region === "EU") ||
+                    ($team1->region === "EU" && $team2->region === "SEA") 
+                )
+            {
+                return 13;
+            }            
+            if (
+                    ($team1->region === "USE" && $team2->region === "SEA") ||
+                    ($team1->region === "SEA" && $team2->region === "USE") 
+                )
+            {
+                return -4;
+            }
+            if (
+                    ($team1->region === "USW" && $team2->region === "SEA") ||
+                    ($team1->region === "SEA" && $team2->region === "USW") 
+                )
+            {
+                return -4;
+            }
         }
         return 12;
     }
@@ -435,11 +479,28 @@ class Tools extends MY_Controller
         
         foreach($times as $blocks)
         {
-            $m1Time = $blocks->idx;
-            $m2Time = $blocks->idx + 1;
+            $bSEA = false;
+            if ($blocks->idx < 0)
+            {
+                $m1Time = 4 - $blocks->idx;
+                $m2Time = 4 - $blocks->idx + 1;  
+                $bSEA = true;
+            }
+            else
+            {
+                $m1Time = $blocks->idx;
+                $m2Time = $blocks->idx + 1;                
+            }
             
             foreach($blocks->matches as $local_match)
             {
+                if ($bSEA)
+                {
+                    $date = new DateTime($local_match->date);
+                    $date->sub(new DateInterval('P1D'));              
+                    $local_match->date = $date->format('Y-m-d');
+                }
+                
                 $date = new DateTime($local_match->date . " " . $m1Time . ":00:00");
                 $match = $local_match->g1->match;                
                 $match->gamedate = date_format($date, "Y-m-d H:i:s");
@@ -476,7 +537,7 @@ class Tools extends MY_Controller
     
     public function CreateChallengerMatches($season, $week)
     {
-        $gameId = 32; 
+        $gameId = 247; 
         $teams = $this->Seasons_model->getActiveChallengerTeams($season->id);
         usort($teams, "teamPointSortLocal");
         
@@ -545,14 +606,22 @@ class Tools extends MY_Controller
             $away = array_shift($teams);
             
             $date = new DateTime($week->end);
-            $date->sub(new DateInterval('P1D'));
+            //$date->sub(new DateInterval('P1D'));
 
             $date_day = $date->format('Y-m-d');
             $match_day = $date_day;
             $startTime = $this->matchStartTime($home, $away);
             $regions = $this->matchRegions($home, $away);
+            
+            if ($startTime < 0)
+            {
+                $startTime = 0;
+            }
+            
             $match_day1 = $match_day . ' ' . $startTime . ":00:00";
             $match_day2 = $match_day . ' ' . ($startTime+1) . ":00:00";
+            
+            
             
             $this->Seasons_model->newMatch($season->id, $week->id, $home->id, $away->id, $regions[1], $match_day1, 'G' . ++$gameId);
             $this->Seasons_model->newMatch($season->id, $week->id, $away->id, $home->id, $regions[2], $match_day2, 'G' . ++$gameId);

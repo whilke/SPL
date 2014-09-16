@@ -89,6 +89,10 @@ class Team
         $this->__manager = $newPlayer;   
     }
 
+    public function getTeamSize()
+    {
+        return (count($this->getStarters()) + count($this->getSubs()));
+    }
     
     public function getStarters()
     {

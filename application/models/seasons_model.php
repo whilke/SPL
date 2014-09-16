@@ -967,6 +967,7 @@ class Seasons_model extends CI_Model
                 ->join('season_group_teams sgt', 'sgt.season_group_id = sg.id')
                 ->where('sg.season_id', $seasonId)
                 ->where('sg.isopen', true)
+                ->order_by('sgt.seeding', 'asc')
                 ->get();
                 
         $arr = Array();
@@ -978,9 +979,8 @@ class Seasons_model extends CI_Model
             //okay, from this teamid, we want to go see if they have an active 5 man roster.
             $team = $ci->Teams_model->getById($row->team_id);
             if ($team != null)
-            {
-                $starters = $team->players;
-                if (sizeof($starters) >= 5)
+            {                
+                if ($team->getTeamSize() >= 5)
                 {
                     //valid team! we now need the points.
                     $team->seeding = $row->seeding;

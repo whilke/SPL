@@ -540,9 +540,7 @@ class Tools extends MY_Controller
     {
         $gameId = 247; 
         $teams = $this->Seasons_model->getActiveChallengerTeams($season->id);
-        usort($teams, "teamPointSortLocal");
         
-        //okay, now that this is sorted, we want to secheck to see if there needs to be a buy, and who hasn't had one yet.
         $count = count($teams);
         $iseven = (($count % 2) == 0);
         
@@ -597,6 +595,9 @@ class Tools extends MY_Controller
                     $team->id, 0, null );
             
         }
+        
+        usort($teams, "teamPointSortLocal");
+
         
         //teams should be even now and very easy to create.
         $half = floor(count($teams) / 2);
@@ -1032,7 +1033,7 @@ function teamPointSortLocal($a, $b)
 {
     if ($a->points == $b->points)
     {
-        return ($a->name < $b->name) ? -1: 1;        
+        return ($a->region < $b->region) ? -1: 1;        
     }
     return ($a->points < $b->points) ? 1 : -1;        
 }

@@ -1,0 +1,46 @@
+{% extends _layout %}
+{% block content %}
+<div class='col-md-8 col-md-offset-2'>
+    <h2>Donations</h2>
+    
+    {% set fund = 0 %}
+    <div class="row">
+    <h4>Incoming</h4>  
+    {%for tip in tips %}
+    <div class="row">
+        <div class="col-md-2">
+            ${{tip.amount}}
+            {% set fund = fund + tip.amount%}
+        </div>
+        <div class="col-md-10">
+            {{tip.note}}
+        </div>
+    </div>
+    {%endfor%}         
+    </div>
+    
+    <br/>
+    <br/>
+    
+    <div class="row">
+        <h4>Outgoing</h4>
+     <div class="row">
+         <div class="col-md-2">
+         {% set fund = fund - 0%}
+
+         </div>
+         <div class="col-md-10">
+         </div>
+     </div>
+    </div>
+    <br/>
+    <br/>
+    
+    <div class="row">
+    <strong>
+    <h4>Total Donation Fund: ${{fund}}</h4>
+    </strong>
+    </div>
+        
+</div>
+{% endblock %}

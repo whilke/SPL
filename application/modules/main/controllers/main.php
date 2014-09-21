@@ -91,6 +91,18 @@ class Main extends MY_Controller
          $this->twiggy->template('tutorial')->display();
     }
     
+    function donations()
+    {
+        
+        $url = "https://streamtip.com/api/tips?client_id=541df69d9e47184227347edc&access_token=ODhiMjRmNDdmOTQyZTMzOTQxMTIxYWY1";
+        $r = file_get_contents($url);       
+        $o = json_decode($r);
+        
+        $this->twiggy->set('tips', $o->tips);
+        
+        $this->twiggy->template('donations')->display();
+    }
+    
     function search()
     {
         $this->load->model('Teams_model');

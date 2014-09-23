@@ -37,7 +37,7 @@ class Main extends MY_Controller
                 }
                 else
                 {
-                    $cast->timestamp = $cast->timestamp;
+                    $cast->timestamp = $cast->timestamp . " GMT";
                     
                 }
                 

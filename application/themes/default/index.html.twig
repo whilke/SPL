@@ -151,7 +151,7 @@ $( document ).ready( function() {
     var d = '01/01/2000 00:00';
     if ('{{nextCast.timestamp}}' != '')
     {
-        var strDateTime = '{{nextCast.timestamp}} GMT';
+        var strDateTime = '{{nextCast.timestamp}}';
         var myDate = moment(strDateTime, "YYYY-MM-DD HH:mm:ss Z");
         d = myDate.format("MM/DD/YYYY hh:mm A ") + getTimezone();
     }

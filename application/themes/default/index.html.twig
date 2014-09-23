@@ -152,7 +152,7 @@ $( document ).ready( function() {
     if ('{{nextCast.timestamp}}' != '')
     {
         var strDateTime = '{{nextCast.timestamp}}';
-        var myDate = moment(strDateTime, "YYYY-MM-DD HH:mm:ss Z");
+        var myDate = moment(strDateTime, "MM/DD/YYYY HH:mm:ss Z");
         d = myDate.format("MM/DD/YYYY hh:mm A ") + getTimezone();
     }
     

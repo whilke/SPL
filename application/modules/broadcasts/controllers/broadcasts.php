@@ -34,7 +34,8 @@ class Broadcasts extends MY_Controller
                 }
                 else
                 {
-                    $cast->timestamp = $cast->timestamp . " GMT";
+                    $oDate = new DateTime($cast->timestamp);
+                    $cast->timestamp = $oDate->format('m/d/Y H:i:s') ." GMT";
                 }
                 
                 date_default_timezone_set('GMT');

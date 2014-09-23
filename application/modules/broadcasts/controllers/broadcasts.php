@@ -32,6 +32,10 @@ class Broadcasts extends MY_Controller
                     $cast->title = $match->homeTeam . " vs " . $match->awayTeam;
                     $cast->timestamp = $match->gamedate;
                 }
+                else
+                {
+                    $cast->timestamp = $cast->timestamp . " GMT";
+                }
                 
                 date_default_timezone_set('GMT');
                 $t = strtotime($cast->timestamp . " GMT");

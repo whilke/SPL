@@ -148,17 +148,24 @@ $( document ).ready( function() {
     });
     
     
-    var d = '01/01/2000 00:00';
+    var d = '01/01/2000 00:00 GMT';
+    var dObj = null;
     if ('{{nextCast.timestamp}}' != '')
     {
         var strDateTime = '{{nextCast.timestamp}}';
         var myDate = moment(strDateTime, "MM/DD/YYYY HH:mm:ss Z");
-        d = myDate.format("MM/DD/YYYY hh:mm A ") + getTimezone();
+        dObj = myDate.toDate();
+    }
+    else
+    {
+        var strDateTime = d;
+        var myDate = moment(strDateTime, "MM/DD/YYYY HH:mm:ss Z");
+        dObj = myDate.toDate();
     }
     
 
     $('.countdown-styled').countdown({
-        date: d,
+        date: dObj,
         render: function(data) {
           var el = $(this.el);
           el.empty()

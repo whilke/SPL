@@ -63,7 +63,7 @@
             if (schDate != 0)
             {
                 var strDateTime = schDate + " GMT";
-                var myDate = moment(strDateTime);
+                var myDate = moment(strDateTime, "YYYY-MM-DD HH:mm:ss Z");
                 var d = myDate.format("MM/DD/YYYY hh:mm A ") + getTimezone();
                 $(this).html( d );
             }

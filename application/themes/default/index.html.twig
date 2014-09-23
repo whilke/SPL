@@ -124,7 +124,7 @@ $( document ).ready( function() {
         if (schDate != 0)
         {
             var strDateTime = schDate + " GMT";
-            var myDate = moment(strDateTime);
+            var myDate = moment(strDateTime, "YYYY-MM-DD HH:mm:ss Z");
             var d = myDate.format("MMMM Do, YYYY");
             $(this).html( d );
         }
@@ -152,7 +152,7 @@ $( document ).ready( function() {
     if ('{{nextCast.timestamp}}' != '')
     {
         var strDateTime = '{{nextCast.timestamp}} GMT';
-        var myDate = moment(strDateTime);
+        var myDate = moment(strDateTime, "YYYY-MM-DD HH:mm:ss Z");
         d = myDate.format("MM/DD/YYYY hh:mm A ") + getTimezone();
     }
     

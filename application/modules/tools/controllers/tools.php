@@ -538,7 +538,7 @@ class Tools extends MY_Controller
     
     public function CreateChallengerMatches($season, $week)
     {
-        $gameId = 247; 
+        $gameId = 259; 
         $teams = $this->Seasons_model->getActiveChallengerTeams($season->id);
         
         $count = count($teams);

@@ -108,7 +108,7 @@ class Ladder extends MY_Controller
                 'name'  => 'name',
                 'id'    => 'name',
                 'type'  => 'text',
-                'maxlength'  => '20',
+                 'maxlength'  => '20',
                 'value' => $this->form_validation->set_value('name'),
             );        
  

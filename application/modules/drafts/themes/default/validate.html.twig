@@ -1,0 +1,43 @@
+{% extends _layout %}
+
+{% block content %}
+<div class="row">
+<div class="col-lg-8 col-lg-offset-1">
+<h1>Draft Lobby</h1>
+
+{% if data.message != "" %}
+<div class="alert alert-info" id="infoMessage">{{ data.message}}</div>
+{% endif%}
+
+<h4>Notice: Once in the draft lobby the timer will start as soon as both users sit down. <br/>Make sure you do not sit down until you are ready to draft.</h4>
+
+<br/>
+
+{% set l = 'drafts/validate/' ~ draft.id %}
+{{l|form_open()}}
+
+{% if draft.password != "" %}
+<p>
+    Password:
+<div class="input-group col-lg-6">
+ {{data.password|bs_form_input()}}
+ <div class="input-group-btn">
+ <input type="submit" name="submit" value="Join" class="btn btn-primary"/>
+ </div>
+</div>    
+</p>
+{% else %}
+<div class="text-center">
+    <div class="center-div">
+        <input type="submit" name="submit" value="Join" class="btn btn-primary btn-lg"/>
+    </div>
+</div>
+{% endif %}
+
+
+{{form_close()}}
+
+
+</div>
+</div>
+{% endblock %}

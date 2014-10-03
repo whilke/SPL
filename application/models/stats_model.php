@@ -75,6 +75,19 @@ class Stats_model extends CI_Model
         return $arr;
     }
     
+    function getHeroList2()
+    {
+        $query = $this->db->from('heroes')->get();
+        
+        $arr = Array();
+        foreach($query->result() as $row)
+        {
+            $row->name = strtolower(str_replace("Hero_","", $row->name));
+            $arr[] = $row;
+        }
+        return $arr;
+    }
+    
     function getHeroId($hero_name)
     {
         $query = $this->db->where('name', $hero_name)->limit(1)->

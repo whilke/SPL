@@ -1,0 +1,503 @@
+{% extends _layout %}
+
+{% block css %}
+{% endblock %}
+        
+{% block content %}  
+    <br/>
+    <div class="row">
+        <div class="col-md-2">
+            <div class="text-center center-block">
+                <button class="btn btn-block btn-lg btn-primary glorySeat" onClick='glorySeatClick();'>Glory</button>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class='row'>
+                <div class='col-md-2'>
+                    <div style='margin-top:20px;font-family: Audiowide, sans-serif;' class='pull-left text-warning'>(<span class='gloryTimer'>60</span>s / <span class='gloryTimerExtra'>60</span>s)</div>            
+                </div>
+                <div class='col-md-8'>
+                    <span class="text-center center-block" style='font-family: Oswald, sans-serif; font-size:20px;'> {{draft.title}}</span>                    
+                </div>
+                <div class='col-md-2'>
+                    <div style='margin-top:20px;font-family: Audiowide, sans-serif;' class='pull-right text-warning'>(<span class='valorTimer'>60</span>s / <span class='valorTimerExtra txt-extratime'>60</span>s)</div>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="text-center center-block">
+                <button class="btn btn-block btn-lg btn-primary valorSeat" onClick='valorSeatClick()'>Valor</button>
+            </div>        
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-2 gloryPicks">
+            <div class='heroban-cont center-div'></div>
+            <div class='hero-cont center-div' data-id='1'></div>
+            <div class='hero-cont center-div' data-id='2'></div>
+            <div class='hero-cont center-div' data-id='3'></div>
+            <div class='hero-cont center-div' data-id='4'></div>
+            <div class='hero-cont center-div' data-id='5'></div>
+        </div>
+        <div class="col-md-8">
+            <div class="row">
+            {% for hero in heroes %}
+                <div class='pull-left hero-overlay'>
+                <div title id="hero_port" class="hero-{{hero.name}} hero-medium hero-padding hero-hover" data-name="{{hero.name}}" data-id="{{hero.id}}"></div>
+                <div class='text-overlay text-center'>{{hero.desc}}</div>
+                </div>
+            {%endfor%}
+            </div>
+            <div class='row'>
+                <br/>
+                <div id="chatbox" name="chatbox"></div>
+
+                <form class="chat_form" name='chat_form'  onsubmit="return false">
+                <div class="input-group">
+                 <input type="text" class="form-control" name="usermsg" id="usermsg" maxlength="255">
+                 <div class="input-group-btn">
+                 <button class='btn btn-info'  name="submitmsg" id="submitmsg">Send</button>
+                 </div>
+                </div>
+                    
+                </form>
+        </div>
+        </div>
+        <div class="col-md-2 valorPicks">   
+            <div class='heroban-cont center-div valorBan'></div>
+            <div class='hero-cont center-div' data-id='1'></div>
+            <div class='hero-cont center-div' data-id='2'></div>
+            <div class='hero-cont center-div' data-id='3'></div>
+            <div class='hero-cont center-div' data-id='4'></div>
+            <div class='hero-cont center-div' data-id='5'></div>
+            
+        </div>
+    </div>
+    <div class="row">
+        <br/>
+        <br/>
+        <div class="col-md-8 col-md-push-5 small" style="color: grey;">
+        *SPL Drafter is for SPL use only. Limited permission is granted for personal non-broadcast use, unless noted otherwise.  
+        </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">    
+    
+function HashTable() {
+    this.length = 0;
+    this.items = new Array();
+    for (var i = 0; i < arguments.length; i += 2) {
+        if (typeof (arguments[i + 1]) != 'undefined') {
+            this.items[arguments[i]] = arguments[i + 1];
+            this.length++;
+        }
+    }
+
+    this.removeItem = function (in_key) {
+        var tmp_previous;
+        if (typeof (this.items[in_key]) != 'undefined') {
+            this.length--;
+            var tmp_previous = this.items[in_key];
+            delete this.items[in_key];
+        }
+
+        return tmp_previous;
+    }
+
+    this.getItem = function (in_key) {
+        return this.items[in_key];
+    }
+
+    this.setItem = function (in_key, in_value) {
+        var tmp_previous;
+        if (typeof (in_value) != 'undefined') {
+            if (typeof (this.items[in_key]) == 'undefined') {
+                this.length++;
+            } else {
+                tmp_previous = this.items[in_key];
+            }
+
+            this.items[in_key] = in_value;
+        }
+
+        return tmp_previous;
+    }
+
+    this.hasItem = function (in_key) {
+        return typeof (this.items[in_key]) != 'undefined';
+    }
+
+    this.clear = function () {
+        for (var i in this.items) {
+            delete this.items[i];
+        }
+
+        this.length = 0;
+    }
+    
+    return this;
+}    
+
+$( document ).ready( function() {
+    gamePoll();
+    $('div.hero-medium').click(function(idx) {
+        var t = $(this);
+        pickHero(t.data('id'), t);
+    });  
+    
+    $('.chat_form').bind("submit", function() {
+        var e = $('#usermsg');
+        var msg = e.val();
+        e.val('');
+        handleChatEvent(msg);
+        
+    });
+});
+
+var nextChatTime = 0;
+function gamePoll()
+{
+    $.getJSON( "{{'drafts/draft_api/getDraftLobby'|site_url}}" + "/" + {{draft.id}} + "/" + nextChatTime, function( data ) {
+        procGame(data);
+    });
+    
+    setTimeout('gamePoll();', 500);
+}
+
+var valorBanSet = false;
+var gloryBanSet = false;
+var glorySet = HashTable();
+var valorSet = HashTable();
+var curDraft = null;
+function procGame(draft)
+{
+    curDraft = draft;
+    
+    if (draft.valid == false) return;
+    
+    nextChatTime = draft.nowChatTime;
+    if (draft.gloryBan > 0 && gloryBanSet == false)
+    {
+        gloryBanSet = true;   
+        disableHero(draft.gloryBan);
+        
+        var cont = $('.gloryPicks').find('div.heroban-cont');
+        var name = getHeroName(draft.gloryBan);
+        cont.append("<div class='hero-" +name+" hero-medium heroImg-cont'></div>");   
+        cont.append("<div class='heroban-cont'></div>");   
+
+
+    }
+        
+    if (draft.valorBan > 0 && valorBanSet == false)
+    {
+        valorBanSet = true;   
+        disableHero(draft.valorBan);
+
+        var cont = $('.valorPicks').find('div.heroban-cont');
+        var name = getHeroName(draft.valorBan);
+        cont.append("<div class='hero-" +name+" hero-medium heroImg-cont'></div>");  
+        cont.append("<div class='heroban-cont'></div>");   
+    }
+    
+    if (draft.gloryPicks != null)
+    {
+        var arrayLength = draft.gloryPicks.length;
+        for (var i = 0; i < arrayLength; i++) {
+            var id = draft.gloryPicks[i];
+            
+            if (!glorySet.hasItem(id))
+            {
+                glorySet.setItem(id, id);
+                disableHero(id);
+                
+                var cont = $('.gloryPicks').find('div.hero-cont[data-id="' + (i+1) + '"]');
+                var name = getHeroName(id);
+                cont.append("<div class='hero-" +name+" hero-medium heroImg-cont'></div>");   
+            }
+        }
+    }
+    if (draft.valorPicks != null)
+    {
+        var arrayLength = draft.valorPicks.length;
+        for (var i = 0; i < arrayLength; i++) {
+            var id = draft.valorPicks[i];
+            
+            if (!valorSet.hasItem(id))
+            {
+                valorSet.setItem(id, id);
+                disableHero(id);
+                
+                var cont = $('.valorPicks').find('div.hero-cont[data-id="' + (i+1) + '"]');
+                var name = getHeroName(id);
+                cont.append("<div class='hero-" +name+" hero-medium heroImg-cont'></div>");   
+                
+            }
+        }
+    }
+    
+    if (draft.glorySeat != null)
+    {
+        var e = $('button.glorySeat');
+        e.text(draft.glorySeat.name);
+    }
+    else
+    {
+        var e = $('button.glorySeat');
+        e.text('Glory');
+    }
+        
+        
+    if (draft.valorSeat != null)
+    {
+        var e = $('button.valorSeat');
+        e.text(draft.valorSeat.name);
+    }
+    else
+    {
+        var e = $('button.valorSeat');
+        e.text('Valor');
+    }
+    
+    if (draft.timerActive == true)
+    {
+        if (draft.gloryRound == true)
+        {
+            var gloryTimer = $('.gloryTimer');
+            gloryTimer.text(draft.roundTime);
+            
+            if (draft.roundTime > 30)
+            {
+                gloryTimer.removeClass('txt-extratime-danger');
+                gloryTimer.removeClass('txt-extratime-warn');
+            }
+            else if (draft.roundTime > 10)
+            {
+                gloryTimer.removeClass('txt-extratime-danger');
+                gloryTimer.addClass('txt-extratime-warn');
+            }
+            else
+            {
+                gloryTimer.addClass('txt-extratime-danger');
+                gloryTimer.removeClass('txt-extratime-warn');
+            }
+            
+            
+        }
+        else
+        {
+            var valorTimer = $('.valorTimer');
+            valorTimer.text(draft.roundTime);
+            
+            if (draft.roundTime > 30)
+            {
+                valorTimer.removeClass('txt-extratime-danger');
+                valorTimer.removeClass('txt-extratime-warn');
+            }
+            else if (draft.roundTime > 10)
+            {
+                valorTimer.removeClass('txt-extratime-danger');
+                valorTimer.addClass('txt-extratime-warn');
+            }
+            else
+            {
+                valorTimer.addClass('txt-extratime-danger');
+                valorTimer.removeClass('txt-extratime-warn');
+            }
+                        
+            
+        }        
+    }
+    else
+    {
+         var gloryTimer = $('.gloryTimer');
+         var valorTimer = $('.valorTimer');
+         gloryTimer.text('60');
+         valorTimer.text('60');
+
+         valorTimer.removeClass('txt-extratime-danger');
+         valorTimer.removeClass('txt-extratime-warn');
+
+         gloryTimer.removeClass('txt-extratime-danger');
+         gloryTimer.removeClass('txt-extratime-warn');
+    }
+    
+     var timer = $('.gloryTimerExtra');
+     timer.text(draft.glory_extraTime);
+    if (draft.glory_extraTime > 30)
+    {
+        timer.removeClass('txt-extratime-danger');
+        timer.removeClass('txt-extratime-warn');
+    }
+    else if (draft.glory_extraTime > 10)
+    {
+        timer.removeClass('txt-extratime-danger');
+        timer.addClass('txt-extratime-warn');
+    }
+    else
+    {
+        timer.addClass('txt-extratime-danger');
+        timer.removeClass('txt-extratime-warn');
+    }
+                   
+     
+     timer = $('.valorTimerExtra');
+     timer.text(draft.valor_extraTime);
+     
+    if (draft.valor_extraTime > 30)
+    {
+        timer.removeClass('txt-extratime-danger');
+        timer.removeClass('txt-extratime-warn');
+    }
+    else if (draft.valor_extraTime > 10)
+    {
+        timer.removeClass('txt-extratime-danger');
+        timer.addClass('txt-extratime-warn');
+    }
+    else
+    {
+        timer.addClass('txt-extratime-danger');
+        timer.removeClass('txt-extratime-warn');
+    }
+    
+    if (draft.chat != null)
+    {
+        var chatBox = $("#chatbox");
+        var oldSCroll = chatBox.prop("scrollHeight") - 20;
+        for (i = 0; i < draft.chat.length; i++) { 
+                var c = draft.chat[i];         
+                var t = "<div><span class='chatName'>"+c.username+":</span> <span class='chatMsg'>"+c.data+"</span></div>";
+                chatBox.append(t);
+        }
+        var newSCroll = chatBox.prop("scrollHeight") - 20;
+        if (newSCroll > oldSCroll)
+        {
+            chatBox.animate({scrollTop: newSCroll}, 'normal');
+        }
+    }
+    
+}
+function getHeroName(id)
+{
+    var name = "";
+    $('div.hero-medium').each(function(idx) {
+        if ($(this).data('id') == id)
+        {
+            name = $(this).data('name');
+        }
+    });
+    
+    return name;
+}
+
+function disableHero(id)
+{
+ $('div.hero-medium').each(function(idx) {
+    if ($(this).data('id') == id)
+    {
+        var e = $(this);
+        var e2 = "<div class='img-cross'></div>"
+        e.append(e2);
+        e.removeClass('hero-hover');
+    }
+});    
+}
+
+function handleChatEvent(msg)
+{
+    var postData = {
+        msg: msg
+    };
+
+    postData = JSON.stringify(postData);
+    postData = {
+        id: {{draft.id}},
+        data: postData
+    };
+
+    $.ajax({
+        type: "POST",
+        url: "{{'drafts/draft_api/sendChat'|site_url()}}",
+        data: postData,
+        dataType:'json',
+        success: function(){
+        }
+    });                
+}
+
+function pickHero(id, e) {
+
+    var postData = {
+                id: id,
+            };
+                        
+    postData = JSON.stringify(postData);
+    postData = {
+        id: {{draft.id}},
+        data: postData
+    };
+
+    $.ajax({
+        type: "POST",
+        url: "{{'drafts/draft_api/pickHero'|site_url()}}",
+        data: postData,
+        dataType:'json',
+        async: false,
+        success: function(data, s, x){  
+            if (data.result == true)
+                e.unbind('click');        
+        }
+    });                
+}
+
+function glorySeatClick()
+{    
+    var postData = {
+                isGlory: true,
+            };
+                        
+    postData = JSON.stringify(postData);
+    postData = {
+        id: {{draft.id}},
+        data: postData
+    };  
+
+    $.ajax({
+        type: "POST",
+        url: "{{'drafts/draft_api/sitDown'|site_url()}}",
+        data: postData,
+        dataType:'json',
+        async: false,
+        success: function(data, s, x){  
+        }
+    });               
+}
+function valorSeatClick()
+{    
+    var postData = {
+                isGlory: false,
+            };
+                        
+    postData = JSON.stringify(postData);
+    postData = {
+        id: {{draft.id}},
+        data: postData
+    };  
+
+    $.ajax({
+        type: "POST",
+        url: "{{'drafts/draft_api/sitDown'|site_url()}}",
+        data: postData,
+        dataType:'json',
+        async: false,
+        success: function(data, s, x){  
+        }
+    });               
+}
+</script>
+{% endblock %}
+        
+    

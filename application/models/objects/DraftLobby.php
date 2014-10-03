@@ -23,6 +23,7 @@ class DraftLobby
         $this->glory_extra_time = 60;
         $this->valor_extra_time = 60;        
         $this->draft_model = null;
+        $this->password = '';
     }
     
     public function isUserValid($user)

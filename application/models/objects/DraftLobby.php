@@ -222,7 +222,7 @@ class DraftLobby
             }
         }
         
-        if ($added && $this->glory_seat != null && $this->valor_seat != null)
+        if ($added && $this->state == 0 && $this->glory_seat != null && $this->valor_seat != null)
         {
             $obj = array();
             $obj['state'] = 1;

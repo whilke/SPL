@@ -452,6 +452,7 @@ function handleChatEvent(msg)
         type: "POST",
         url: "{{'drafts/draft_api/sendChat'|site_url()}}",
         data: postData,
+        async: false,
         dataType:'json',
         success: function(){
         }
@@ -475,7 +476,7 @@ function pickHero(id, e) {
         url: "{{'drafts/draft_api/pickHero'|site_url()}}",
         data: postData,
         dataType:'json',
-        async: false,
+        async: true,
         success: function(data, s, x){  
             if (data.result == true)
                 e.unbind('click');        

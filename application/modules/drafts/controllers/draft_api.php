@@ -174,8 +174,13 @@ class draft_api extends MY_Controller
             if ($draft != null)
             {
                 $this->Drafts->addChat($id, $user->id, "Joined the lobby.");
-            }
-            
+                
+                $dUser = $draft->getDraftUser($user->id);
+                if ($dUser == null)
+                {
+                    $this->Drafts->addUser($draft->id, $user->id);
+                }
+            }   
         }
     }
     

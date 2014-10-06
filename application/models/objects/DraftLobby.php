@@ -96,7 +96,7 @@ class DraftLobby
          return true;
     }
     
-    public function pickHero($user, $heroId)
+    public function pickHero($user, $heroId, $isRandom=false)
     {
         $pickUser = $this->getPickUser();
         if ($pickUser == null || $user->id != $pickUser->id) return;
@@ -106,19 +106,19 @@ class DraftLobby
         
         if ($state == 1)
         {
-            $this->model->pickHero($this->id, $user->id, $heroId, 1);
+            $this->model->pickHero($this->id, $user->id, $heroId, 1,$isRandom);
         }
         else if ($state == 2)
         {
-            $this->model->pickHero($this->id, $user->id, $heroId, 2);
+            $this->model->pickHero($this->id, $user->id, $heroId, 2,$isRandom);
         }
         else if ($state == 3 || $state == 6 || $state == 7 || $state == 10 | $state == 11)
         {
-            $this->model->pickHero($this->id, $user->id, $heroId, 3);
+            $this->model->pickHero($this->id, $user->id, $heroId, 3,$isRandom);
         }
         else
         {
-            $this->model->pickHero($this->id, $user->id, $heroId, 4);
+            $this->model->pickHero($this->id, $user->id, $heroId, 4,$isRandom);
         }
                
         $obj = array();
@@ -220,13 +220,14 @@ class DraftLobby
         {
             $obj = array();
             $obj['state'] = 1;
+            $obj['round_time'] = time()+ $this->static_round_time;
             $this->model->update($this->id, $obj);                             
         }
     }
     
     public function randomPick()
     {
-        $this->pickHero( $this->getPickUser(), $this->getRandomHero());
+        $this->pickHero( $this->getPickUser(), $this->getRandomHero(), true);
     }
     
     protected function getRandomHero()

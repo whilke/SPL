@@ -93,8 +93,8 @@ class Drafts extends MY_Controller
         if (!$draft->isUserValid($user) && $draft->password != "")
         {
             //admins are allowed.
-            //$isManager = $this->ion_auth->is_manager();
-            //if (!$isManager)
+            $isManager = $this->ion_auth->is_manager();
+            if (!$isManager)
             {
                 redirect('drafts/validate/' .  $id, 'refresh');    
                 return;                

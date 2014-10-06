@@ -69,6 +69,24 @@ class Draft_model extends CI_Model
         return $o;
     }
     
+    public function getHero($id)
+    {
+          $query = $this->db->
+            select('*')->
+            from('heroes')->
+            where('id', $id)->
+            limit(1)->
+            get();
+        
+        if ($query->num_rows() === 1)
+        {
+            $r = $query->row();
+            return $r;            
+        }
+        
+        return null;           
+    }
+    
     public function getHeroList()
     {
          $query = $this->db
@@ -173,7 +191,7 @@ class Draft_model extends CI_Model
         return $data;        
     }      
     
-    public function pickHero($draft_id, $user_id, $hero_id, $type)
+    public function pickHero($draft_id, $user_id, $hero_id, $type, $isR=false)
     {
         $data = array(
             'draft_id'=>$draft_id,
@@ -184,6 +202,25 @@ class Draft_model extends CI_Model
         
         $this->db->insert('draft_picks', $data);
         $id = $this->db->insert_id();
+        
+        $hero = $this->getHero($hero_id);
+        
+        if ($type == 1 || $type == 2)
+        {
+            if ($isR)
+                $this->addChat($draft_id, $user_id, ("Random Bans " . $hero->desc) );
+            else
+                $this->addChat($draft_id, $user_id, ("Bans " . $hero->desc) );            
+        }
+        else
+        {
+            if ($isR)
+                $this->addChat($draft_id, $user_id, ("Randoms " . $hero->desc) );
+            else
+                $this->addChat($draft_id, $user_id, ("Picks " . $hero->desc) );
+        }
+            
+        
         return $id;
     }
     

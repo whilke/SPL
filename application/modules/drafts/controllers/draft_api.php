@@ -87,7 +87,7 @@ class draft_api extends MY_Controller
             $retObj->gloryRound = $draft->isGloryRound();
             $retObj->roundTime = $draft->getRoundTimeLeft();
             
-            if ( $retObj->roundTime < 0)
+            if ( $retObj->timerActive && $retObj->roundTime < 0)
             {
                 if ( $retObj->gloryRound )
                 {

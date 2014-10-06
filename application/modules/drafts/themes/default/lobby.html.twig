@@ -142,6 +142,7 @@ function HashTable() {
 }    
 
 $( document ).ready( function() {
+    joinLobby();
     gamePoll();
     $('div.hero-medium').click(function(idx) {
         var t = $(this);
@@ -155,6 +156,10 @@ $( document ).ready( function() {
         handleChatEvent(msg);
         
     });
+    
+    window.onbeforeunload = function() { 
+        leaveLobby();
+    };    
 });
 
 var nextChatTime = 0;
@@ -426,6 +431,7 @@ function disableHero(id)
         var e2 = "<div class='img-cross'></div>"
         e.append(e2);
         e.removeClass('hero-hover');
+        e.unbind('click');        
     }
 });    
 }
@@ -475,6 +481,52 @@ function pickHero(id, e) {
                 e.unbind('click');        
         }
     });                
+}
+
+function joinLobby()
+{    
+    var postData = {
+                isGlory: true,
+            };
+                        
+    postData = JSON.stringify(postData);
+    postData = {
+        id: {{draft.id}},
+        data: postData
+    };  
+
+    $.ajax({
+        type: "POST",
+        url: "{{'drafts/draft_api/joinLobby'|site_url()}}",
+        data: postData,
+        dataType:'json',
+        async: true,
+        success: function(data, s, x){  
+        }
+    });               
+}
+
+function leaveLobby()
+{    
+    var postData = {
+                isGlory: true,
+            };
+                        
+    postData = JSON.stringify(postData);
+    postData = {
+        id: {{draft.id}},
+        data: postData
+    };  
+
+    $.ajax({
+        type: "POST",
+        url: "{{'drafts/draft_api/leaveLobby'|site_url()}}",
+        data: postData,
+        dataType:'json',
+        async: false,
+        success: function(data, s, x){  
+        }
+    });               
 }
 
 function glorySeatClick()

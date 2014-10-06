@@ -160,6 +160,44 @@ class draft_api extends MY_Controller
         ->set_output($json);                
     }
     
+    function joinLobby()
+    {
+        $r = new stdClass();
+        $r->result = false;
+        $id = $this->input->post('id');
+        $data = $this->input->post('data');
+        
+        if ($this->ion_auth->logged_in())
+        {
+            $user = $this->ion_auth->user()->row();        
+            $draft = $this->Drafts->get($id);
+            if ($draft != null)
+            {
+                $this->Drafts->addChat($id, $user->id, "Joined the lobby.");
+            }
+            
+        }
+    }
+    
+    function leaveLobby()
+    {
+        $r = new stdClass();
+        $r->result = false;
+        $id = $this->input->post('id');
+        $data = $this->input->post('data');
+        
+        if ($this->ion_auth->logged_in())
+        {
+            $user = $this->ion_auth->user()->row();        
+            $draft = $this->Drafts->get($id);
+            if ($draft != null)
+            {
+                $this->Drafts->addChat($id, $user->id, "Left the lobby.");
+            }
+            
+        }
+    }    
+    
     function sitDown()
     {
         $r = new stdClass();

@@ -96,10 +96,39 @@ class DraftLobby
          return true;
     }
     
+    public function isHeroPicked($heroId)
+    {
+        if ($this->glory_ban != null && $this->glory_ban == $hero->id)
+            return true;
+        if ($this->valor_ban != null && $this->valor_ban == $hero->id)
+            return true;
+
+        foreach($this->glory_picks as $gp)
+        {
+            if ($gp == $hero->id)
+            {
+                return true;
+            }
+        }
+
+        foreach($this->valor_picks as $vp)
+        {
+            if ($vp == $hero->id)
+            {
+                return true;
+            }
+        }       
+        
+        return false;
+    }
+    
     public function pickHero($user, $heroId, $isRandom=false)
     {
         $pickUser = $this->getPickUser();
         if ($pickUser == null || $user->id != $pickUser->id) return;
+        
+        //check if hero is picked.
+        if ($this->heroPicked($heroId)) return;
         
         $state = $this->state;
         if ($state == 0 || $state >= 13) return;

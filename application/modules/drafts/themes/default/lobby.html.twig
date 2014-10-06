@@ -266,6 +266,18 @@ function procGame(draft)
     {
         if (draft.gloryRound == true)
         {
+            var gSeat = $('.glorySeat');
+            var vSeat = $('.valorSeat');
+            
+            gSeat.removeClass('btn-primary');
+            gSeat.removeClass('btn-warning');
+            gSeat.addClass('btn-warning');
+            
+            vSeat.removeClass('btn-primary');
+            vSeat.removeClass('btn-warning');
+            vSeat.addClass('btn-primary');
+            
+            
             var gloryTimer = $('.gloryTimer');
             gloryTimer.text(draft.roundTime);
             
@@ -289,6 +301,18 @@ function procGame(draft)
         }
         else
         {
+            
+            var gSeat = $('.glorySeat');
+            var vSeat = $('.valorSeat');
+            
+            vSeat.removeClass('btn-primary');
+            vSeat.removeClass('btn-warning');
+            vSeat.addClass('btn-warning');
+            
+            gSeat.removeClass('btn-primary');
+            gSeat.removeClass('btn-warning');
+            gSeat.addClass('btn-primary');
+            
             var valorTimer = $('.valorTimer');
             valorTimer.text(draft.roundTime);
             

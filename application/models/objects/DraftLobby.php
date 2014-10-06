@@ -168,6 +168,7 @@ class DraftLobby
     public function sitDown($isGlory, $user)
     {
         $isSitting = $this->isUserSitting($user);
+        $added = false;
         if ($isGlory)
         {
             if ($this->glory_seat != null && $this->glory_seat->id == $user->id)
@@ -175,7 +176,8 @@ class DraftLobby
                 $this->glory_seat = null;
                 $obj = array();
                 $obj['glory_seat'] = null;
-                $this->model->update($this->id, $obj);           
+                $this->model->update($this->id, $obj);     
+                $added = true;
             }
             else if ($this->glory_seat == null)
             {
@@ -188,6 +190,8 @@ class DraftLobby
                 $this->glory_seat = $user;                
                 $obj['glory_seat'] = $user->id;
                 $this->model->update($this->id, $obj);           
+                $added = true;
+
             }
             
         }
@@ -199,6 +203,7 @@ class DraftLobby
                 $obj = array();
                 $obj['valor_seat'] = null;
                 $this->model->update($this->id, $obj); 
+                $added = true;
             }
             else if ($this->valor_seat == null)
             {
@@ -213,10 +218,11 @@ class DraftLobby
                 
                 $obj['valor_seat'] = $user->id;
                 $this->model->update($this->id, $obj);                             
+                $added = true;
             }
         }
         
-        if ($this->glory_seat != null && $this->valor_seat != null)
+        if ($added && $this->glory_seat != null && $this->valor_seat != null)
         {
             $obj = array();
             $obj['state'] = 1;

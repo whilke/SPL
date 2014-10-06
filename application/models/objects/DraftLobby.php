@@ -98,14 +98,14 @@ class DraftLobby
     
     public function isHeroPicked($heroId)
     {
-        if ($this->glory_ban != null && $this->glory_ban == $hero->id)
+        if ($this->glory_ban != null && $this->glory_ban ==$heroId)
             return true;
-        if ($this->valor_ban != null && $this->valor_ban == $hero->id)
+        if ($this->valor_ban != null && $this->valor_ban == $heroId)
             return true;
 
         foreach($this->glory_picks as $gp)
         {
-            if ($gp == $hero->id)
+            if ($gp == $heroId)
             {
                 return true;
             }
@@ -113,7 +113,7 @@ class DraftLobby
 
         foreach($this->valor_picks as $vp)
         {
-            if ($vp == $hero->id)
+            if ($vp == $heroId)
             {
                 return true;
             }
@@ -128,7 +128,7 @@ class DraftLobby
         if ($pickUser == null || $user->id != $pickUser->id) return;
         
         //check if hero is picked.
-        if ($this->heroPicked($heroId)) return;
+        if ($this->isHeroPicked($heroId)) return;
         
         $state = $this->state;
         if ($state == 0 || $state >= 13) return;

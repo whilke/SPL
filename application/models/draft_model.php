@@ -20,6 +20,8 @@ class Draft_model extends CI_Model
         $o->password = $props->password;
         $o->timestamp = $props->timestamp;
         
+        $o->usedevheroes = $props->usedevheroes;
+        
         if ($props->glory_seat > 0)
         {
             $o->glory_seat = $this->getDraftUser($props->glory_seat);
@@ -161,6 +163,7 @@ class Draft_model extends CI_Model
         $props['state'] = 0;
         $props['glory_extra_time'] = $draft->glory_extra_time;
         $props['valor_extra_time'] = $draft->valor_extra_time;
+        $props['usedevheroes'] = $draft->usedevheroes;
         
         $this->db->insert('draft_lobby', $props);
         $id = $this->db->insert_id();

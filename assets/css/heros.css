@@ -303,3 +303,24 @@ background:
 url(/assets/images/heroes.png) ;
 background-position: -512px -384px;
 }
+
+.hero-nikolai
+{
+background:
+url(/assets/images/heroes.png) ;
+background-position: -256px -512px;
+}
+
+.hero-jinshe
+{
+background:
+url(/assets/images/heroes.png) ;
+background-position: -128px -512px;
+}
+
+.hero-gokong
+{
+background:
+url(/assets/images/heroes.png) ;
+background-position: 0px -512px;
+}

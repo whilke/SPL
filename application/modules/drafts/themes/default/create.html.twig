@@ -19,7 +19,10 @@
     Password   
     {{data.password|bs_form_input()}}
 </p>
-
+<p>
+    {{'usedev'|form_checkbox('1', FALSE, 'id="usedev"')}}
+    Use Dev Heros
+</p>
 <div class="pull-right">{{'submit'|bs_form_submit('Create')}}</div>
 {{form_close()}}
 

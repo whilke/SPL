@@ -75,11 +75,19 @@ class Stats_model extends CI_Model
         return $arr;
     }
     
-    function getHeroList2()
+    function getHeroList2($useDevHeroes=0)
     {
         $query = $this->db->from('heroes')->
                 order_by('group')->
-                order_by('desc')->get();
+                order_by('desc');
+        
+        if ($useDevHeroes == 0)
+        {
+            $query = $query->
+                where('isdev', 0);
+        }
+        
+        $query = $query->get();
         
         $arr = Array();
         foreach($query->result() as $row)

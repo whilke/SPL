@@ -102,7 +102,7 @@ class Drafts extends MY_Controller
         }
         
         $this->load->model('stats_model', 'stats');
-        $heroList = $this->stats->getHeroList2();
+        $heroList = $this->stats->getHeroList2($draft->usedevheroes);
         
         $this->twiggy->set('heroes', $heroList);
         $this->twiggy->set('draft', $draft);
@@ -135,6 +135,7 @@ class Drafts extends MY_Controller
         {
             $name = $this->input->post('name');
             $pass = $this->input->post('password');
+            $useDevHeros = $this->input->post('usedev');
             
             $props = array();
             
@@ -142,6 +143,7 @@ class Drafts extends MY_Controller
             $draft = new Objects\DraftLobby();
             $draft->title = $name;
             $draft->password = $pass;
+            $draft->usedevheroes = $useDevHeros;
             
             $id = $this->Drafts->add($draft);
             if ($id != false)

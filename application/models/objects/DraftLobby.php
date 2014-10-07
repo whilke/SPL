@@ -10,11 +10,13 @@ class DraftLobby
     public $glory_picks = array();
     public $valor_picks = array();
     protected $teams = array();
+    public $sedevheroes;
     protected $static_round_time = 60;
     public function __construct()
     {
         $this->id = 0;
         $this->match_id = 0;
+        $this->usedevheroes = 0;
         $this->title = ""; 
         $this->state = 0;
         $this->glory_seat = null;

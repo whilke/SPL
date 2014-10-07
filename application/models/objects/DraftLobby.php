@@ -160,12 +160,14 @@ class DraftLobby
                 $u = $this->glory_extra_time + $this->getRoundTimeLeft();
                 if ($u < 0) $u = 0;
                 $obj['glory_extra_time'] = $u;
+                $obj['round_time'] = time();
             }
             else
             {
                 $u = $this->valor_extra_time + $this->getRoundTimeLeft();
                 if ($u < 0) $u = 0;
                 $obj['valor_extra_time'] = $u;
+                $obj['round_time'] = time();
             }
         }
         
@@ -322,9 +324,9 @@ class DraftLobby
         if ($t < 0)
         {
             if ($this->isGloryRound())
-                return ($t + $this->glory_extra_time) < 0 ;
+                return (($t + $this->glory_extra_time) < 0) ;
             else
-                return ($t + $this->valor_extra_time) < 0 ;
+                return (($t + $this->valor_extra_time) < 0) ;
                 
         }
     }

@@ -1,0 +1,29 @@
+{% extends _layout %}
+
+{% block content %}
+<div class="row">
+<div class="col-lg-offset-3 col-lg-6">
+<h1>New Lobby</h1>
+
+{% if data.message != "" %}
+<div class="alert alert-info" id="infoMessage">{{ data.message}}</div>
+{% endif%}
+
+{{'drafts/create'|form_open()}}
+
+<p>
+    Title   
+    {{data.name|bs_form_input()}}
+</p>
+<p>
+    Password   
+    {{data.password|bs_form_input()}}
+</p>
+
+<div class="pull-right">{{'submit'|bs_form_submit('Create')}}</div>
+{{form_close()}}
+
+
+</div>
+</div>
+{% endblock %}

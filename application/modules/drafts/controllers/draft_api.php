@@ -12,6 +12,50 @@ class draft_api extends MY_Controller
 
     }
     
+    function getLobbys()
+    { 
+        $lobbys = $this->Drafts->getAll();
+        
+        $obj = new stdClass();
+        $retLobbys = array();
+        foreach($lobbys AS $lobby)
+        {
+            $timestamp = new DateTime($lobby->timestamp);
+            $time = date("Y-m-d H:i:s");
+            $now = new DateTime($time);
+            
+            $diff = $now->diff($timestamp);       
+            
+            $mins = $diff->days * 24 * 60;
+            $mins += $diff->h * 60;
+            $mins += $diff->i;            
+            
+            
+            $stripLobby = new stdClass();
+            
+            if ( $mins > 15  )
+            {
+            }
+            else
+            {                
+                $stripLobby = new stdClass();
+                $stripLobby->id = $lobby->id;
+                $stripLobby->name = $lobby->title;
+                $retLobbys[] = $stripLobby;
+            }
+            
+        }        
+        $obj->lobbys = $retLobbys;
+        
+
+        $json = json_encode($obj);
+            
+        $this->output
+        ->set_content_type('application/json')
+        ->set_output($json);
+        
+    }    
+    
     function sendChat()
     {
         $id = $this->input->post('id');
@@ -175,8 +219,8 @@ class draft_api extends MY_Controller
             {
                 $this->Drafts->addChat($id, $user->id, "Joined the lobby.");
                 
-                $dUser = $draft->getDraftUser($user->id);
-                if ($dUser == null)
+                $dUser =  $this->Drafts->isUserInDraft($draft->id, $user->id);
+                if ($dUser == false)
                 {
                     $this->Drafts->addUser($draft->id, $user->id);
                 }

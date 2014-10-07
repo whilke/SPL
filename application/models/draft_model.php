@@ -18,6 +18,7 @@ class Draft_model extends CI_Model
         $o->title = $props->title;
         $o->state = $props->state;
         $o->password = $props->password;
+        $o->timestamp = $props->timestamp;
         
         if ($props->glory_seat > 0)
         {
@@ -101,6 +102,24 @@ class Draft_model extends CI_Model
         return $data;    
     }
     
+    public function isUserInDraft($id, $uId)
+    {
+        $query = $this->db->
+            select('u.*')->
+            from('draft_users u')->
+            where('u.draft_id', $id)->
+            where('u.user_id', $uId)->
+            limit(1)->
+            get();
+        
+        if ($query->num_rows() === 1)
+        {
+            return true;
+        }
+        
+        return false;
+    }
+    
     public function getDraftUser($uId)
     {
         $query = $this->db->
@@ -138,6 +157,7 @@ class Draft_model extends CI_Model
     {
         $props['match_id'] = $draft->match_id;
         $props['title'] = $draft->title;
+        $props['password'] = $draft->password;
         $props['state'] = 0;
         $props['glory_extra_time'] = $draft->glory_extra_time;
         $props['valor_extra_time'] = $draft->valor_extra_time;
@@ -242,6 +262,7 @@ class Draft_model extends CI_Model
     
     public function addUser($id, $userId)
     {
+        $props = array();
         $props['draft_id'] = $id;
         $props['user_id'] = $userId;
         

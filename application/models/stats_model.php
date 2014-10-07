@@ -77,7 +77,9 @@ class Stats_model extends CI_Model
     
     function getHeroList2()
     {
-        $query = $this->db->from('heroes')->get();
+        $query = $this->db->from('heroes')->
+                order_by('group')->
+                order_by('desc')->get();
         
         $arr = Array();
         foreach($query->result() as $row)

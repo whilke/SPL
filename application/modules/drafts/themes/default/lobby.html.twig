@@ -190,8 +190,8 @@ function procGame(draft)
         
         var cont = $('.gloryPicks').find('div.heroban-cont');
         var name = getHeroName(draft.gloryBan);
-        cont.append("<div class='hero-" +name+" hero-medium heroImg-cont'></div>");   
-        cont.append("<div class='heroban-cont'></div>");   
+        cont.append("<div class='hero-" +name+" hero-medium heroImg-cont'></div>");  
+        cont.append("<div class='heroban2-cont'></div>");   
 
 
     }
@@ -204,7 +204,7 @@ function procGame(draft)
         var cont = $('.valorPicks').find('div.heroban-cont');
         var name = getHeroName(draft.valorBan);
         cont.append("<div class='hero-" +name+" hero-medium heroImg-cont'></div>");  
-        cont.append("<div class='heroban-cont'></div>");   
+        cont.append("<div class='heroban2-cont'></div>");   
     }
     
     if (draft.gloryPicks != null)

@@ -60,7 +60,8 @@
 .heroban-cont
 {
     background: url(/assets/images/ban.png) no-repeat 0 0 ;
-    background-position: 0px 0px;      
+    background-position: 0px 0px;    
+    background-size: 100% 100%;
     width:  100px;
     height: 100px;
     margin-top: 5px;
@@ -69,18 +70,21 @@
     
     -webkit-border-radius: 10px; 
     -moz-border-radius: 10px; 
-    border-radius: 10px;     
+    border-radius: 10px;    
+    position: relative;
 }
 
 .heroban2-cont
 {
     background: url(/assets/images/ban.png) no-repeat 0 0 ;
     background-position: 0px 0px;      
-    width:  100px;
-    height: 100px;
-    margin-top: 5px;
-    margin-bottom: 5px;
-    opacity: 1.0;
+    background-size: 100% 100%;
+    width:  100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 10;
+    opacity: 0.9;
     
     -webkit-border-radius: 10px; 
     -moz-border-radius: 10px; 
@@ -140,7 +144,6 @@ font-size:15px;
 {
 background: url(/assets/images/cross.png) no-repeat 0 0 ;
 background-position: 0px 0px;   
-position: fixed;
 top: 0;
 left: 0;
 width: 100%;

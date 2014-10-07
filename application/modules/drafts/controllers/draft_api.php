@@ -217,7 +217,7 @@ class draft_api extends MY_Controller
             $draft = $this->Drafts->get($id);
             if ($draft != null)
             {
-                $this->Drafts->addChat($id, $user->id, "Joined the lobby.");
+                $this->Drafts->addChat($id, 2, $user->username . " joined the lobby.");
                 
                 $dUser =  $this->Drafts->isUserInDraft($draft->id, $user->id);
                 if ($dUser == false)
@@ -241,7 +241,7 @@ class draft_api extends MY_Controller
             $draft = $this->Drafts->get($id);
             if ($draft != null)
             {
-                $this->Drafts->addChat($id, $user->id, "Left the lobby.");
+                $this->Drafts->addChat($id, 2, $user->username . " left the lobby.");
             }
             
         }

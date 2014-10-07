@@ -90,11 +90,17 @@ class Draft_model extends CI_Model
         return null;           
     }
     
-    public function getHeroList()
+    public function getHeroList($useDevHeroes=0)
     {
          $query = $this->db
-         ->from('heroes')
-         ->get();   
+         ->from('heroes');
+        
+        if ($useDevHeroes == 0)
+        {
+            $query = $query->
+                where('isdev', 0);
+        }        
+        $query = $query->get();
         
         $data = array();
         foreach($query->result() as $row)
@@ -227,20 +233,20 @@ class Draft_model extends CI_Model
         $id = $this->db->insert_id();
         
         $hero = $this->getHero($hero_id);
-        
+        $user = $this->getDraftUser($user_id);
         if ($type == 1 || $type == 2)
         {
             if ($isR)
-                $this->addChat($draft_id, $user_id, ("Random Bans " . $hero->desc) );
+                $this->addChat($draft_id, 2, ($user->username . " random bans " . $hero->desc) );
             else
-                $this->addChat($draft_id, $user_id, ("Bans " . $hero->desc) );            
+                $this->addChat($draft_id, 2, ($user->username . " bans " . $hero->desc) );            
         }
         else
         {
             if ($isR)
-                $this->addChat($draft_id, $user_id, ("Randoms " . $hero->desc) );
+                $this->addChat($draft_id, 2, ($user->username . " randoms " . $hero->desc) );
             else
-                $this->addChat($draft_id, $user_id, ("Picks " . $hero->desc) );
+                $this->addChat($draft_id, 2, ($user->username . " picks " . $hero->desc) );
         }
             
         

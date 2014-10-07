@@ -10,7 +10,7 @@ class DraftLobby
     public $glory_picks = array();
     public $valor_picks = array();
     protected $teams = array();
-    public $sedevheroes;
+    public $usedevheroes;
     protected $static_round_time = 60;
     public function __construct()
     {
@@ -271,7 +271,7 @@ class DraftLobby
     
     protected function getRandomHero()
     {
-        $heroList = $this->model->getHeroList();
+        $heroList = $this->model->getHeroList($this->usedevheroes);
         shuffle($heroList);
         
         //find the first hero not selected

@@ -59,3 +59,66 @@ tr th:last-child {
   margin: 0 auto;
   width: 800px;
 }
+
+.team
+{
+    height: 120px;
+    margin: 5px;
+    border: 2px solid grey;
+    -webkit-border-radius: 10px; 
+    -moz-border-radius: 10px; 
+    border-radius: 10px;     
+}
+
+.header-line{
+    background: #3990f2;
+    -webkit-border-radius: 10px; 
+    -moz-border-radius: 10px; 
+    border-radius: 10px;    
+    height:30px;
+}
+.header-text {
+    font-size:20px;
+}
+
+.team-text-1
+{
+    color: black;
+    font-family: Oswald, sans-serif; 
+    font-size:1.4vh;    
+}
+
+.team-text-2
+{
+    font-family: Audiowide, sans-serif; 
+    font-size:10px;    
+}
+
+.team-text-green
+{
+    color: green;
+}
+
+.team-text-red
+{
+    color: red;
+}
+
+
+.team-text-3
+{
+    color: #3990f2;
+    font-family: Audiowide, sans-serif; 
+    font-size:15px;    
+}
+
+.number-overlay {
+    position: absolute;
+    top: 0;
+    left: 3px;
+    width: 100%;
+    height: 100%;
+    color: #3990f2;
+    font-family: Audiowide, sans-serif; 
+    font-size:12px;     
+}

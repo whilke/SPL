@@ -677,6 +677,7 @@ class Seasons_model extends CI_Model
             $stat->teamName = $team->name;
             $stat->teamId = $team->id;
             $stat->group_name = $team->group_name;
+            $stat->logo = $team->logo;
             $stats[] = $stat;
         }
         

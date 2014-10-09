@@ -33,7 +33,7 @@ class draft_api extends MY_Controller
             
             $stripLobby = new stdClass();
             
-            if ( $mins > 15  )
+            if ( $mins > 30  )
             {
             }
             else

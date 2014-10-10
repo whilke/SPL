@@ -14,7 +14,7 @@
 {% endblock %}
 
 {% block content %}
-    <div class="row">
+    <div class="row body-container">
         <div class="col-sm-2">
             <h3>{{lobby.name}} <span style="font-size:12px;">(hosted by <span id="txtHost"></span>)</span><h3>
         </div>
@@ -42,7 +42,7 @@
             </div>
         </div>
     </div>
-    <div class="col-sm-2">
+    <div class="col-sm-2 body-container">
         <ul class="list-group row">
             <li class="list-group-item" style='background-color: #c0c0c0;height:70px;'>
                 <div id='slot1' data-number=1 class="slotItem"></div>
@@ -68,11 +68,11 @@
         <div  id='team1Vote' class='text-center' style='font-size:12px;font-weight:bold;color:lightgray;'>Match Quality: <span id='mq1'></span></div>
 
     </div>    
-    <div class="col-sm-8" id="cntUserList" style="min-height:200px;">
+    <div class="col-sm-8 body-container" id="cntUserList" style="min-height:200px;">
         <ul id="cntUsers" class="list-group row">
         </ul>  
     </div>    
-    <div class="col-sm-2">  
+    <div class="col-sm-2 body-container">  
         <ul class="list-group row">
             <li class="list-group-item" style='background-color: #c0c0c0;height:70px;'>
                 <div id='slot6' data-number=6 class="slotItem"></div>
@@ -99,7 +99,7 @@
     </div>    
     
     
-    <div id="chatBox"></div>
+    <div class='body-container' id="chatBox"></div>
 {% endblock %}
 
 {% block js%}

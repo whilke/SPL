@@ -1,7 +1,7 @@
 {% extends _layout %}
 
 {% block content %}    
-
+<div class='body-container'>
 {% if isTeamOwner  %}
 {{'team/lfp'|form_open()}}
 <fieldset>
@@ -126,7 +126,7 @@ Teams looking to fill the following roles
         {%endfor%}
     </tbody>
 </table>
-        
+</div>
 <script type="text/javascript">
 $(document).ready(function(){
     $('#lfg').dataTable( {

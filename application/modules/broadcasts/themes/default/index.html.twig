@@ -2,7 +2,7 @@
 
 {% block content %}
     <br/>
-    <div class='col-md-8 col-md-offset-2'>
+    <div class='col-md-8 col-md-offset-2 body-container'>
     {% if user.isAdmin %}
         <a class="btn btn-sm btn-info pull-right" href="{{'broadcasts/create'|site_url}}" rel="async" 
            ajaxify="{{'broadcasts/Broadcast_Ajax/dialog/create'|site_url}}">Create Broadcast</a>

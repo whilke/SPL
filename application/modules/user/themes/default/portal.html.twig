@@ -3,7 +3,7 @@
     <!-- Header -->
     <div id="alertCnt">
     {% for invite in invites  %}
-    <div class="alert alert-success" id="infoMessage">
+    <div class="alert alert-success" id="infoMessage" class='body-container'>
         {% set s = 'user/invite/' ~ invite.id ~ '/1'    %}
         {% set s2 = 'user/invite/' ~ invite.id ~ '/0'    %}
         {{ invite.team_name }} as invited you to their team as a {{invite.role}} 
@@ -14,7 +14,7 @@
     </div>    
     {%endfor%}
     </div>
-    <h2 style='text-align:center;'>
+    <h2 style='text-align:center;'  class='body-container'>
         {%if isOwner %}
         <span id="nameContainer" class="">
             <a href="javascript://;" id="username">

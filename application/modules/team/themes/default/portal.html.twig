@@ -1,7 +1,7 @@
 {% extends _layout %}
 {% block content %}
     {% for invite in invites  %}
-    <div class="alert alert-success" id="infoMessage">
+    <div class="alert alert-success" id="infoMessage"  class='body-container'>
         {% set s = 'team/invacct/' ~ invite.id ~ '/0'    %}
         {{ invite.user_name }} has a pending invite for a {{invite.role}} role.
         <span class='pull-right'>
@@ -10,18 +10,18 @@
     </div>    
     {%endfor%}
     {% if canJoin and isTeamOwner%}
-    <div class="alert alert-success" id="infoMessage">
+    <div class="alert alert-success" id="infoMessage"  class='body-container'>
         {% set s = 'team/join_season/' ~ team.id  %}
         Sign your team into <a href='{{s|site_url}}'>{{season.name}}</a> and start playing next week!
     </div>
     {%endif%}
     {% if canLeave and isTeamOwner%}
-    <div class="alert alert-warning" id="infoMessage">
+    <div class="alert alert-warning" id="infoMessage"  class='body-container'>
         {% set s = 'team/join_season/' ~ team.id  ~ '/1' %}
         Sign your team out of <a href='{{s|site_url}}'>{{season.name}}</a> starting next week.
     </div>
     {%endif%}
-    <h2 style='text-align:center;'>{{team.name}} ( 
+    <h2  class='body-container' style='text-align:center;'>{{team.name}} ( 
         
         {%if isTeamOwner and canEdit %}
         <span id="regionContainer" class="">
@@ -227,7 +227,7 @@
             </div>
         </div>
     </div>
-    <div class="col-md-10 col-md-offset-1">   
+    <div class="col-md-10 col-md-offset-1 body-container">   
         <table id="matches" class="table table-bordered table-hover" style="border: 0px;">
             <thead>
                 <tr>

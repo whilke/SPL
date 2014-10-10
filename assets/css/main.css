@@ -15,10 +15,43 @@ html {
     position: relative;
     min-height: 100%;
 }
+
 body {
     /* Margin bottom by footer height */
     margin-bottom: 30px;
+    padding-top: 27px;
 }
+
+@media screen and (min-width: 600px) { 
+body {
+    /* Margin bottom by footer height */
+    margin-bottom: 30px;
+    padding-top: 27px;
+    background-image: url('/assets/images/spl-background.jpg');
+    background-repeat: repeat-x;
+    background-attachment: fixed;
+    /*background changes for HoNtour 3 changes*/
+    background-size: cover;
+    background-position-x: center;
+}
+}
+
+
+.container .body-container {
+    margin-top:10px;
+    padding-left:25px;
+    padding-right:25px;
+    padding-top:5px;
+    padding-bottom: 5px;
+    background-color: white;
+    border: 1px solid #CCC;
+    -webkit-border-radius: 10px; 
+    -moz-border-radius: 10px; 
+    border-radius: 10px;     
+    box-shadow: 0px 0px 4px #CCC;
+
+}
+
 #footer {
     position: absolute;
     bottom: 0;

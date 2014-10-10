@@ -8,7 +8,7 @@
 {% block content %}
 <div class="row">
     <div class="col-md-12">
-    
+        <div class='body-container'>
         <h2>{{season.name}} Standings <span style="font-size:10px;color:grey;">(*stats are delayed by one week)</span></h2>
 
         {% if stats_tourny is defined %}
@@ -132,7 +132,8 @@
             </a>
         {% endfor %}            
        </div>
-       
+        </div>
+        <div class='body-container'>
         <div class='row'>
         <div class='col-md-9 col-md-push-1 col-sm-10 col-sm-push-1 col-xs-8 col-xs-push-2' style='margin-left:10px;'>
         <div class='header-line'>
@@ -231,7 +232,7 @@
             </tbody>
         </table>        
         {%endif%}
-        
+        </div>
     </div>
 </div>
 {% endblock %}

@@ -1,5 +1,6 @@
 {% extends _layout %}
 {% block content %}
+    <div class='row body-container'>
     <h4>
         Searching for "{{search}}"
     </h4>
@@ -18,5 +19,5 @@
         <a href="{{l|site_url}}" target="_blank">{{user.name}}</a><br/>
     {% endfor %}
    </div>
-    
+    </div>
 {% endblock %}

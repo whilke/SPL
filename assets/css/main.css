@@ -36,6 +36,16 @@ body {
 }
 }
 
+.header-container {
+    background: url(/assets/images/top_banner.png) no-repeat 0 0 ;
+    background-position: 0px 0px;    
+    background-size: 100% 100%;
+    margin-right: 0px;
+
+    -webkit-border-radius: 10px; 
+    -moz-border-radius: 10px; 
+    border-radius: 10px;     
+}
 
 .container .body-container {
     margin-top:10px;

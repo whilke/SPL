@@ -274,6 +274,7 @@ class User extends MY_Controller
             if ($team == null)
                 $bHasInvite = false;
             
+            $bHasInvite = false;
             if (!$bHasInvite)
             {
                 //does this owner have spots to invite someone with?

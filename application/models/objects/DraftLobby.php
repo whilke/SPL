@@ -28,23 +28,26 @@ class DraftLobby
         $this->password = '';
     }
     
-    public function isUserValid($user)
+    public function isUserValid($user, $sessionId=null)
     {
         //first lets see if this user is part of a team.
-        if($user->team_id > 0)
+        if ($user != null)
         {
-            if ($this->teams != null)
+            if($user->team_id > 0)
             {
-                foreach($this->teams as $team)
+                if ($this->teams != null)
                 {
-                    if ($team->id == $user->team_id)
-                        return true;
-                }                
-            }
+                    foreach($this->teams as $team)
+                    {
+                        if ($team->id == $user->team_id)
+                            return true;
+                    }                
+                }
+            }            
         }
         
         //check if this user is allowed already
-        return $this->model->isValidUser($this->id, $user->id);
+        return $this->model->isValidUser($this->id, $user, $sessionId);
     }
     
     public function validatePickUser($user)

@@ -87,22 +87,54 @@ class draft_api extends MY_Controller
     {
         $chatTs = rawurldecode($chatTs);
         
-        if (!$this->ion_auth->logged_in())
+        $user = null;
+        $sId= null;
+        if ($this->ion_auth->logged_in())
         {
-            redirect('auth', 'refresh');
+            $user = $this->ion_auth->user()->row();
         }        
-        $user = $this->ion_auth->user()->row();
+        else
+        {
+            $sId = $this->session->userdata('session_id');
+        }
 
         $draft = $this->Drafts->get($id);
+        $draftValid = false;
+        
+        if ($draft != null)
+        {
+            $timestamp = new DateTime($draft->timestamp);
+            $time = date("Y-m-d H:i:s");
+            $now = new DateTime($time);
+            
+            $diff = $now->diff($timestamp);       
+            
+            $mins = $diff->days * 24 * 60;
+            $mins += $diff->h * 60;
+            $mins += $diff->i;            
+            
+            if ($mins < 30)                
+                $draftValid = true;
+        }
         
         $retObj = new stdClass();
         $retObj->valid = false;
-        if ($draft == null)
+        if (!$draftValid)
         {
             $retObj->redirect = site_url('drafts');
         }
         else
         {
+            if ($user != null)
+            {
+                $retObj->validUser = true;
+            }
+            else
+            {
+                $retObj->validUser = false;
+                
+            }
+                
             
             if ($draft->isTimerActive() && $draft->isTimerExpired())
             {
@@ -211,18 +243,32 @@ class draft_api extends MY_Controller
         $id = $this->input->post('id');
         $data = $this->input->post('data');
         
+        $user = null;
+        $sId= null;
         if ($this->ion_auth->logged_in())
         {
-            $user = $this->ion_auth->user()->row();        
+            $user = $this->ion_auth->user()->row();
+        }        
+        else
+        {
+            $sId = $this->session->userdata('session_id');
+        }
+        
+        //if ($this->ion_auth->logged_in())
+        {
             $draft = $this->Drafts->get($id);
             if ($draft != null)
             {
-                $this->Drafts->addChat($id, 2, $user->username . " joined the lobby.");
+                $username = "Guest";
+                if ($user != null)
+                    $username = $user->username;
                 
-                $dUser =  $this->Drafts->isUserInDraft($draft->id, $user->id);
+                $this->Drafts->addChat($id, 2, $username . " joined the lobby.");
+                
+                $dUser =  $this->Drafts->isUserInDraft($draft->id, $user, $sId);
                 if ($dUser == false)
                 {
-                    $this->Drafts->addUser($draft->id, $user->id);
+                    $this->Drafts->addUser($draft->id, $user, $sId);
                 }
             }   
         }
@@ -235,13 +281,26 @@ class draft_api extends MY_Controller
         $id = $this->input->post('id');
         $data = $this->input->post('data');
         
+        $user = null;
+        $sId= null;
         if ($this->ion_auth->logged_in())
         {
-            $user = $this->ion_auth->user()->row();        
+            $user = $this->ion_auth->user()->row();
+        }        
+        else
+        {
+            $sId = $this->session->userdata('session_id');
+        }
+        
+        {
+            $username = "Guest";
+            if ($user != null)
+                $username = $user->username;
+
             $draft = $this->Drafts->get($id);
             if ($draft != null)
             {
-                $this->Drafts->addChat($id, 2, $user->username . " left the lobby.");
+                $this->Drafts->addChat($id, 2, $username . " left the lobby.");
             }
             
         }

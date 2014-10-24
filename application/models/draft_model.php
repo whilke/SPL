@@ -110,13 +110,18 @@ class Draft_model extends CI_Model
         return $data;    
     }
     
-    public function isUserInDraft($id, $uId)
+    public function isUserInDraft($id, $user, $sessionId)
     {
+        $uId = 0;
+        if ($user != null)
+            $uId = $user->id;
+        
         $query = $this->db->
             select('u.*')->
             from('draft_users u')->
             where('u.draft_id', $id)->
             where('u.user_id', $uId)->
+            or_where('u.session_id', $sessionId)->
             limit(1)->
             get();
         
@@ -269,11 +274,13 @@ class Draft_model extends CI_Model
         return $data;      
     }
     
-    public function addUser($id, $userId)
+    public function addUser($id, $user, $sessionId=null)
     {
         $props = array();
         $props['draft_id'] = $id;
-        $props['user_id'] = $userId;
+        $props['session_id'] = $sessionId;
+        if ($user != null)
+            $props['user_id'] = $user->id;
         
         $this->db->insert('draft_users', $props);
         $id = $this->db->insert_id();
@@ -282,13 +289,18 @@ class Draft_model extends CI_Model
         
     }
     
-    public function isValidUser($id, $userId)
+    public function isValidUser($id, $user, $sessionId=null)
     {
+        $uid = 0;
+        if ($user != null)
+            $uid = $user->id;
+        
         $query = $this->db->
             select('du.*')->
             from('draft_users du')->
             where('du.draft_id', $id)->
-            where('du.user_id', $userId)->
+            where('du.user_id', $uid)->
+            or_where('du.session_id', $sessionId)->
             limit(1)->
             get();
         

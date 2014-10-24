@@ -17,12 +17,18 @@ class Drafts extends MY_Controller
     
     function validate($id)
     {
-        if (!$this->ion_auth->logged_in())
+        $user = null;
+        $sId = null;
+        if ($this->ion_auth->logged_in())
         {
-            redirect('auth', 'refresh');
+            $user = $this->ion_auth->user()->row();
         }        
-        $user = $this->ion_auth->user()->row();
-
+        else
+        {
+            $sId = $this->session->userdata('session_id');
+        }
+        
+        
         $draft = $this->Drafts->get($id);
         if ($draft == null)
         {
@@ -45,7 +51,7 @@ class Drafts extends MY_Controller
 
                 if ($passwd == $draft->password)
                 {
-                    $this->Drafts->addUser($draft->id, $user->id);
+                    $this->Drafts->addUser($draft->id, $user, $sId);
                     redirect('drafts/lobby/' . $id, 'refresh');            
                     return;
                 }
@@ -77,12 +83,18 @@ class Drafts extends MY_Controller
     
     function lobby($id)
     {
-        if (!$this->ion_auth->logged_in())
+        $user = null;
+        $sId = null;
+        if ($this->ion_auth->logged_in())
         {
-            redirect('auth', 'refresh');
+            $user = $this->ion_auth->user()->row();
         }        
-        $user = $this->ion_auth->user()->row();
+        else
+        {
+            $sId = $this->session->userdata('session_id');
+        }
 
+        $this->twiggy->set('sid', $sId);
         $draft = $this->Drafts->get($id);
         if ($draft == null)
         {
@@ -90,7 +102,7 @@ class Drafts extends MY_Controller
             return;
         }
         
-        if (!$draft->isUserValid($user) && $draft->password != "")
+        if (!$draft->isUserValid($user, $sId) && $draft->password != "")
         {
             //admins are allowed.
             $isManager = $this->ion_auth->is_manager();

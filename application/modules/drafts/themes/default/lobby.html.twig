@@ -3,6 +3,7 @@
 {%block title %}SPL Drafter{%endblock%}
         
 {% block content %}  
+    {{sid}}
     <br/>
     <div class='body-container'>
     <div class="row">
@@ -181,6 +182,11 @@ var curDraft = null;
 function procGame(draft)
 {
     curDraft = draft;
+    
+    if (draft.redirect != null)
+    {
+        window.location = draft.redirect;
+    }
     
     if (draft.valid == false) return;
     

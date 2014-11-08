@@ -291,6 +291,9 @@ class Draft_model extends CI_Model
     
     public function isValidUser($id, $user, $sessionId=null)
     {
+        if ($sessionId == null)
+            $sessionId = '';
+        
         $uid = 0;
         if ($user != null)
             $uid = $user->id;
